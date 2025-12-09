@@ -2,11 +2,10 @@
 
 from datetime import date
 from pathlib import Path
-from typing import Optional
 
-from lawarchive.models import Section, SearchResult, TitleInfo, Citation
-from lawarchive.storage.sqlite import SQLiteStorage
+from lawarchive.models import Citation, SearchResult, Section, TitleInfo
 from lawarchive.storage.base import StorageBackend
+from lawarchive.storage.sqlite import SQLiteStorage
 
 
 class LawArchive:
@@ -26,7 +25,7 @@ class LawArchive:
     def __init__(
         self,
         db_path: Path | str = "lawarchive.db",
-        storage: Optional[StorageBackend] = None,
+        storage: StorageBackend | None = None,
     ):
         """Initialize the law archive.
 
@@ -39,8 +38,8 @@ class LawArchive:
     def get(
         self,
         citation: str | Citation,
-        as_of: Optional[date] = None,
-    ) -> Optional[Section]:
+        as_of: date | None = None,
+    ) -> Section | None:
         """Get a section by citation.
 
         Args:
@@ -68,7 +67,7 @@ class LawArchive:
     def search(
         self,
         query: str,
-        title: Optional[int] = None,
+        title: int | None = None,
         limit: int = 20,
     ) -> list[SearchResult]:
         """Search for sections matching a query.

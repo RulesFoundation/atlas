@@ -1,7 +1,7 @@
 """Data models for statute representation."""
 
 from datetime import date
-from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -10,7 +10,7 @@ class Citation(BaseModel):
 
     title: int = Field(..., description="Title number (e.g., 26 for IRC)")
     section: str = Field(..., description="Section number (e.g., '32' or '32A')")
-    subsection: Optional[str] = Field(None, description="Subsection path (e.g., 'a/1/A')")
+    subsection: str | None = Field(None, description="Subsection path (e.g., 'a/1/A')")
 
     @property
     def usc_cite(self) -> str:
@@ -60,7 +60,7 @@ class Subsection(BaseModel):
     """A subsection within a statute section."""
 
     identifier: str = Field(..., description="Subsection identifier (e.g., 'a', '1', 'A')")
-    heading: Optional[str] = Field(None, description="Subsection heading if present")
+    heading: str | None = Field(None, description="Subsection heading if present")
     text: str = Field(..., description="Text content of this subsection")
     children: list["Subsection"] = Field(default_factory=list, description="Child subsections")
 
@@ -79,12 +79,12 @@ class Section(BaseModel):
     )
 
     # Metadata
-    enacted_date: Optional[date] = Field(None, description="Date section was enacted")
-    last_amended: Optional[date] = Field(None, description="Date of last amendment")
+    enacted_date: date | None = Field(None, description="Date section was enacted")
+    last_amended: date | None = Field(None, description="Date of last amendment")
     public_laws: list[str] = Field(
         default_factory=list, description="Public law numbers that affected this section"
     )
-    effective_date: Optional[date] = Field(None, description="Effective date if different from enactment")
+    effective_date: date | None = Field(None, description="Effective date if different from enactment")
 
     # Cross-references
     references_to: list[str] = Field(
@@ -97,7 +97,7 @@ class Section(BaseModel):
     # Source tracking
     source_url: str = Field(..., description="URL to official source")
     retrieved_at: date = Field(..., description="Date this version was retrieved")
-    uslm_id: Optional[str] = Field(None, description="USLM identifier if from US Code")
+    uslm_id: str | None = Field(None, description="USLM identifier if from US Code")
 
     model_config = {"extra": "forbid"}
 

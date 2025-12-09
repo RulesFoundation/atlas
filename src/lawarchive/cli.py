@@ -1,17 +1,14 @@
 """Command-line interface for the law archive."""
 
 from pathlib import Path
-from typing import Optional
 
 import click
 from rich.console import Console
-from rich.table import Table
 from rich.panel import Panel
-from rich.markdown import Markdown
+from rich.table import Table
 
 from lawarchive.archive import LawArchive
 from lawarchive.parsers.uslm import download_title
-
 
 console = Console()
 
@@ -61,7 +58,7 @@ def get(ctx: click.Context, citation: str, as_json: bool):
 @click.option("--title", "-t", type=int, help="Limit to specific title")
 @click.option("--limit", "-n", default=10, help="Maximum results")
 @click.pass_context
-def search(ctx: click.Context, query: str, title: Optional[int], limit: int):
+def search(ctx: click.Context, query: str, title: int | None, limit: int):
     """Search for sections matching a query.
 
     Examples:
@@ -164,7 +161,7 @@ def serve(ctx: click.Context, host: str, port: int, reload: bool):
         lawarchive serve --host 0.0.0.0 --port 8080
     """
     import uvicorn
-    from lawarchive.api.main import create_app
+
 
     console.print(f"[green]Starting server at http://{host}:{port}[/green]")
     console.print(f"[dim]API docs at http://{host}:{port}/docs[/dim]")
@@ -194,7 +191,7 @@ def refs(ctx: click.Context, citation: str):
     console.print(Panel(
         f"[bold]References from {citation}:[/bold]\n" +
         "\n".join(f"  → {r}" for r in refs["references_to"]) or "  (none)" +
-        f"\n\n[bold]Referenced by:[/bold]\n" +
+        "\n\n[bold]Referenced by:[/bold]\n" +
         "\n".join(f"  ← {r}" for r in refs["referenced_by"]) or "  (none)",
         title=f"Cross-references: {citation}",
     ))

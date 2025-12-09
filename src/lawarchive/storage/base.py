@@ -2,9 +2,8 @@
 
 from abc import ABC, abstractmethod
 from datetime import date
-from typing import Optional
 
-from lawarchive.models import Section, SearchResult, TitleInfo
+from lawarchive.models import SearchResult, Section, TitleInfo
 
 
 class StorageBackend(ABC):
@@ -20,9 +19,9 @@ class StorageBackend(ABC):
         self,
         title: int,
         section: str,
-        subsection: Optional[str] = None,
-        as_of: Optional[date] = None,
-    ) -> Optional[Section]:
+        subsection: str | None = None,
+        as_of: date | None = None,
+    ) -> Section | None:
         """Retrieve a section by citation."""
         pass
 
@@ -30,7 +29,7 @@ class StorageBackend(ABC):
     def search(
         self,
         query: str,
-        title: Optional[int] = None,
+        title: int | None = None,
         limit: int = 20,
     ) -> list[SearchResult]:
         """Full-text search across sections."""

@@ -2,14 +2,13 @@
 
 from datetime import date
 from pathlib import Path
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from lawarchive.archive import LawArchive
-from lawarchive.models import Section, SearchResult, TitleInfo, Citation
+from lawarchive.models import Citation, SearchResult, Section
 
 
 # Response models
@@ -142,7 +141,7 @@ def create_app(db_path: Path | str = "lawarchive.db") -> FastAPI:
     async def get_section(
         title: int,
         section: str,
-        as_of: Optional[date] = Query(None, description="Historical version date"),
+        as_of: date | None = Query(None, description="Historical version date"),
     ):
         """Get a specific section by title and section number.
 
@@ -166,7 +165,7 @@ def create_app(db_path: Path | str = "lawarchive.db") -> FastAPI:
         title: int,
         section: str,
         subsection: str,
-        as_of: Optional[date] = Query(None, description="Historical version date"),
+        as_of: date | None = Query(None, description="Historical version date"),
     ):
         """Get a specific subsection.
 
@@ -189,7 +188,7 @@ def create_app(db_path: Path | str = "lawarchive.db") -> FastAPI:
     @app.get("/v1/search", response_model=SearchResponse)
     async def search(
         q: str = Query(..., min_length=1, description="Search query"),
-        title: Optional[int] = Query(None, description="Limit to specific title"),
+        title: int | None = Query(None, description="Limit to specific title"),
         limit: int = Query(20, ge=1, le=100, description="Maximum results"),
     ):
         """Full-text search across sections.
@@ -224,7 +223,7 @@ def create_app(db_path: Path | str = "lawarchive.db") -> FastAPI:
     @app.get("/v1/citation/{citation:path}", response_model=SectionResponse)
     async def get_by_citation(
         citation: str,
-        as_of: Optional[date] = Query(None, description="Historical version date"),
+        as_of: date | None = Query(None, description="Historical version date"),
     ):
         """Get a section by full citation string.
 
@@ -235,7 +234,7 @@ def create_app(db_path: Path | str = "lawarchive.db") -> FastAPI:
         try:
             parsed = Citation.from_string(citation)
         except ValueError as e:
-            raise HTTPException(status_code=400, detail=str(e))
+            raise HTTPException(status_code=400, detail=str(e)) from e
 
         result = archive.get(parsed, as_of=as_of)
         if not result:

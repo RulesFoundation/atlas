@@ -1,12 +1,13 @@
 """Tests for storage backends."""
 
-import pytest
+import tempfile
 from datetime import date
 from pathlib import Path
-import tempfile
 
+import pytest
+
+from lawarchive.models import Citation, Section, Subsection
 from lawarchive.storage.sqlite import SQLiteStorage
-from lawarchive.models import Section, Citation, Subsection
 
 
 @pytest.fixture

@@ -43,8 +43,8 @@ dev = [
     "pre-commit>=3.6",
 ]
 postgres = [
-    "asyncpg>=0.29",
-    "sqlalchemy[asyncio]>=2.0",
+    "sqlalchemy>=2.0",
+    "psycopg2-binary>=2.9",
 ]
 
 [project.scripts]
@@ -64,7 +64,7 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM"]
-ignore = ["E501"]
+ignore = ["E501", "B008"]  # B008: FastAPI Query() in defaults is idiomatic
 
 [tool.mypy]
 python_version = "3.10"

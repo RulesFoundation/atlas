@@ -1,6 +1,7 @@
 """Tests for data models."""
 
 import pytest
+
 from lawarchive.models import Citation
 
 

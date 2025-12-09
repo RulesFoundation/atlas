@@ -3,11 +3,10 @@
 import json
 from datetime import date
 from pathlib import Path
-from typing import Optional
 
 import sqlite_utils
 
-from lawarchive.models import Section, Subsection, Citation, SearchResult, TitleInfo
+from lawarchive.models import Citation, SearchResult, Section, Subsection, TitleInfo
 from lawarchive.storage.base import StorageBackend
 
 
@@ -197,9 +196,9 @@ class SQLiteStorage(StorageBackend):
         self,
         title: int,
         section: str,
-        subsection: Optional[str] = None,
-        as_of: Optional[date] = None,
-    ) -> Optional[Section]:
+        subsection: str | None = None,
+        as_of: date | None = None,
+    ) -> Section | None:
         """Retrieve a section by citation."""
         # TODO: Implement historical versions (as_of parameter)
         row = self.db.execute(
@@ -217,7 +216,7 @@ class SQLiteStorage(StorageBackend):
         # Get column names
         cursor = self.db.execute("SELECT * FROM sections LIMIT 0")
         columns = [desc[0] for desc in cursor.description]
-        record = dict(zip(columns, row))
+        record = dict(zip(columns, row, strict=True))
 
         subsections = [
             self._dict_to_subsection(d) for d in json.loads(record["subsections_json"] or "[]")
@@ -249,7 +248,7 @@ class SQLiteStorage(StorageBackend):
     def search(
         self,
         query: str,
-        title: Optional[int] = None,
+        title: int | None = None,
         limit: int = 20,
     ) -> list[SearchResult]:
         """Full-text search across sections."""
