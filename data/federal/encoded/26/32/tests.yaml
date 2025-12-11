@@ -1,0 +1,299 @@
+# Test cases for 26 USC § 32 (EITC)
+#
+# Sources:
+# - Statute: data/federal/statute/26/32/formula.cosilico
+# - TY 2024 values: data/federal/guidance/irs/rp-23-34/eitc.yaml
+
+variable: eitc
+validator: policyengine-us
+
+test_cases:
+  # ==========================================================================
+  # PHASE-IN REGION - Credit = credit_percentage × earned_income
+  # Tests § 32(a)(1): credit_percentage of earned_income up to earned_income_amount
+  # ==========================================================================
+
+  - name: "Phase-in: 0 children, $5000 income"
+    description: "Credit = 7.65% × $5,000 = $382.50"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 5000
+      qualifying_children: 0
+    expected:
+      eitc: 382
+    citations:
+      - "§ 32(b)(1): credit_percentage = 7.65%"
+
+  - name: "Phase-in: 1 child, $8000 income"
+    description: "Credit = 34% × $8,000 = $2,720"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 8000
+      qualifying_children: 1
+    expected:
+      eitc: 2720
+    citations:
+      - "§ 32(b)(1): credit_percentage = 34%"
+
+  - name: "Phase-in: 2 children, $10000 income"
+    description: "Credit = 40% × $10,000 = $4,000"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 10000
+      qualifying_children: 2
+    expected:
+      eitc: 4000
+    citations:
+      - "§ 32(b)(1): credit_percentage = 40%"
+
+  - name: "Phase-in: 3 children, $12000 income"
+    description: "Credit = 45% × $12,000 = $5,400"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 12000
+      qualifying_children: 3
+    expected:
+      eitc: 5400
+    citations:
+      - "§ 32(b)(1): credit_percentage = 45%"
+
+  # ==========================================================================
+  # PLATEAU REGION - Credit at maximum
+  # Tests § 32(a)(2)(A): credit_percentage × earned_income_amount
+  # Values from Rev. Proc. 2023-34
+  # ==========================================================================
+
+  - name: "Plateau: 0 children, max $632"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 9000
+      qualifying_children: 0
+    expected:
+      eitc: 632
+    citations:
+      - "Rev. Proc. 2023-34, p.10: max = $632"
+
+  - name: "Plateau: 1 child, max $4,213"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 15000
+      qualifying_children: 1
+    expected:
+      eitc: 4213
+    citations:
+      - "Rev. Proc. 2023-34, p.10: max = $4,213"
+
+  - name: "Plateau: 2 children, max $6,960"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 18000
+      qualifying_children: 2
+    expected:
+      eitc: 6960
+    citations:
+      - "Rev. Proc. 2023-34, p.10: max = $6,960"
+
+  - name: "Plateau: 3+ children, max $7,830"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 18000
+      qualifying_children: 4
+    expected:
+      eitc: 7830
+    citations:
+      - "Rev. Proc. 2023-34, p.10: max = $7,830"
+      - "§ 32(b)(1): 3+ children use same rate as 3"
+
+  # ==========================================================================
+  # PHASE-OUT REGION - Credit reduced
+  # Tests § 32(a)(2)(B): phaseout_percentage × (AGI - phaseout_amount)
+  # ==========================================================================
+
+  - name: "Phase-out: 0 children, $12000 income"
+    description: "$632 - 7.65% × ($12,000 - $10,330) = $504"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 12000
+      qualifying_children: 0
+    expected:
+      eitc: 504
+    citations:
+      - "§ 32(a)(2)(B): phaseout_percentage = 7.65%"
+      - "Rev. Proc. 2023-34: threshold = $10,330"
+
+  - name: "Phase-out: 1 child, $30000 income"
+    description: "$4,213 - 15.98% × ($30,000 - $22,720) = $3,050"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 30000
+      qualifying_children: 1
+    expected:
+      eitc: 3050
+    citations:
+      - "§ 32(a)(2)(B): phaseout_percentage = 15.98%"
+      - "Rev. Proc. 2023-34: threshold = $22,720"
+
+  - name: "Phase-out: 2 children, $40000 income"
+    description: "$6,960 - 21.06% × ($40,000 - $22,720) = $3,321"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 40000
+      qualifying_children: 2
+    expected:
+      eitc: 3320
+    citations:
+      - "§ 32(a)(2)(B): phaseout_percentage = 21.06%"
+
+  # ==========================================================================
+  # JOINT RETURNS - Higher phaseout threshold
+  # Tests § 32(b)(2)(B): phaseout_amount increased by $5,000 (indexed)
+  # ==========================================================================
+
+  - name: "Joint: 0 children, plateau"
+    description: "Joint threshold $17,250 vs single $10,330"
+    tax_year: 2024
+    inputs:
+      filing_status: joint
+      earned_income: 15000
+      qualifying_children: 0
+    expected:
+      eitc: 632
+    citations:
+      - "§ 32(b)(2)(B): joint bonus = $5,000 (indexed)"
+      - "Rev. Proc. 2023-34: joint threshold = $17,250"
+
+  - name: "Joint: 2 children, partial phase-out"
+    description: "$6,960 - 21.06% × ($40,000 - $29,640) = $4,778"
+    tax_year: 2024
+    inputs:
+      filing_status: joint
+      earned_income: 40000
+      qualifying_children: 2
+    expected:
+      eitc: 4778
+    citations:
+      - "Rev. Proc. 2023-34: joint threshold = $29,640"
+
+  # ==========================================================================
+  # COMPLETE PHASE-OUT - Credit = 0
+  # ==========================================================================
+
+  - name: "Fully phased out: 0 children, $19000"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 19000
+      qualifying_children: 0
+    expected:
+      eitc: 0
+    citations:
+      - "Rev. Proc. 2023-34: complete phaseout at $18,591"
+
+  - name: "Fully phased out: 1 child, $50000"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 50000
+      qualifying_children: 1
+    expected:
+      eitc: 0
+    citations:
+      - "Rev. Proc. 2023-34: complete phaseout at $49,084"
+
+  # ==========================================================================
+  # ELIGIBILITY TESTS
+  # ==========================================================================
+
+  - name: "No earned income - ineligible"
+    description: "Must have earned income per § 32(c)(2)"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 0
+      qualifying_children: 2
+    expected:
+      eitc: 0
+    citations:
+      - "§ 32(c)(2): earned income required"
+
+  - name: "Investment income exceeds limit - ineligible"
+    description: "§ 32(i)(1): disqualified if investment income > $11,600"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 20000
+      qualifying_children: 2
+      investment_income: 15000
+    expected:
+      eitc: 0
+    citations:
+      - "§ 32(i)(1): investment income limit"
+      - "Rev. Proc. 2023-34: limit = $11,600"
+
+  - name: "Investment income at limit - eligible but affects AGI"
+    description: "Investment income adds to AGI, triggering phase-out"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 18000
+      qualifying_children: 2
+      investment_income: 11600
+    expected:
+      # AGI = 18000 + 11600 = 29600
+      # Credit = 6960 - 21.06% × (29600 - 22720) = 5511
+      eitc: 5511
+    citations:
+      - "§ 32(i): investment income at limit passes eligibility"
+      - "§ 32(a)(2)(B): but adds to AGI for phaseout"
+
+  - name: "Childless under age 25 - ineligible"
+    description: "§ 32(c)(1)(A)(ii)(II): must be 25-64 without children"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 8000
+      qualifying_children: 0
+      age: 23
+    expected:
+      eitc: 0
+    citations:
+      - "§ 32(c)(1)(A)(ii)(II): age 25 minimum for childless"
+
+  - name: "Childless age 25 - eligible"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 8000
+      qualifying_children: 0
+      age: 25
+    expected:
+      eitc: 612
+    citations:
+      - "§ 32(c)(1)(A)(ii)(II): age 25 is eligible"
+
+  - name: "AGI higher than earned income"
+    description: "§ 32(a)(2)(B): uses max(AGI, earned_income) for phaseout"
+    tax_year: 2024
+    inputs:
+      filing_status: single
+      earned_income: 25000
+      adjusted_gross_income: 35000
+      qualifying_children: 1
+    expected:
+      # Phaseout uses $35,000 AGI, not $25,000 earned income
+      # Credit = 4213 - 15.98% × (35000 - 22720) = 2251
+      eitc: 2251
+    citations:
+      - "§ 32(a)(2)(B): 'if greater, the earned income'"
+    notes: "Test harness must inject AGI at tax_unit level"

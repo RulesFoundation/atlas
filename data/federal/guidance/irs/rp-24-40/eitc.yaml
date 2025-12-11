@@ -1,0 +1,59 @@
+# IRS Revenue Procedure 2024-40
+# Inflation-adjusted EITC amounts for Tax Year 2025
+#
+# Source: https://www.irs.gov/pub/irs-drop/rp-24-40.pdf
+# Page 9, Section 3.08 - Earned Income Credit
+
+document:
+  type: revenue_procedure
+  number: "2024-40"
+  date: "2024-10-22"
+  source: https://www.irs.gov/pub/irs-drop/rp-24-40.pdf
+  applies_to_tax_year: 2025
+
+implements:
+  - statute: "26 USC § 32(b)(3)"
+    description: "Inflation adjustments to EITC amounts"
+
+eitc:
+  max_amount:
+    description: "Maximum EITC by number of qualifying children"
+    page: 9
+    values:
+      0: 649
+      1: 4328
+      2: 7152
+      3: 8046
+
+  phaseout_start:
+    description: "AGI at which phaseout begins"
+    page: 9
+    single:
+      0: 10620
+      1: 23350
+      2: 23350
+      3: 23350
+    joint:
+      0: 17730
+      1: 30470
+      2: 30470
+      3: 30470
+
+  phaseout_end:
+    description: "AGI at which credit reaches zero"
+    page: 9
+    single:
+      0: 19104
+      1: 50434
+      2: 57310
+      3: 61555
+    joint:
+      0: 26214
+      1: 57554
+      2: 64430
+      3: 68675
+
+  investment_income_limit:
+    description: "Maximum investment income to claim EITC"
+    page: 9
+    value: 11950

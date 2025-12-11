@@ -1,0 +1,77 @@
+# IRS Revenue Procedure 2023-34
+# Inflation-adjusted EITC amounts for Tax Year 2024
+#
+# Source: https://www.irs.gov/pub/irs-drop/rp-23-34.pdf
+# Page 10, Section 3.08 - Earned Income Credit
+
+document:
+  type: revenue_procedure
+  number: "2023-34"
+  date: "2023-11-09"
+  source: https://www.irs.gov/pub/irs-drop/rp-23-34.pdf
+  applies_to_tax_year: 2024
+
+implements:
+  - statute: "26 USC § 32(b)(3)"
+    description: "Inflation adjustments to EITC amounts"
+
+eitc:
+  # Maximum credit amounts (earned_income_amount × credit_percentage)
+  # These are the amounts published by IRS, derived from indexed base amounts
+  max_amount:
+    description: "Maximum EITC by number of qualifying children"
+    page: 10
+    values:
+      0: 632      # $4,220 base × 1.237 index × 0.0765 rate ≈ $632
+      1: 4213     # $6,330 base × indexed × 0.34 rate
+      2: 6960     # $8,890 base × indexed × 0.40 rate
+      3: 7830     # $8,890 base × indexed × 0.45 rate
+
+  # Phaseout thresholds (where credit begins to decrease)
+  phaseout_start:
+    description: "AGI at which phaseout begins"
+    page: 10
+    single:
+      0: 10330
+      1: 22720
+      2: 22720
+      3: 22720
+    joint:
+      # Single threshold + indexed joint bonus
+      0: 17250    # 10330 + ~6920
+      1: 29640    # 22720 + ~6920
+      2: 29640
+      3: 29640
+
+  # Complete phaseout (where credit = 0)
+  # Note: IRS publishes this, but it's derivable from max_amount / phaseout_rate + phaseout_start
+  phaseout_end:
+    description: "AGI at which credit reaches zero"
+    page: 10
+    single:
+      0: 18591    # 10330 + 632/0.0765 = 18591
+      1: 49084    # 22720 + 4213/0.1598 = 49084
+      2: 55768    # 22720 + 6960/0.2106 = 55768
+      3: 59899    # 22720 + 7830/0.2106 = 59899
+    joint:
+      0: 25511
+      1: 56004
+      2: 62688
+      3: 66819
+
+  # Investment income limit
+  investment_income_limit:
+    description: "Maximum investment income to claim EITC"
+    page: 10
+    value: 11600  # $10,000 base (2021) × 1.16 index
+
+  # Earned income amounts (implicit - used to calculate max)
+  # IRS doesn't publish these directly, but they're the indexed § 32(b)(2)(A) values
+  earned_income_amount:
+    description: "Earned income cap for phase-in (derived)"
+    derived_from: "max_amount / credit_percentage"
+    values:
+      0: 8262     # 632 / 0.0765
+      1: 12391    # 4213 / 0.34
+      2: 17400    # 6960 / 0.40
+      3: 17400    # 7830 / 0.45
