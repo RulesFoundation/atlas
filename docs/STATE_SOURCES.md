@@ -12,8 +12,8 @@
 | PA | 12.9 | palegis.us | HTML scrape | ✅ Done |
 | IL | 12.6 | ilga.gov | HTML | 🔨 TODO |
 | OH | 11.8 | codes.ohio.gov | HTML scrape | ✅ Done |
-| GA | 10.9 | legis.ga.gov | HTML | 🔨 TODO |
-| NC | 10.7 | ncleg.gov | HTML | 🔨 TODO |
+| GA | 10.9 | legis.ga.gov | PDF/complex | 🔨 TODO |
+| NC | 10.7 | ncleg.gov | HTML scrape | ✅ Done |
 | MI | 10.0 | legislature.mi.gov | HTML | 🔨 TODO |
 
 ### Tier 2: Medium Income Tax States
@@ -77,8 +77,8 @@ For each state, focus on:
 - [x] TX (HTML scraper)
 - [x] PA (generic scraper)
 - [x] OH (generic scraper)
-- [ ] IL
-- [ ] GA
-- [ ] NC
+- [x] NC (generic scraper)
+- [ ] IL (complex URL structure)
+- [ ] GA (PDF-based, harder)
 - [ ] MI
-- [ ] ... (remaining 40 states)
+- [ ] ... (remaining ~40 states)

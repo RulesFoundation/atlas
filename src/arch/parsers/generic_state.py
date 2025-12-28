@@ -130,6 +130,57 @@ ILLINOIS_CONFIG = StateConfig(
     },
 )
 
+NORTH_CAROLINA_CONFIG = StateConfig(
+    state_code="NC",
+    state_name="North Carolina",
+    base_url="https://www.ncleg.gov",
+    section_url_pattern="/EnactedLegislation/Statutes/HTML/BySection/Chapter_{chapter}/GS_{section}.html",
+    toc_url_pattern="/EnactedLegislation/Statutes/HTML/ByChapter/Chapter_{chapter}.html",
+    content_selector="body",
+    title_selector="title",
+    codes={
+        "105": "Taxation",
+        "108A": "Social Services",
+        "95": "Department of Labor",
+        "96": "Employment Security",
+        "58": "Insurance",
+    },
+)
+
+MICHIGAN_CONFIG = StateConfig(
+    state_code="MI",
+    state_name="Michigan",
+    base_url="https://www.legislature.mi.gov",
+    section_url_pattern="/Laws/MCL?objectId=mcl-{section}",
+    toc_url_pattern="/Laws/MCL?chapter={chapter}",
+    content_selector="div.content, main, body",
+    title_selector="title, h1",
+    codes={
+        "206": "Income Tax Act",
+        "400": "Social Welfare",
+        "408": "Labor",
+        "421": "Michigan Employment Security Act",
+        "500": "Insurance Code",
+    },
+)
+
+GEORGIA_CONFIG = StateConfig(
+    state_code="GA",
+    state_name="Georgia",
+    base_url="https://www.legis.ga.gov",
+    # Georgia's code is in PDFs, harder to scrape - using placeholder
+    section_url_pattern="/api/legislation/document/{session}/{doc_id}",
+    toc_url_pattern="/legislation/en-US/Search/Legislation",
+    content_selector="body",
+    title_selector="title",
+    codes={
+        "48": "Revenue and Taxation",
+        "49": "Social Services",
+        "34": "Labor and Industrial Relations",
+        "33": "Insurance",
+    },
+)
+
 
 class GenericStateParser:
     """Generic parser for state statutes.
@@ -372,6 +423,55 @@ def get_pennsylvania_parser() -> GenericStateParser:
 def get_illinois_parser() -> GenericStateParser:
     """Get a parser for Illinois Compiled Statutes."""
     return GenericStateParser(ILLINOIS_CONFIG)
+
+
+def get_north_carolina_parser() -> GenericStateParser:
+    """Get a parser for North Carolina General Statutes."""
+    return GenericStateParser(NORTH_CAROLINA_CONFIG)
+
+
+def get_michigan_parser() -> GenericStateParser:
+    """Get a parser for Michigan Compiled Laws."""
+    return GenericStateParser(MICHIGAN_CONFIG)
+
+
+def get_georgia_parser() -> GenericStateParser:
+    """Get a parser for Georgia Code (O.C.G.A.)."""
+    return GenericStateParser(GEORGIA_CONFIG)
+
+
+# Registry of all available state parsers
+STATE_PARSERS: dict[str, StateConfig] = {
+    "OH": OHIO_CONFIG,
+    "PA": PENNSYLVANIA_CONFIG,
+    "IL": ILLINOIS_CONFIG,
+    "NC": NORTH_CAROLINA_CONFIG,
+    "MI": MICHIGAN_CONFIG,
+    "GA": GEORGIA_CONFIG,
+}
+
+
+def get_parser_for_state(state_code: str) -> GenericStateParser | None:
+    """Get a parser for a specific state by code.
+
+    Args:
+        state_code: Two-letter state code (e.g., "OH", "PA")
+
+    Returns:
+        GenericStateParser if state is supported, None otherwise
+    """
+    config = STATE_PARSERS.get(state_code.upper())
+    if config:
+        return GenericStateParser(config)
+    return None
+
+
+def list_supported_states() -> list[dict[str, str]]:
+    """List all states with configured parsers."""
+    return [
+        {"code": code, "name": config.state_name}
+        for code, config in STATE_PARSERS.items()
+    ]
 
 
 if __name__ == "__main__":
