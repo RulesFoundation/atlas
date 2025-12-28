@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Query IRS guidance documents from the lawarchive database.
+"""Query IRS guidance documents from the atlas database.
 
 This script demonstrates querying Rev. Procs and other guidance documents.
 
@@ -13,12 +13,12 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from lawarchive.storage.guidance import GuidanceStorage
+from atlas.storage.guidance import GuidanceStorage
 
 
 def main():
     """Query and display guidance documents."""
-    storage = GuidanceStorage("lawarchive.db")
+    storage = GuidanceStorage("atlas.db")
 
     print("="*70)
     print("IRS GUIDANCE DOCUMENTS IN LAWARCHIVE")

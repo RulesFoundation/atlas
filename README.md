@@ -1,14 +1,15 @@
-# Cosilico Law Archive
+# Cosilico Atlas
 
-**Open source US statute text via API.**
+**Structured policy document API — statutes, regulations, and guidance.**
 
-US law is public domain, but no open source project provides structured statute text via API with historical versions. This project fills that gap.
+Policy documents are public domain, but no open source project provides structured access via API with historical versions. Atlas fills that gap.
 
 ## Features
 
 - **Federal statutes** — All 54 titles of the US Code from official USLM XML
+- **IRS guidance** — Revenue Procedures, Revenue Rulings, Notices
 - **Historical versions** — Track changes over time
-- **REST API** — Query statutes by citation, keyword, or path
+- **REST API** — Query documents by citation, keyword, or path
 - **Structured data** — JSON output with section hierarchy, cross-references, and metadata
 - **State codes** — Incremental rollout (starting with CA, NY, TX)
 
@@ -16,22 +17,22 @@ US law is public domain, but no open source project provides structured statute 
 
 ```bash
 # Install
-pip install cosilico-lawarchive
+pip install cosilico-atlas
 
 # Run the API server
-lawarchive serve
+atlas serve
 
 # Or use the CLI
-lawarchive get "26 USC 32"        # Get IRC § 32 (EITC)
-lawarchive search "earned income" # Search across statutes
+atlas get "26 USC 32"        # Get IRC § 32 (EITC)
+atlas search "earned income" # Search across documents
 ```
 
 ## API Usage
 
 ```python
-from lawarchive import LawArchive
+from atlas import Atlas
 
-archive = LawArchive()
+archive = Atlas()
 
 # Get a specific section
 eitc = archive.get("26 USC 32")
@@ -69,21 +70,25 @@ curl "http://localhost:8000/v1/sections/26/32?as_of=2020-01-01"
 | Source | Content | Format | Update Frequency |
 |--------|---------|--------|------------------|
 | [uscode.house.gov](https://uscode.house.gov/download/download.shtml) | US Code | USLM XML | Continuous |
+| [IRS.gov](https://www.irs.gov/) | Revenue Procedures, Rulings | HTML/PDF | Weekly |
 | [eCFR](https://www.ecfr.gov/) | Code of Federal Regulations | XML | Daily |
 | State legislatures | State codes | Varies | Varies |
 
 ## Architecture
 
 ```
-cosilico-lawarchive/
-├── src/lawarchive/
+cosilico-atlas/
+├── src/atlas/
 │   ├── __init__.py
-│   ├── archive.py       # Main LawArchive class
+│   ├── archive.py       # Main Atlas class
 │   ├── models.py        # Pydantic models for statutes
+│   ├── models_guidance.py # Models for IRS guidance
 │   ├── parsers/
 │   │   ├── uslm.py      # USLM XML parser
 │   │   ├── ecfr.py      # eCFR XML parser
 │   │   └── state/       # State-specific parsers
+│   ├── fetchers/
+│   │   └── irs_guidance.py # IRS guidance fetcher
 │   ├── api/
 │   │   ├── main.py      # FastAPI app
 │   │   └── routes.py    # API routes
@@ -121,8 +126,9 @@ Apache 2.0 — Use it for anything.
 We welcome contributions! Priority areas:
 
 1. State code parsers (50 states to cover)
-2. Historical version tracking
-3. Cross-reference resolution
-4. Full-text search improvements
+2. IRS guidance extraction
+3. Historical version tracking
+4. Cross-reference resolution
+5. Full-text search improvements
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.

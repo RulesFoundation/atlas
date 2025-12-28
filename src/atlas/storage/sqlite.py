@@ -6,14 +6,14 @@ from pathlib import Path
 
 import sqlite_utils
 
-from lawarchive.models import Citation, SearchResult, Section, Subsection, TitleInfo
-from lawarchive.storage.base import StorageBackend
+from atlas.models import Citation, SearchResult, Section, Subsection, TitleInfo
+from atlas.storage.base import StorageBackend
 
 
 class SQLiteStorage(StorageBackend):
     """SQLite-based storage with FTS5 full-text search."""
 
-    def __init__(self, db_path: Path | str = "lawarchive.db"):
+    def __init__(self, db_path: Path | str = "atlas.db"):
         """Initialize SQLite storage.
 
         Args:

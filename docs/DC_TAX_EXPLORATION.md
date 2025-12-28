@@ -2,11 +2,11 @@
 
 **Date:** 2025-12-25
 **Issue:** cosilico-us-mat
-**Purpose:** Assess feasibility of importing DC tax law into cosilico-lawarchive
+**Purpose:** Assess feasibility of importing DC tax law into cosilico-atlas
 
 ## Executive Summary
 
-DC is an excellent candidate for lawarchive import because the Council of the District of Columbia publishes their entire legal code on GitHub in structured XML format under CC0 license. This is the only jurisdiction in the world that publishes law on GitHub as an authoritative source.
+DC is an excellent candidate for atlas import because the Council of the District of Columbia publishes their entire legal code on GitHub in structured XML format under CC0 license. This is the only jurisdiction in the world that publishes law on GitHub as an authoritative source.
 
 **Recommendation:** Proceed with DC as the first state/territory implementation. The XML structure is well-documented and the tax code is contained in Title 47.
 
@@ -181,9 +181,9 @@ The DC EITC is a percentage of the federal EITC:
    dc/council/code/titles/47/chapters/18/sections/
    ```
 
-3. **Parse XML sections into lawarchive format**
+3. **Parse XML sections into atlas format**
    - Use existing USLM parser as template
-   - Map DC XML elements to lawarchive models
+   - Map DC XML elements to atlas models
 
 ### Phase 2: Schema Mapping
 
@@ -249,8 +249,8 @@ brackets = [
 ### File Structure
 
 ```
-cosilico-lawarchive/
-├── src/lawarchive/parsers/
+cosilico-atlas/
+├── src/atlas/parsers/
 │   ├── uslm.py           # Existing federal parser
 │   └── dc/
 │       ├── __init__.py
@@ -270,7 +270,7 @@ cosilico-lawarchive/
 ### R2 Storage
 
 ```
-cosilico-lawarchive (R2)/
+cosilico-atlas (R2)/
 └── dc/statute/
     └── 47/
         ├── 1806.01.xml   # Taxable income definition
@@ -305,9 +305,9 @@ Priority order for cosilico-us encoding:
 
 ## Next Steps
 
-1. [ ] Create DC XML parser in `src/lawarchive/parsers/dc/`
+1. [ ] Create DC XML parser in `src/atlas/parsers/dc/`
 2. [ ] Clone law-xml-codified and test parsing
-3. [ ] Add DC sections to lawarchive.db
+3. [ ] Add DC sections to atlas.db
 4. [ ] Create catalog entries for key tax sections
 5. [ ] Implement DC individual income tax in cosilico-us
 

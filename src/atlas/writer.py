@@ -5,7 +5,7 @@ Provides a standard interface for scrapers to store documents with:
 - Canonical JSON (normalized schema for encoding)
 
 Usage:
-    from lawarchive.writer import CanonicalDocument, DocumentWriter, LocalBackend
+    from atlas.writer import CanonicalDocument, DocumentWriter, LocalBackend
 
     backend = LocalBackend(root=Path("/path/to/storage"))
     writer = DocumentWriter(backend=backend)

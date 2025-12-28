@@ -1,19 +1,19 @@
 """Tests for USLM XML parser.
 
 These tests use real downloaded USLM XML from uscode.house.gov.
-Run `lawarchive download 26` first to get the test data.
+Run `atlas download 26` first to get the test data.
 """
 
 from pathlib import Path
 
 import pytest
 
-from lawarchive.parsers.uslm import USLMParser
+from atlas.parsers.uslm import USLMParser
 
 # Skip tests if Title 26 hasn't been downloaded
 TITLE_26_PATH = Path("data/uscode/usc26.xml")
 pytestmark = pytest.mark.skipif(
-    not TITLE_26_PATH.exists(), reason="Title 26 XML not downloaded. Run: lawarchive download 26"
+    not TITLE_26_PATH.exists(), reason="Title 26 XML not downloaded. Run: atlas download 26"
 )
 
 

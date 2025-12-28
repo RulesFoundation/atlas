@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from datetime import date
 
-from lawarchive.models import SearchResult, Section, TitleInfo
+from atlas.models import SearchResult, Section, TitleInfo
 
 
 class StorageBackend(ABC):

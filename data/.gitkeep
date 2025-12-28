@@ -1,3 +1,3 @@
 # This directory stores downloaded statute data.
 # Files here are gitignored because they're large.
-# Use `lawarchive download <title>` to fetch data.
+# Use `atlas download <title>` to fetch data.

@@ -12,7 +12,7 @@ from pathlib import Path
 
 from lxml import etree
 
-from lawarchive.models import Citation, Section, Subsection
+from atlas.models import Citation, Section, Subsection
 
 # USLM namespaces - the actual namespace varies by source
 USLM_NS_GPO = {"uslm": "http://schemas.gpo.gov/xml/uslm"}

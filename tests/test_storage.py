@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from lawarchive.models import Citation, Section, Subsection
-from lawarchive.storage.sqlite import SQLiteStorage
+from atlas.models import Citation, Section, Subsection
+from atlas.storage.sqlite import SQLiteStorage
 
 
 @pytest.fixture

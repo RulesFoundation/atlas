@@ -6,7 +6,7 @@ from pathlib import Path
 
 import sqlite_utils
 
-from lawarchive.models_guidance import (
+from atlas.models_guidance import (
     GuidanceSearchResult,
     GuidanceSection,
     GuidanceType,
@@ -20,7 +20,7 @@ class GuidanceStorage:
     This extends the base SQLiteStorage to handle Rev. Procs, Rev. Rulings, etc.
     """
 
-    def __init__(self, db_path: Path | str = "lawarchive.db"):
+    def __init__(self, db_path: Path | str = "atlas.db"):
         """Initialize guidance storage.
 
         Args:

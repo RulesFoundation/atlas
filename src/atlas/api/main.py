@@ -7,8 +7,8 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from lawarchive.archive import LawArchive
-from lawarchive.models import Citation, SearchResult, Section
+from atlas.archive import Atlas
+from atlas.models import Citation, SearchResult, Section
 
 
 # Response models
@@ -84,7 +84,7 @@ class ReferencesResponse(BaseModel):
     referenced_by: list[str]
 
 
-def create_app(db_path: Path | str = "lawarchive.db") -> FastAPI:
+def create_app(db_path: Path | str = "atlas.db") -> FastAPI:
     """Create and configure the FastAPI application.
 
     Args:
@@ -111,7 +111,7 @@ def create_app(db_path: Path | str = "lawarchive.db") -> FastAPI:
     )
 
     # Initialize archive
-    archive = LawArchive(db_path=db_path)
+    archive = Atlas(db_path=db_path)
 
     @app.get("/")
     async def root():

@@ -7,8 +7,8 @@ Usage:
 
 from pathlib import Path
 
-from lawarchive.archive import LawArchive
-from lawarchive.parsers.uslm import download_title
+from atlas.archive import LawArchive
+from atlas.parsers.uslm import download_title
 
 
 def main():
@@ -24,9 +24,9 @@ def main():
         print(f"Using existing {xml_path}")
 
     # Ingest into database
-    archive = LawArchive(db_path="lawarchive.db")
+    archive = LawArchive(db_path="atlas.db")
     count = archive.ingest_title(xml_path)
-    print(f"\nDone! Ingested {count} sections into lawarchive.db")
+    print(f"\nDone! Ingested {count} sections into atlas.db")
 
     # Test a lookup
     print("\nTest lookup: 26 USC 32 (EITC)")

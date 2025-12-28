@@ -7,14 +7,14 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from lawarchive.archive import LawArchive
-from lawarchive.parsers.uslm import download_title
+from atlas.archive import Atlas
+from atlas.parsers.uslm import download_title
 
 console = Console()
 
 
 @click.group()
-@click.option("--db", default="lawarchive.db", help="Path to database file")
+@click.option("--db", default="atlas.db", help="Path to database file")
 @click.pass_context
 def main(ctx: click.Context, db: str):
     """Cosilico Law Archive - Open source US statute text via API."""
@@ -30,10 +30,10 @@ def get(ctx: click.Context, citation: str, as_json: bool):
     """Get a section by citation.
 
     Examples:
-        lawarchive get "26 USC 32"
-        lawarchive get "26 USC 32(a)(1)"
+        atlas get "26 USC 32"
+        atlas get "26 USC 32(a)(1)"
     """
-    archive = LawArchive(db_path=ctx.obj["db"])
+    archive = Atlas(db_path=ctx.obj["db"])
     section = archive.get(citation)
 
     if not section:
@@ -64,10 +64,10 @@ def search(ctx: click.Context, query: str, title: int | None, limit: int):
     """Search for sections matching a query.
 
     Examples:
-        lawarchive search "earned income"
-        lawarchive search "child tax credit" --title 26
+        atlas search "earned income"
+        atlas search "child tax credit" --title 26
     """
-    archive = LawArchive(db_path=ctx.obj["db"])
+    archive = Atlas(db_path=ctx.obj["db"])
     results = archive.search(query, title=title, limit=limit)
 
     if not results:
@@ -95,11 +95,11 @@ def search(ctx: click.Context, query: str, title: int | None, limit: int):
 @click.pass_context
 def titles(ctx: click.Context):
     """List all available titles."""
-    archive = LawArchive(db_path=ctx.obj["db"])
+    archive = Atlas(db_path=ctx.obj["db"])
     title_list = archive.list_titles()
 
     if not title_list:
-        console.print("[yellow]No titles loaded. Use 'lawarchive ingest' to add titles.[/yellow]")
+        console.print("[yellow]No titles loaded. Use 'atlas ingest' to add titles.[/yellow]")
         return
 
     table = Table(title="US Code Titles")
@@ -128,9 +128,9 @@ def ingest(ctx: click.Context, xml_path: Path):
     """Ingest a US Code title from USLM XML file.
 
     Example:
-        lawarchive ingest data/uscode/usc26.xml
+        atlas ingest data/uscode/usc26.xml
     """
-    archive = LawArchive(db_path=ctx.obj["db"])
+    archive = Atlas(db_path=ctx.obj["db"])
     with console.status(f"Ingesting {xml_path}..."):
         count = archive.ingest_title(xml_path)
     console.print(f"[green]Successfully ingested {count} sections[/green]")
@@ -149,7 +149,7 @@ def download(title_num: int, output: Path):
     """Download a US Code title from uscode.house.gov.
 
     Example:
-        lawarchive download 26 -o data/uscode
+        atlas download 26 -o data/uscode
     """
     with console.status(f"Downloading Title {title_num}..."):
         path = download_title(title_num, output)
@@ -165,7 +165,7 @@ def serve(ctx: click.Context, host: str, port: int, reload: bool):
     """Start the REST API server.
 
     Example:
-        lawarchive serve --host 0.0.0.0 --port 8080
+        atlas serve --host 0.0.0.0 --port 8080
     """
     import uvicorn
 
@@ -175,7 +175,7 @@ def serve(ctx: click.Context, host: str, port: int, reload: bool):
     # We need to pass the db path to the app
     # For now, use environment variable or default
     uvicorn.run(
-        "lawarchive.api.main:app",
+        "atlas.api.main:app",
         host=host,
         port=port,
         reload=reload,
@@ -189,9 +189,9 @@ def refs(ctx: click.Context, citation: str):
     """Show cross-references for a section.
 
     Example:
-        lawarchive refs "26 USC 32"
+        atlas refs "26 USC 32"
     """
-    archive = LawArchive(db_path=ctx.obj["db"])
+    archive = Atlas(db_path=ctx.obj["db"])
     refs = archive.get_references(citation)
 
     console.print(
@@ -230,13 +230,13 @@ def encode(ctx: click.Context, citation: str, output: Path, model: str):
     - metadata.json (provenance)
 
     Examples:
-        lawarchive encode "26 USC 32"
-        lawarchive encode "26 USC 24" -o ./my-workspace
+        atlas encode "26 USC 32"
+        atlas encode "26 USC 24" -o ./my-workspace
     """
-    from lawarchive.encoder import encode_and_save
-    from lawarchive.models import Citation
+    from atlas.encoder import encode_and_save
+    from atlas.models import Citation
 
-    archive = LawArchive(db_path=ctx.obj["db"])
+    archive = Atlas(db_path=ctx.obj["db"])
 
     # Parse citation
     try:
@@ -286,7 +286,7 @@ def validate(path: Path):
     - Test case format
 
     Example:
-        lawarchive validate ~/.cosilico/workspace/federal/statute/26/32
+        atlas validate ~/.cosilico/workspace/federal/statute/26/32
     """
     # Find rules.cosilico file
     rules_file = path / "rules.cosilico" if path.is_dir() else path
@@ -350,10 +350,10 @@ def verify(path: Path, pe_var: str, tolerance: float, save: Path | None):
     to expected values from the DSL encoding.
 
     Examples:
-        lawarchive verify ~/.cosilico/workspace/federal/statute/26/32 -v eitc
-        lawarchive verify ~/.cosilico/workspace/federal/statute/26/24 -v ctc
+        atlas verify ~/.cosilico/workspace/federal/statute/26/32 -v eitc
+        atlas verify ~/.cosilico/workspace/federal/statute/26/24 -v ctc
     """
-    from lawarchive.verifier import (
+    from atlas.verifier import (
         print_verification_report,
         save_verification_report,
         verify_encoding,

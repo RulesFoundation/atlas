@@ -1,33 +1,33 @@
-"""Main LawArchive class - the public API."""
+"""Main Atlas class - the public API."""
 
 from datetime import date
 from pathlib import Path
 
-from lawarchive.models import Citation, SearchResult, Section, TitleInfo
-from lawarchive.storage.base import StorageBackend
-from lawarchive.storage.sqlite import SQLiteStorage
+from atlas.models import Citation, SearchResult, Section, TitleInfo
+from atlas.storage.base import StorageBackend
+from atlas.storage.sqlite import SQLiteStorage
 
 
-class LawArchive:
+class Atlas:
     """Main interface for accessing the law archive.
 
     Example:
-        >>> archive = LawArchive()
-        >>> eitc = archive.get("26 USC 32")
+        >>> atlas = Atlas()
+        >>> eitc = atlas.get("26 USC 32")
         >>> print(eitc.section_title)
         "Earned income"
 
-        >>> results = archive.search("child tax credit")
+        >>> results = atlas.search("child tax credit")
         >>> for r in results:
         ...     print(r.citation.usc_cite, r.section_title)
     """
 
     def __init__(
         self,
-        db_path: Path | str = "lawarchive.db",
+        db_path: Path | str = "atlas.db",
         storage: StorageBackend | None = None,
     ):
-        """Initialize the law archive.
+        """Initialize Atlas.
 
         Args:
             db_path: Path to SQLite database (ignored if storage is provided)
@@ -50,9 +50,9 @@ class LawArchive:
             Section object or None if not found
 
         Example:
-            >>> archive.get("26 USC 32")
-            >>> archive.get("26 USC 32(a)(1)")
-            >>> archive.get("26 USC 32", as_of=date(2020, 1, 1))
+            >>> atlas.get("26 USC 32")
+            >>> atlas.get("26 USC 32(a)(1)")
+            >>> atlas.get("26 USC 32", as_of=date(2020, 1, 1))
         """
         if isinstance(citation, str):
             citation = Citation.from_string(citation)
@@ -81,8 +81,8 @@ class LawArchive:
             List of SearchResult objects
 
         Example:
-            >>> archive.search("earned income credit")
-            >>> archive.search("child", title=26, limit=10)
+            >>> atlas.search("earned income credit")
+            >>> atlas.search("child", title=26, limit=10)
         """
         return self.storage.search(query, title=title, limit=limit)
 
@@ -104,7 +104,7 @@ class LawArchive:
             Dict with 'references_to' and 'referenced_by' lists
 
         Example:
-            >>> refs = archive.get_references("26 USC 32")
+            >>> refs = atlas.get_references("26 USC 32")
             >>> print(refs["references_to"])  # What this section cites
             >>> print(refs["referenced_by"])  # What cites this section
         """
@@ -126,10 +126,10 @@ class LawArchive:
             Number of sections ingested
 
         Example:
-            >>> archive.ingest_title("data/uscode/usc26.xml")
+            >>> atlas.ingest_title("data/uscode/usc26.xml")
             2345  # sections ingested
         """
-        from lawarchive.parsers.uslm import USLMParser
+        from atlas.parsers.uslm import USLMParser
 
         parser = USLMParser(xml_path)
         count = 0

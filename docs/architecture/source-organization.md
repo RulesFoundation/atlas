@@ -13,13 +13,13 @@ Never mix document types. A guidance document (IRS Rev. Proc., USDA COLA memo) n
 
 | Repo | Purpose |
 |------|---------|
-| **cosilico-lawarchive** | Archive tooling + document catalog (this repo) |
+| **cosilico-atlas** | Archive tooling + document catalog (this repo) |
 | **cosilico-us** | Executable encodings (.cosilico formulas, parameters.yaml, tests.yaml) |
 
 ## Lawarchive Structure
 
 ```
-cosilico-lawarchive/
+cosilico-atlas/
 ├── catalog/                      # What's in R2
 │   ├── statute/
 │   │   ├── 26/63.yaml           # Metadata for us/statute/26/63.xml
@@ -37,7 +37,7 @@ cosilico-lawarchive/
 ## R2 Bucket Structure
 
 ```
-cosilico-lawarchive (R2)/
+cosilico-atlas (R2)/
 ├── us/statute/
 │   ├── 26/63.xml                # USC Title 26 § 63
 │   └── 7/2017.xml               # USC Title 7 § 2017

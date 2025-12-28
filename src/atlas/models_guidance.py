@@ -75,7 +75,7 @@ class RevenueProcedure(BaseModel):
 
     @property
     def path(self) -> str:
-        """Return filesystem-style path for lawarchive."""
+        """Return filesystem-style path for atlas."""
         # e.g., "us/guidance/irs/rp-23-34"
         year, num = self.doc_number.split("-")
         return f"us/guidance/irs/rp-{year}-{num}"

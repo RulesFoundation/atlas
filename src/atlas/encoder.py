@@ -6,7 +6,7 @@ from pathlib import Path
 
 from anthropic import Anthropic
 
-from lawarchive.models import Section
+from atlas.models import Section
 
 
 @dataclass

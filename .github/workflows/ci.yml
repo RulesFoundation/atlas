@@ -32,7 +32,7 @@ jobs:
 
       - name: Type check with mypy
         run: |
-          mypy src/lawarchive --ignore-missing-imports
+          mypy src/atlas --ignore-missing-imports
         continue-on-error: true  # Strict typing takes time to fully implement
 
       - name: Run tests
@@ -65,7 +65,7 @@ jobs:
       - name: Download Title 26 (if not cached)
         run: |
           if [ ! -f data/uscode/usc26.xml ]; then
-            lawarchive download 26
+            atlas download 26
           fi
 
       - name: Run USLM parser tests
@@ -81,7 +81,7 @@ jobs:
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
-          POSTGRES_DB: lawarchive_test
+          POSTGRES_DB: atlas_test
         ports:
           - 5432:5432
         options: >-
@@ -105,10 +105,10 @@ jobs:
 
       - name: Test PostgreSQL connection
         env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/lawarchive_test
+          DATABASE_URL: postgresql://test:test@localhost:5432/atlas_test
         run: |
           python -c "
-          from lawarchive.storage import PostgresStorage
+          from atlas.storage import PostgresStorage
           storage = PostgresStorage()
           print('PostgreSQL connection successful')
           print('Stats:', storage.get_stats())

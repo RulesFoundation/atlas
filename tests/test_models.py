@@ -2,7 +2,7 @@
 
 import pytest
 
-from lawarchive.models import Citation
+from atlas.models import Citation
 
 
 class TestCitation:

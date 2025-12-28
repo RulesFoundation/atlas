@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cosilico-lawarchive"
+name = "cosilico-atlas"
 version = "0.1.0"
-description = "Open source US statute text via API"
+description = "Structured policy document API - statutes, regulations, and guidance"
 readme = "README.md"
 license = {text = "Apache-2.0"}
 authors = [
@@ -56,12 +56,12 @@ verify = [
 ]
 
 [project.scripts]
-lawarchive = "lawarchive.cli:main"
+atlas = "atlas.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/CosilicoAI/cosilico-lawarchive"
-Documentation = "https://docs.cosilico.ai/lawarchive"
-Repository = "https://github.com/CosilicoAI/cosilico-lawarchive"
+Homepage = "https://github.com/CosilicoAI/cosilico-atlas"
+Documentation = "https://docs.cosilico.ai/atlas"
+Repository = "https://github.com/CosilicoAI/cosilico-atlas"
 
 [tool.setuptools.packages.find]
 where = ["src"]
