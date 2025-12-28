@@ -43,12 +43,16 @@ htmlcov/
 # Type checking
 .mypy_cache/
 
-# Data (downloaded statutes - too large for git)
+# Data (downloaded sources - too large for git, stored in R2)
 data/uscode/
 data/ecfr/
 data/states/
 data/snap/
 data/temp/
+data/guidance/
+data/federal/
+data/ca/
+data/us/
 *.db
 *.sqlite
 
