@@ -644,5 +644,220 @@ def fetch_guidance(
     console.print(f"\n[dim]Total documents in database: {total}[/dim]")
 
 
+@main.command()
+@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
+@click.pass_context
+def stats(ctx: click.Context, as_json: bool):
+    """Show archive statistics and scraping progress.
+
+    Displays counts of:
+    - US Code titles and sections
+    - State statutes by state
+    - IRS guidance by type and year
+    - Database size and storage info
+
+    Example:
+        arch stats
+        arch stats --json
+    """
+    import json as json_module
+    import os
+    from collections import defaultdict
+    from datetime import date
+
+    archive = Arch(db_path=ctx.obj["db"])
+    db = archive.storage.db
+
+    stats_data: dict = {
+        "generated_at": date.today().isoformat(),
+        "database": ctx.obj["db"],
+        "us_code": {},
+        "state_statutes": {},
+        "irs_guidance": {},
+        "totals": {},
+    }
+
+    # US Code statistics
+    usc_query = """
+        SELECT title, title_name, COUNT(*) as section_count,
+               MAX(retrieved_at) as last_updated
+        FROM sections
+        WHERE title > 0
+        GROUP BY title
+        ORDER BY title
+    """
+    usc_rows = db.execute(usc_query).fetchall()
+
+    usc_stats = []
+    usc_total_sections = 0
+    for row in usc_rows:
+        usc_stats.append({
+            "title": row[0],
+            "name": row[1],
+            "sections": row[2],
+            "last_updated": row[3],
+        })
+        usc_total_sections += row[2]
+
+    stats_data["us_code"] = {
+        "titles": len(usc_stats),
+        "total_sections": usc_total_sections,
+        "by_title": usc_stats,
+    }
+
+    # State statutes (title 0 or negative titles are state codes)
+    state_query = """
+        SELECT
+            CASE
+                WHEN section LIKE 'NY-%' THEN 'NY'
+                WHEN section LIKE 'CA-%' THEN 'CA'
+                ELSE 'Other'
+            END as state,
+            COUNT(*) as section_count
+        FROM sections
+        WHERE title = 0 OR title < 0
+        GROUP BY state
+        ORDER BY state
+    """
+    state_rows = db.execute(state_query).fetchall()
+
+    state_stats = {}
+    state_total = 0
+    for row in state_rows:
+        state_stats[row[0]] = row[1]
+        state_total += row[1]
+
+    # Get NY law breakdown
+    ny_breakdown_query = """
+        SELECT
+            SUBSTR(section, 4, INSTR(SUBSTR(section, 4), '-') - 1) as law_code,
+            COUNT(*) as sections
+        FROM sections
+        WHERE section LIKE 'NY-%'
+        GROUP BY law_code
+        ORDER BY sections DESC
+    """
+    ny_rows = db.execute(ny_breakdown_query).fetchall()
+    ny_breakdown = {row[0]: row[1] for row in ny_rows}
+
+    stats_data["state_statutes"] = {
+        "total_sections": state_total,
+        "by_state": state_stats,
+        "ny_breakdown": ny_breakdown,
+    }
+
+    # IRS Guidance statistics
+    guidance_query = """
+        SELECT doc_type, COUNT(*) as count,
+               MIN(SUBSTR(doc_number, 1, 4)) as earliest_year,
+               MAX(SUBSTR(doc_number, 1, 4)) as latest_year
+        FROM guidance_documents
+        GROUP BY doc_type
+    """
+    try:
+        guidance_rows = db.execute(guidance_query).fetchall()
+        guidance_stats = {}
+        guidance_total = 0
+        for row in guidance_rows:
+            guidance_stats[row[0]] = {
+                "count": row[1],
+                "year_range": f"{row[2]}-{row[3]}",
+            }
+            guidance_total += row[1]
+
+        stats_data["irs_guidance"] = {
+            "total_documents": guidance_total,
+            "by_type": guidance_stats,
+        }
+    except Exception:
+        stats_data["irs_guidance"] = {"total_documents": 0, "by_type": {}}
+
+    # Totals
+    stats_data["totals"] = {
+        "usc_titles": len(usc_stats),
+        "usc_sections": usc_total_sections,
+        "state_sections": state_total,
+        "guidance_documents": stats_data["irs_guidance"].get("total_documents", 0),
+        "all_sections": usc_total_sections + state_total,
+    }
+
+    # Database file size
+    db_path = Path(ctx.obj["db"])
+    if db_path.exists():
+        stats_data["database_size_mb"] = round(db_path.stat().st_size / 1024 / 1024, 2)
+
+    if as_json:
+        console.print_json(json_module.dumps(stats_data, indent=2))
+        return
+
+    # Pretty print
+    console.print()
+    console.print(
+        Panel(
+            "[bold cyan]Cosilico Arch - Archive Statistics[/bold cyan]",
+            subtitle=f"Database: {ctx.obj['db']}",
+        )
+    )
+
+    # US Code table
+    table = Table(title="📜 US Code", show_header=True, header_style="bold cyan")
+    table.add_column("Title", justify="right", style="cyan")
+    table.add_column("Name", style="white")
+    table.add_column("Sections", justify="right", style="green")
+
+    for t in stats_data["us_code"]["by_title"][:10]:  # Top 10
+        table.add_row(str(t["title"]), t["name"][:35], f"{t['sections']:,}")
+
+    if len(stats_data["us_code"]["by_title"]) > 10:
+        table.add_row("...", f"... and {len(stats_data['us_code']['by_title']) - 10} more", "")
+
+    table.add_row("", "[bold]TOTAL[/bold]", f"[bold]{usc_total_sections:,}[/bold]")
+    console.print(table)
+
+    # State statutes
+    if state_total > 0:
+        console.print()
+        table2 = Table(title="🏛️  State Statutes", show_header=True, header_style="bold cyan")
+        table2.add_column("State", style="cyan")
+        table2.add_column("Law", style="white")
+        table2.add_column("Sections", justify="right", style="green")
+
+        for law, count in sorted(ny_breakdown.items(), key=lambda x: -x[1]):
+            table2.add_row("NY", law, f"{count:,}")
+
+        table2.add_row("", "[bold]TOTAL[/bold]", f"[bold]{state_total:,}[/bold]")
+        console.print(table2)
+
+    # IRS Guidance
+    if stats_data["irs_guidance"].get("total_documents", 0) > 0:
+        console.print()
+        table3 = Table(title="📋 IRS Guidance", show_header=True, header_style="bold cyan")
+        table3.add_column("Type", style="cyan")
+        table3.add_column("Count", justify="right", style="green")
+        table3.add_column("Years", style="dim")
+
+        for doc_type, info in stats_data["irs_guidance"]["by_type"].items():
+            table3.add_row(doc_type, str(info["count"]), info["year_range"])
+
+        table3.add_row(
+            "[bold]TOTAL[/bold]",
+            f"[bold]{stats_data['irs_guidance']['total_documents']}[/bold]",
+            "",
+        )
+        console.print(table3)
+
+    # Summary
+    console.print()
+    console.print(
+        Panel(
+            f"[bold green]Total Sections:[/bold green] {stats_data['totals']['all_sections']:,}\n"
+            f"[bold blue]US Code Titles:[/bold blue] {stats_data['totals']['usc_titles']}\n"
+            f"[bold yellow]IRS Documents:[/bold yellow] {stats_data['totals']['guidance_documents']}\n"
+            f"[dim]Database Size: {stats_data.get('database_size_mb', 'N/A')} MB[/dim]",
+            title="Summary",
+        )
+    )
+
+
 if __name__ == "__main__":
     main()
