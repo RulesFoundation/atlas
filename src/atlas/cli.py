@@ -8,7 +8,10 @@ from rich.panel import Panel
 from rich.table import Table
 
 from atlas.archive import Atlas
+from atlas.fetchers.irs_bulk import IRSBulkFetcher
+from atlas.models_guidance import GuidanceType
 from atlas.parsers.uslm import download_title
+from atlas.storage.guidance import GuidanceStorage
 
 console = Console()
 
@@ -333,6 +336,104 @@ def validate(path: Path):
             console.print(f"  [yellow]WARNING:[/yellow] {w}")
 
 
+@main.command("download-state")
+@click.argument("state", type=click.Choice(["ny"], case_sensitive=False))
+@click.option(
+    "--law",
+    "-l",
+    multiple=True,
+    help="Law code(s) to download (e.g., TAX, SOS). Defaults to TAX and SOS.",
+)
+@click.option(
+    "--list-laws",
+    is_flag=True,
+    help="List available law codes for the state",
+)
+@click.pass_context
+def download_state(ctx: click.Context, state: str, law: tuple[str, ...], list_laws: bool):
+    """Download state statutes from official APIs.
+
+    Currently supported states:
+    - ny: New York (requires NY_LEGISLATION_API_KEY env var)
+
+    Examples:
+        atlas download-state ny                    # Download TAX and SOS laws
+        atlas download-state ny --law TAX          # Download only Tax Law
+        atlas download-state ny --list-laws        # List available law codes
+    """
+    if state.lower() == "ny":
+        _download_ny_state(ctx, law, list_laws)
+    else:
+        console.print(f"[red]State not supported:[/red] {state}")
+        raise SystemExit(1)
+
+
+def _download_ny_state(ctx: click.Context, law_codes: tuple[str, ...], list_laws: bool) -> None:
+    """Download New York state statutes."""
+    import os
+
+    from atlas.parsers.ny_laws import NY_LAW_CODES, NYLegislationClient, download_ny_law
+
+    # Check for API key
+    if not os.environ.get("NY_LEGISLATION_API_KEY"):
+        console.print("[red]Error:[/red] NY_LEGISLATION_API_KEY environment variable not set.")
+        console.print("\nTo get a free API key:")
+        console.print("  1. Visit https://legislation.nysenate.gov")
+        console.print("  2. Register for an account")
+        console.print("  3. Copy your API key")
+        console.print("  4. Set: export NY_LEGISLATION_API_KEY=your_key_here")
+        raise SystemExit(1)
+
+    # List laws mode
+    if list_laws:
+        try:
+            with NYLegislationClient() as client:
+                laws = client.get_law_ids()
+
+            table = Table(title="New York State Laws")
+            table.add_column("Code", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Type")
+
+            for law in sorted(laws, key=lambda x: x.law_id):
+                table.add_row(law.law_id, law.name, law.law_type)
+
+            console.print(table)
+            console.print(f"\n[dim]Total: {len(laws)} laws available[/dim]")
+        except Exception as e:
+            console.print(f"[red]Error listing laws:[/red] {e}")
+            raise SystemExit(1) from e
+        return
+
+    # Default to TAX and SOS if no laws specified
+    laws_to_download = list(law_codes) if law_codes else ["TAX", "SOS"]
+
+    archive = Atlas(db_path=ctx.obj["db"])
+    total_sections = 0
+
+    for law_id in laws_to_download:
+        law_name = NY_LAW_CODES.get(law_id.upper(), f"{law_id} Law")
+        console.print(f"\n[blue]Downloading:[/blue] New York {law_name} ({law_id})")
+
+        try:
+            count = 0
+            with console.status(f"Fetching {law_id}..."):
+                for section in download_ny_law(law_id.upper()):
+                    archive.storage.store_section(section)
+                    count += 1
+                    if count % 50 == 0:
+                        console.print(f"  [dim]Processed {count} sections...[/dim]")
+
+            console.print(f"[green]Stored {count} sections from {law_id}[/green]")
+            total_sections += count
+
+        except Exception as e:
+            console.print(f"[red]Error downloading {law_id}:[/red] {e}")
+            continue
+
+    console.print(f"\n[green]Total: {total_sections} sections stored[/green]")
+
+
 @main.command()
 @click.argument("path", type=click.Path(exists=True, path_type=Path))
 @click.option(
@@ -369,6 +470,178 @@ def verify(path: Path, pe_var: str, tolerance: float, save: Path | None):
     if save:
         save_verification_report(report, save)
         console.print(f"\n[dim]Report saved to {save}[/dim]")
+
+
+@main.command("fetch-guidance")
+@click.option(
+    "--year",
+    "-y",
+    type=int,
+    multiple=True,
+    help="Year(s) to fetch (e.g., 2024). Can be repeated. Default: 2020-2024",
+)
+@click.option(
+    "--type",
+    "-t",
+    "doc_types",
+    type=click.Choice(["rev-proc", "rev-rul", "notice", "all"], case_sensitive=False),
+    multiple=True,
+    default=["all"],
+    help="Document type(s) to fetch. Default: all",
+)
+@click.option(
+    "--download-pdfs",
+    is_flag=True,
+    help="Also download PDF files to data/guidance/irs/",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="List documents without fetching",
+)
+@click.pass_context
+def fetch_guidance(
+    ctx: click.Context,
+    year: tuple[int, ...],
+    doc_types: tuple[str, ...],
+    download_pdfs: bool,
+    dry_run: bool,
+):
+    """Fetch IRS guidance documents (Rev. Procs, Rev. Rulings, Notices).
+
+    Downloads documents from https://www.irs.gov/pub/irs-drop/ and stores
+    metadata in the database. By default fetches all document types for
+    years 2020-2024.
+
+    Examples:
+        atlas fetch-guidance                     # Fetch all 2020-2024
+        atlas fetch-guidance --year 2024         # Just 2024
+        atlas fetch-guidance -y 2023 -y 2024     # 2023 and 2024
+        atlas fetch-guidance --type rev-proc     # Only Revenue Procedures
+        atlas fetch-guidance --dry-run           # List without fetching
+    """
+    # Parse years
+    years = list(year) if year else [2020, 2021, 2022, 2023, 2024]
+
+    # Parse document types
+    type_mapping = {
+        "rev-proc": [GuidanceType.REV_PROC],
+        "rev-rul": [GuidanceType.REV_RUL],
+        "notice": [GuidanceType.NOTICE],
+        "all": [GuidanceType.REV_PROC, GuidanceType.REV_RUL, GuidanceType.NOTICE],
+    }
+
+    selected_types = []
+    for dt in doc_types:
+        selected_types.extend(type_mapping[dt.lower()])
+    selected_types = list(set(selected_types))
+
+    console.print(f"[blue]Fetching IRS guidance for years:[/blue] {years}")
+    console.print(f"[blue]Document types:[/blue] {[t.value for t in selected_types]}")
+
+    if dry_run:
+        console.print("\n[yellow]DRY RUN - listing documents only[/yellow]\n")
+
+    # Initialize storage and fetcher
+    storage = GuidanceStorage(ctx.obj["db"])
+    download_dir = Path("data/guidance/irs") if download_pdfs else None
+
+    fetched_count = 0
+    error_count = 0
+
+    with IRSBulkFetcher() as fetcher:
+        # First, list all available documents (multi-page)
+        console.print("[dim]Scanning IRS drop folder (may take a minute for multiple pages)...[/dim]")
+
+        def page_progress(msg: str) -> None:
+            console.print(f"[dim]{msg}[/dim]")
+
+        html = fetcher._fetch_drop_listing(progress_callback=page_progress)
+        from atlas.fetchers.irs_bulk import parse_irs_drop_listing
+
+        all_docs = []
+        for y in years:
+            docs = parse_irs_drop_listing(html, year=y, doc_types=selected_types)
+            all_docs.extend(docs)
+
+        console.print(f"[green]Found {len(all_docs)} documents[/green]\n")
+
+        if dry_run:
+            # Just show a table of documents
+            table = Table(title="Available IRS Guidance Documents")
+            table.add_column("Type", style="cyan")
+            table.add_column("Number", style="green")
+            table.add_column("Year", justify="right")
+            table.add_column("PDF URL")
+
+            for doc in sorted(all_docs, key=lambda d: (d.year, d.doc_type.value, d.doc_number)):
+                table.add_row(
+                    doc.doc_type.value,
+                    doc.doc_number,
+                    str(doc.year),
+                    doc.pdf_url,
+                )
+
+            console.print(table)
+            return
+
+        # Fetch and store each document
+        for i, doc in enumerate(all_docs):
+            console.print(
+                f"[{i+1}/{len(all_docs)}] Fetching {doc.doc_type.value} {doc.doc_number}...",
+                end=" ",
+            )
+
+            try:
+                # Fetch PDF to get file size (we don't parse content yet)
+                pdf_content = fetcher.fetch_pdf(doc)
+                pdf_size = len(pdf_content)
+
+                # Optionally save PDF
+                if download_dir:
+                    download_dir.mkdir(parents=True, exist_ok=True)
+                    pdf_path = download_dir / doc.pdf_filename
+                    pdf_path.write_bytes(pdf_content)
+
+                # Create RevenueProcedure model with placeholder content
+                from datetime import date as date_module
+
+                from atlas.models_guidance import RevenueProcedure
+
+                rev_proc = RevenueProcedure(
+                    doc_number=doc.doc_number,
+                    doc_type=doc.doc_type,
+                    title=fetcher._generate_title(doc),
+                    irb_citation="",  # Would need IRB lookup
+                    published_date=date_module(doc.year, 1, 1),  # Placeholder
+                    full_text=f"[PDF content: {pdf_size} bytes]",
+                    sections=[],
+                    effective_date=None,
+                    tax_years=[doc.year, doc.year + 1],
+                    subject_areas=["General"],
+                    parameters={},
+                    source_url=doc.pdf_url,
+                    pdf_url=doc.pdf_url,
+                    retrieved_at=date_module.today(),
+                )
+
+                # Store in database
+                storage.store_revenue_procedure(rev_proc)
+                fetched_count += 1
+                console.print(f"[green]OK[/green] ({pdf_size:,} bytes)")
+
+            except Exception as e:
+                error_count += 1
+                console.print(f"[red]ERROR: {e}[/red]")
+
+    console.print()
+    console.print(f"[green]Successfully fetched:[/green] {fetched_count} documents")
+    if error_count:
+        console.print(f"[red]Errors:[/red] {error_count}")
+
+    # Show final count in database
+    total = storage.db.execute("SELECT COUNT(*) FROM guidance_documents").fetchone()[0]
+    console.print(f"\n[dim]Total documents in database: {total}[/dim]")
 
 
 if __name__ == "__main__":
