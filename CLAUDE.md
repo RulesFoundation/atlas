@@ -136,3 +136,53 @@ Run a single test:
 ```bash
 pytest tests/test_models.py::TestCitation::test_parse_simple_citation -v
 ```
+
+## Session Continuation Notes (2024-12-28)
+
+### Completed This Session
+- ✅ Renamed GitHub repo: `cosilico-atlas` → `arch` (CosilicoAI/arch)
+- ✅ Renamed source: `src/atlas` → `src/arch`
+- ✅ Updated all imports and class names (`Atlas` → `Arch`)
+- ✅ Updated README with expanded scope
+- ✅ Git remote updated to `https://github.com/CosilicoAI/arch.git`
+
+### Next Steps (see beads issues)
+1. **CosilicoAI-uj0**: Update cosilico.ai stack pages for Arch
+   - Add `/stack/arch` route
+   - Update StackPage.tsx grid
+   - Create ArchPage.tsx with hero, features, data sources
+
+2. **CosilicoAI-jtu**: Create arch PostgreSQL schema in cosilico-db
+   - Schema already drafted (previous session created migration file)
+   - Tables: sources, files, fetch_log, content, cross_references
+   - Full-text search with tsvector
+
+3. **CosilicoAI-4en**: Set up Cloudflare R2 bucket for raw files
+   - Bucket: `cosilico-arch` or just `arch`
+   - Structure: `sources/{statutes,guidance,microdata,crosstabs}/`
+
+4. **CosilicoAI-yf6**: Rename other repos
+   - `cosilico-engine` → `rac` (the core DSL)
+   - `cosilico-us` → `rac-us` (US federal rules)
+   - `cosilico-compile` → `rac-compile`
+
+### Folder Rename Required
+After exiting Claude Code, rename local folder:
+```bash
+cd ~/CosilicoAI
+mv cosilico-arch arch
+cd arch
+```
+
+### Naming Convention Decided
+```
+CosilicoAI/
+├── rac                 # Core DSL engine
+├── rac-compile         # Multi-target compiler
+├── rac-us              # US federal rules
+├── arch                # Source document archive (this repo)
+├── microplex           # Microdata library
+├── cosilico-db         # Infrastructure (PostgreSQL)
+├── cosilico-api        # Infrastructure (API)
+└── cosilico.ai         # Website
+```
