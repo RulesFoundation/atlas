@@ -1,0 +1,500 @@
+"""Fast parallel statute crawler with R2 upload.
+
+Usage:
+    # Test single state
+    uv run python -m arch.crawl us-oh --max-sections 100
+
+    # Crawl all states
+    uv run python -m arch.crawl --all
+
+    # Dry run (no R2 upload)
+    uv run python -m arch.crawl --all --dry-run
+"""
+
+import asyncio
+import hashlib
+import json
+import os
+import re
+import time
+from dataclasses import dataclass, field, asdict
+from pathlib import Path
+from typing import Iterator
+from urllib.parse import urljoin, urlparse
+
+import httpx
+import click
+from bs4 import BeautifulSoup
+
+from arch.sources.registry import get_all_configs, SourceConfig
+
+
+# R2 config
+R2_ENDPOINT = "https://e9e506f2eee3258eab499058235cb3c4.r2.cloudflarestorage.com"
+R2_BUCKET = "arch"
+
+# State-specific section URL patterns (regex)
+# These identify what counts as a "section page" worth storing
+SECTION_PATTERNS: dict[str, str] = {
+    "us-oh": r"/section-[\d.]+",
+    "us-ca": r"/section/\d+",
+    "us-tx": r"/[A-Z]+\.\d+",
+    "us-ny": r"/[A-Z]+/\d+",
+    "us-fl": r"/statutes/\d+\.\d+",
+    # Nevada: chapters contain all sections, so fetch chapter pages
+    "us-nv": r"NRS-[\dA-Z]+\.html",
+    # Default pattern matches common section URL formats
+    "_default": r"(?:section|§|sec)[\-_/]?[\d.]+",
+}
+
+
+@dataclass
+class CrawlStats:
+    """Stats for a crawl job."""
+    jurisdiction: str
+    name: str
+    codes: int = 0
+    sections_discovered: int = 0
+    sections_fetched: int = 0
+    sections_failed: int = 0
+    bytes_fetched: int = 0
+    bytes_uploaded: int = 0
+    start_time: float = field(default_factory=time.time)
+    end_time: float = 0
+    errors: list = field(default_factory=list)
+
+    @property
+    def duration(self) -> float:
+        return (self.end_time or time.time()) - self.start_time
+
+    @property
+    def rate(self) -> float:
+        if self.duration > 0:
+            return self.sections_fetched / self.duration
+        return 0
+
+
+def get_r2_client():
+    """Get R2 client using environment credentials."""
+    import boto3
+    from botocore.config import Config
+
+    return boto3.client(
+        "s3",
+        endpoint_url=R2_ENDPOINT,
+        aws_access_key_id=os.environ.get("R2_ACCESS_KEY_ID"),
+        aws_secret_access_key=os.environ.get("R2_SECRET_ACCESS_KEY"),
+        config=Config(signature_version="s3v4"),
+        region_name="auto",
+    )
+
+
+class StateCrawler:
+    """Async crawler for a single state."""
+
+    def __init__(
+        self,
+        config: SourceConfig,
+        max_concurrent: int = 20,  # Reduced from 50 to avoid rate limits
+        dry_run: bool = False,
+        delay_between_requests: float = 0.1,  # 100ms between requests
+    ):
+        self.config = config
+        self.max_concurrent = max_concurrent
+        self.dry_run = dry_run
+        self.delay = delay_between_requests
+        self.stats = CrawlStats(
+            jurisdiction=config.jurisdiction,
+            name=config.name,
+            codes=len(config.codes),
+        )
+        self._r2 = None
+        self._semaphore = asyncio.Semaphore(max_concurrent)
+        self._last_request = 0.0
+
+    @property
+    def r2(self):
+        if self._r2 is None and not self.dry_run:
+            self._r2 = get_r2_client()
+        return self._r2
+
+    def _get_headers(self) -> dict:
+        """Get request headers that work for most sites."""
+        return {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+        }
+
+    def _get_section_pattern(self) -> re.Pattern:
+        """Get the section URL regex pattern for this state."""
+        pattern = SECTION_PATTERNS.get(
+            self.config.jurisdiction,
+            SECTION_PATTERNS["_default"]
+        )
+        return re.compile(pattern, re.IGNORECASE)
+
+    def _is_section_url(self, url: str) -> bool:
+        """Check if a URL looks like a section page."""
+        pattern = self._get_section_pattern()
+        return bool(pattern.search(url))
+
+    def _is_same_domain(self, url: str) -> bool:
+        """Check if URL is on the same domain as base_url."""
+        base_domain = urlparse(self.config.base_url).netloc
+        url_domain = urlparse(url).netloc
+        return url_domain == base_domain or url_domain == ""
+
+    async def discover_sections(
+        self, client: httpx.AsyncClient, max_depth: int = 3
+    ) -> list[str]:
+        """Discover all section URLs via recursive BFS crawl.
+
+        Starts from TOC pages and follows links within the domain
+        up to max_depth levels, collecting section URLs.
+        """
+        section_urls: set[str] = set()
+        visited: set[str] = set()
+
+        # Start with TOC URLs for each code
+        frontier: list[tuple[str, int]] = []  # (url, depth)
+
+        for code_id in self.config.codes:
+            if self.config.toc_url_pattern:
+                toc_url = f"{self.config.base_url}{self.config.toc_url_pattern.format(code=code_id)}"
+                frontier.append((toc_url, 0))
+            else:
+                # Fall back to base URL
+                frontier.append((self.config.base_url, 0))
+
+        print(f"  [{self.config.jurisdiction}] Starting discovery from {len(frontier)} TOC pages...")
+
+        while frontier:
+            # Process current frontier in parallel
+            current_batch = frontier[:self.max_concurrent]
+            frontier = frontier[self.max_concurrent:]
+
+            tasks = []
+            for url, depth in current_batch:
+                if url not in visited:
+                    visited.add(url)
+                    tasks.append(self._crawl_page_for_links(client, url, depth))
+
+            if not tasks:
+                continue
+
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            for result in results:
+                if isinstance(result, Exception):
+                    continue
+
+                page_sections, child_links, depth = result
+                section_urls.update(page_sections)
+
+                # Add child links to frontier if within depth limit
+                if depth < max_depth:
+                    for link in child_links:
+                        if link not in visited:
+                            frontier.append((link, depth + 1))
+
+            # Progress update
+            if len(section_urls) % 100 == 0 and len(section_urls) > 0:
+                print(f"  [{self.config.jurisdiction}] Found {len(section_urls)} sections...")
+
+        self.stats.sections_discovered = len(section_urls)
+        return list(section_urls)
+
+    async def _crawl_page_for_links(
+        self, client: httpx.AsyncClient, url: str, depth: int
+    ) -> tuple[set[str], list[str], int]:
+        """Crawl a page and extract section URLs and navigation links."""
+        section_urls: set[str] = set()
+        child_links: list[str] = []
+
+        async with self._semaphore:
+            try:
+                resp = await client.get(url, timeout=30)
+                if resp.status_code != 200:
+                    return section_urls, child_links, depth
+
+                soup = BeautifulSoup(resp.text, "html.parser")
+
+                for link in soup.find_all("a", href=True):
+                    href = link["href"]
+                    full_url = urljoin(url, href)
+
+                    # Skip non-HTTP and external links
+                    if not full_url.startswith("http"):
+                        continue
+                    if not self._is_same_domain(full_url):
+                        continue
+
+                    # Clean URL (remove fragments)
+                    full_url = full_url.split("#")[0]
+
+                    if self._is_section_url(full_url):
+                        section_urls.add(full_url)
+                    else:
+                        # Add to child links for further crawling
+                        # Only include navigation-like links
+                        text = link.get_text(strip=True).lower()
+                        if any(x in href.lower() or x in text for x in [
+                            "title", "chapter", "article", "part", "division",
+                            "subtitle", "subchapter", "code", "revised"
+                        ]):
+                            child_links.append(full_url)
+
+                return section_urls, child_links, depth
+
+            except Exception as e:
+                self.stats.errors.append(f"Crawl {url}: {e}")
+                return section_urls, child_links, depth
+
+    async def _rate_limit(self):
+        """Apply rate limiting between requests."""
+        if self.delay > 0:
+            now = time.time()
+            elapsed = now - self._last_request
+            if elapsed < self.delay:
+                await asyncio.sleep(self.delay - elapsed)
+            self._last_request = time.time()
+
+    async def fetch_section(
+        self, client: httpx.AsyncClient, url: str, max_retries: int = 3
+    ) -> tuple[str, str | None]:
+        """Fetch a single section with retry on rate limit."""
+        await self._rate_limit()
+        async with self._semaphore:
+            for attempt in range(max_retries):
+                try:
+                    resp = await client.get(url, timeout=30)
+                    if resp.status_code == 200:
+                        self.stats.sections_fetched += 1
+                        self.stats.bytes_fetched += len(resp.content)
+                        return url, resp.text
+                    elif resp.status_code == 429:
+                        # Rate limited - exponential backoff
+                        wait_time = (2 ** attempt) + (attempt * 0.5)
+                        await asyncio.sleep(wait_time)
+                        continue
+                    else:
+                        self.stats.sections_failed += 1
+                        return url, None
+                except Exception as e:
+                    if attempt == max_retries - 1:
+                        self.stats.sections_failed += 1
+                        self.stats.errors.append(f"Fetch {url}: {e}")
+                    await asyncio.sleep(1)
+
+            self.stats.sections_failed += 1
+            return url, None
+
+    def upload_to_r2(self, url: str, html: str) -> bool:
+        """Upload section HTML to R2."""
+        if self.dry_run:
+            return True
+
+        try:
+            # Generate key from URL
+            url_hash = hashlib.md5(url.encode()).hexdigest()[:12]
+            path = urlparse(url).path.strip("/").replace("/", "_")
+            key = f"{self.config.jurisdiction}/{path}_{url_hash}.html"
+
+            self.r2.put_object(
+                Bucket=R2_BUCKET,
+                Key=key,
+                Body=html.encode("utf-8"),
+                ContentType="text/html",
+            )
+            self.stats.bytes_uploaded += len(html.encode("utf-8"))
+            return True
+        except Exception as e:
+            self.stats.errors.append(f"R2 upload: {e}")
+            return False
+
+    async def crawl(self, max_sections: int | None = None) -> CrawlStats:
+        """Crawl all sections for this state."""
+        async with httpx.AsyncClient(
+            headers=self._get_headers(),
+            follow_redirects=True,
+            timeout=30,
+        ) as client:
+            # Discover sections
+            print(f"  [{self.config.jurisdiction}] Discovering sections...")
+            section_urls = await self.discover_sections(client)
+
+            if max_sections:
+                section_urls = section_urls[:max_sections]
+
+            if not section_urls:
+                print(f"  [{self.config.jurisdiction}] No sections found")
+                self.stats.end_time = time.time()
+                return self.stats
+
+            print(
+                f"  [{self.config.jurisdiction}] Fetching {len(section_urls)} sections..."
+            )
+
+            # Fetch all sections concurrently
+            tasks = [self.fetch_section(client, url) for url in section_urls]
+            results = await asyncio.gather(*tasks)
+
+            # Upload to R2
+            for url, html in results:
+                if html:
+                    self.upload_to_r2(url, html)
+
+        self.stats.end_time = time.time()
+        return self.stats
+
+
+async def crawl_state(
+    jurisdiction: str,
+    max_concurrent: int = 20,
+    max_sections: int | None = None,
+    dry_run: bool = False,
+    delay: float = 0.1,
+) -> CrawlStats:
+    """Crawl a single state."""
+    configs = get_all_configs()
+    if jurisdiction not in configs:
+        raise ValueError(f"Unknown jurisdiction: {jurisdiction}")
+
+    config = configs[jurisdiction]
+    crawler = StateCrawler(config, max_concurrent, dry_run, delay)
+    return await crawler.crawl(max_sections)
+
+
+async def crawl_all_states(
+    max_concurrent_states: int = 20,
+    max_concurrent_per_state: int = 20,
+    max_sections_per_state: int | None = None,
+    dry_run: bool = False,
+    delay: float = 0.1,
+) -> list[CrawlStats]:
+    """Crawl all states in parallel."""
+    configs = get_all_configs()
+    jurisdictions = sorted([j for j in configs if j.startswith("us-") and j != "us"])
+
+    print(f"Crawling {len(jurisdictions)} states...")
+    print(f"  Concurrent states: {max_concurrent_states}")
+    print(f"  Concurrent per state: {max_concurrent_per_state}")
+    if max_sections_per_state:
+        print(f"  Max sections per state: {max_sections_per_state}")
+    print()
+
+    semaphore = asyncio.Semaphore(max_concurrent_states)
+
+    async def crawl_with_semaphore(jurisdiction: str) -> CrawlStats:
+        async with semaphore:
+            config = configs[jurisdiction]
+            crawler = StateCrawler(config, max_concurrent_per_state, dry_run, delay)
+            stats = await crawler.crawl(max_sections_per_state)
+            print(
+                f"  [{jurisdiction}] Done: {stats.sections_fetched} sections "
+                f"in {stats.duration:.1f}s ({stats.rate:.1f}/s)"
+            )
+            return stats
+
+    start = time.time()
+    tasks = [crawl_with_semaphore(j) for j in jurisdictions]
+    results = await asyncio.gather(*tasks, return_exceptions=True)
+
+    # Separate results from errors
+    stats = []
+    errors = []
+    for r in results:
+        if isinstance(r, CrawlStats):
+            stats.append(r)
+        else:
+            errors.append(r)
+
+    duration = time.time() - start
+
+    # Summary
+    print(f"\n{'='*60}")
+    print("CRAWL COMPLETE")
+    print(f"{'='*60}")
+    print(f"States: {len(stats)} succeeded, {len(errors)} failed")
+    print(f"Total duration: {duration:.1f}s ({duration/60:.1f} minutes)")
+
+    total_sections = sum(s.sections_fetched for s in stats)
+    total_bytes = sum(s.bytes_fetched for s in stats)
+    print(f"Total sections: {total_sections:,}")
+    print(f"Total data: {total_bytes/1024/1024:.1f} MB")
+    print(f"Overall rate: {total_sections/duration:.1f} sections/second")
+
+    if errors:
+        print(f"\nErrors:")
+        for e in errors[:10]:
+            print(f"  {e}")
+
+    return stats
+
+
+@click.command()
+@click.argument("jurisdiction", required=False)
+@click.option("--all", "crawl_all", is_flag=True, help="Crawl all states")
+@click.option("--max-sections", type=int, help="Limit sections per state")
+@click.option("--max-states", type=int, default=20, help="Concurrent states")
+@click.option("--max-concurrent", type=int, default=20, help="Concurrent requests per state")
+@click.option("--delay", type=float, default=0.1, help="Delay between requests (seconds)")
+@click.option("--dry-run", is_flag=True, help="Don't upload to R2")
+def main(
+    jurisdiction: str | None,
+    crawl_all: bool,
+    max_sections: int | None,
+    max_states: int,
+    max_concurrent: int,
+    delay: float,
+    dry_run: bool,
+):
+    """Crawl state statutes and upload to R2.
+
+    Examples:
+
+        # Test single state
+        uv run python -m arch.crawl us-oh --max-sections 100 --dry-run
+
+        # Crawl all states
+        uv run python -m arch.crawl --all
+    """
+    if crawl_all:
+        asyncio.run(
+            crawl_all_states(
+                max_concurrent_states=max_states,
+                max_concurrent_per_state=max_concurrent,
+                max_sections_per_state=max_sections,
+                dry_run=dry_run,
+                delay=delay,
+            )
+        )
+    elif jurisdiction:
+        stats = asyncio.run(
+            crawl_state(
+                jurisdiction,
+                max_concurrent=max_concurrent,
+                max_sections=max_sections,
+                dry_run=dry_run,
+                delay=delay,
+            )
+        )
+        print(f"\n{stats.name}:")
+        print(f"  Sections discovered: {stats.sections_discovered}")
+        print(f"  Sections fetched: {stats.sections_fetched}")
+        print(f"  Sections failed: {stats.sections_failed}")
+        print(f"  Data fetched: {stats.bytes_fetched/1024:.1f} KB")
+        print(f"  Duration: {stats.duration:.1f}s")
+        print(f"  Rate: {stats.rate:.1f} sections/second")
+        if stats.errors:
+            print(f"  Errors: {len(stats.errors)}")
+            for e in stats.errors[:5]:
+                print(f"    {e}")
+    else:
+        click.echo("Specify a jurisdiction or use --all")
+        raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    main()
