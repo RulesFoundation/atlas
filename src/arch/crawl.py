@@ -131,6 +131,9 @@ SECTION_PATTERNS: dict[str, str] = {
     # Rhode Island: title/chapter/section structure
     "us-ri": r"/TITLE\d+/\d+-\d+|Statutes.*\.htm",
 
+    # Connecticut: General Statutes - chapter pages (chap_XXX.htm)
+    "us-ct": r"/pub/chap_\d+\.htm|/pub/title_\d+\.htm",
+
     # South Carolina: code sections
     "us-sc": r"/code/t\d+c\d+|codeoflaw.*section",
 
