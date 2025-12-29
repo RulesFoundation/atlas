@@ -76,6 +76,77 @@ SECTION_PATTERNS: dict[str, str] = {
 }
 
 
+def get_all_jurisdictions() -> list[str]:
+    """Get list of all configured state jurisdictions."""
+    configs = get_all_configs()
+    return sorted([j for j in configs if j.startswith("us-") and j != "us"])
+
+
+async def crawl_jurisdiction(
+    jurisdiction: str,
+    output_dir: Path | None = None,
+    max_sections: int | None = None,
+    concurrency: int = 20,
+    delay: float = 0.1,
+    dry_run: bool = False,
+) -> dict:
+    """Crawl a single jurisdiction and optionally save to disk.
+
+    Args:
+        jurisdiction: State code (e.g., 'us-ca')
+        output_dir: If provided, save HTML files here instead of R2
+        max_sections: Limit number of sections to fetch
+        concurrency: Max concurrent requests
+        delay: Delay between requests
+        dry_run: If True, don't upload/save
+
+    Returns:
+        Dict with crawl statistics
+    """
+    configs = get_all_configs()
+    if jurisdiction not in configs:
+        raise ValueError(f"Unknown jurisdiction: {jurisdiction}")
+
+    config = configs[jurisdiction]
+
+    # Create crawler
+    crawler = StateCrawler(config, concurrency, dry_run, delay)
+
+    # Override upload if output_dir specified
+    if output_dir and not dry_run:
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Monkey-patch upload to save to disk instead
+        original_upload = crawler.upload_to_r2
+
+        def save_to_disk(url: str, html: str):
+            # Create filename from URL (include fragment for section identification)
+            parsed = urlparse(url)
+            path_parts = parsed.path.strip("/").replace("/", "_")
+            fragment = parsed.fragment.replace("/", "_").replace(".", "-") if parsed.fragment else ""
+            if fragment:
+                filename = f"{path_parts}_{fragment}.html"
+            else:
+                filename = f"{path_parts}.html" if path_parts else "index.html"
+            filepath = output_dir / filename
+            filepath.write_text(html, encoding="utf-8")
+            crawler.stats.bytes_uploaded += len(html.encode("utf-8"))
+
+        crawler.upload_to_r2 = save_to_disk
+
+    stats = await crawler.crawl(max_sections)
+
+    return {
+        "source": "html",
+        "sections": stats.sections_fetched,
+        "bytes": stats.bytes_fetched,
+        "duration": stats.duration,
+        "rate": stats.rate,
+        "errors": stats.errors_count,
+    }
+
+
 async def download_from_archive_org(
     jurisdiction: str,
     output_dir: Path | None = None,
@@ -223,6 +294,10 @@ class CrawlStats:
         if self.duration > 0:
             return self.sections_fetched / self.duration
         return 0
+
+    @property
+    def errors_count(self) -> int:
+        return len(self.errors)
 
 
 def get_r2_client():

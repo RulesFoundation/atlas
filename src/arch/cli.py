@@ -988,5 +988,147 @@ def stats(ctx: click.Context, as_json: bool):
     )
 
 
+@main.command()
+@click.argument("jurisdiction", default="all")
+@click.option("--output", "-o", default="data/statutes", help="Output directory")
+@click.option("--dry-run", is_flag=True, help="Show what would be crawled without fetching")
+@click.option("--max-sections", "-n", type=int, help="Limit sections per jurisdiction")
+@click.option("--concurrency", "-c", default=5, help="Concurrent requests (HTML only)")
+@click.option("--force", "-f", is_flag=True, help="Re-download even if files exist")
+def crawl(
+    jurisdiction: str,
+    output: str,
+    dry_run: bool,
+    max_sections: int | None,
+    concurrency: int,
+    force: bool,
+):
+    """Crawl statutes from official sources.
+
+    JURISDICTION can be:
+      - 'all': Crawl all configured states
+      - 'us': Federal US Code only
+      - 'us-ca': California
+      - 'us-tx': Texas
+      - etc.
+
+    Examples:
+        arch crawl all                    # Crawl everything
+        arch crawl us-ca --dry-run        # Preview California crawl
+        arch crawl us-tx -n 100           # Texas, first 100 sections
+    """
+    import asyncio
+
+    from arch.crawl import (
+        ARCHIVE_ORG_STATES,
+        crawl_jurisdiction,
+        download_from_archive_org,
+        get_all_jurisdictions,
+    )
+
+    output_dir = Path(output)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Determine which jurisdictions to crawl
+    if jurisdiction == "all":
+        jurisdictions = get_all_jurisdictions()
+    elif jurisdiction == "us":
+        # Federal only - handled separately via USLM
+        console.print("[cyan]Federal US Code uses USLM parser, not web crawl.[/cyan]")
+        console.print("Use: [bold]arch download <title>[/bold] for federal titles")
+        return
+    else:
+        jurisdictions = [jurisdiction]
+
+    # Playwright-required states
+    playwright_states = {"us-al", "us-ak", "us-tx"}
+
+    async def run_crawls():
+        results = {}
+
+        for jur in jurisdictions:
+            console.print(f"\n[bold blue]{'[DRY RUN] ' if dry_run else ''}Crawling {jur}...[/bold blue]")
+
+            # Check if Archive.org has bulk data
+            if jur in ARCHIVE_ORG_STATES:
+                console.print(f"  [green]→ Using Archive.org bulk download[/green]")
+                if not dry_run:
+                    result = await download_from_archive_org(
+                        jur, output_dir=output_dir / jur, dry_run=dry_run
+                    )
+                    results[jur] = result
+                else:
+                    results[jur] = {"source": "archive.org", "dry_run": True}
+                continue
+
+            # Check if Playwright is needed
+            if jur in playwright_states:
+                console.print(f"  [yellow]→ Using Playwright (JavaScript SPA)[/yellow]")
+                if not dry_run:
+                    try:
+                        from arch.crawl_playwright import crawl_state
+
+                        result = await crawl_state(
+                            jur.replace("us-", ""),
+                            output_dir=output_dir / jur,
+                            max_sections=max_sections,
+                        )
+                        results[jur] = result
+                    except Exception as e:
+                        console.print(f"  [red]Error: {e}[/red]")
+                        results[jur] = {"error": str(e)}
+                else:
+                    results[jur] = {"source": "playwright", "dry_run": True}
+                continue
+
+            # Standard HTML crawler
+            console.print(f"  [cyan]→ Using async HTML crawler[/cyan]")
+            if not dry_run:
+                try:
+                    result = await crawl_jurisdiction(
+                        jur,
+                        output_dir=output_dir / jur,
+                        max_sections=max_sections,
+                        concurrency=concurrency,
+                    )
+                    results[jur] = result
+                except Exception as e:
+                    console.print(f"  [red]Error: {e}[/red]")
+                    results[jur] = {"error": str(e)}
+            else:
+                results[jur] = {"source": "html", "dry_run": True}
+
+        return results
+
+    results = asyncio.run(run_crawls())
+
+    # Summary table
+    console.print("\n")
+    table = Table(title="Crawl Results")
+    table.add_column("Jurisdiction", style="cyan")
+    table.add_column("Source", style="green")
+    table.add_column("Sections", justify="right")
+    table.add_column("Status")
+
+    for jur, result in sorted(results.items()):
+        if isinstance(result, dict):
+            source = result.get("source", "html")
+            sections = result.get("sections", result.get("files", 0))
+            if result.get("error"):
+                status = f"[red]{result['error'][:30]}...[/red]"
+            elif result.get("dry_run"):
+                status = "[yellow]dry run[/yellow]"
+            else:
+                status = "[green]✓[/green]"
+        else:
+            source = "unknown"
+            sections = 0
+            status = "[red]failed[/red]"
+
+        table.add_row(jur, source, str(sections), status)
+
+    console.print(table)
+
+
 if __name__ == "__main__":
     main()

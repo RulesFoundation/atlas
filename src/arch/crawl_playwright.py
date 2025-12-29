@@ -35,6 +35,7 @@ class PlaywrightStats:
     sections_fetched: int = 0
     sections_failed: int = 0
     bytes_fetched: int = 0
+    bytes_uploaded: int = 0
     start_time: float = field(default_factory=time.time)
     end_time: float = 0
     errors: list = field(default_factory=list)
@@ -48,6 +49,10 @@ class PlaywrightStats:
         if self.duration > 0:
             return self.sections_fetched / self.duration
         return 0
+
+    @property
+    def errors_count(self) -> int:
+        return len(self.errors)
 
 
 # State-specific configurations
@@ -659,8 +664,50 @@ class TexasCrawler:
             return False
 
 
+async def crawl_state(
+    state: str,
+    output_dir: Path | None = None,
+    max_sections: int | None = None,
+    dry_run: bool = False,
+    headless: bool = True,
+) -> dict:
+    """Crawl a SPA state and optionally save to disk.
+
+    This is the main entry point for the unified CLI.
+
+    Args:
+        state: State abbreviation (e.g., 'al', 'ak', 'tx')
+        output_dir: If provided, save HTML files here instead of R2
+        max_sections: Limit number of sections
+        dry_run: If True, don't save/upload
+
+    Returns:
+        Dict with crawl statistics
+    """
+    # Normalize jurisdiction
+    jurisdiction = f"us-{state.lower()}" if not state.startswith("us-") else state
+
+    stats = await crawl_spa_state(
+        jurisdiction=jurisdiction,
+        output_dir=output_dir,
+        max_sections=max_sections,
+        dry_run=dry_run,
+        headless=headless,
+    )
+
+    return {
+        "source": "playwright",
+        "sections": stats.sections_fetched,
+        "bytes": stats.bytes_fetched,
+        "duration": stats.duration,
+        "rate": stats.rate,
+        "errors": stats.errors_count,
+    }
+
+
 async def crawl_spa_state(
     jurisdiction: str,
+    output_dir: Path | None = None,
     max_sections: int | None = None,
     dry_run: bool = False,
     headless: bool = True,
@@ -674,6 +721,11 @@ async def crawl_spa_state(
     print(f"\n{'='*60}")
     print(f"Crawling {config['name']} ({jurisdiction})")
     print(f"{'='*60}")
+
+    # Prepare output directory if specified
+    if output_dir and not dry_run:
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
 
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=headless)
@@ -691,6 +743,28 @@ async def crawl_spa_state(
             crawler = TexasCrawler(page, dry_run)
         else:
             raise ValueError(f"No crawler for {jurisdiction}")
+
+        # Override upload to save to disk if output_dir specified
+        if output_dir and not dry_run:
+            original_upload = crawler.upload_to_r2
+
+            def save_to_disk(url: str, html: str) -> bool:
+                from urllib.parse import urlparse
+
+                parsed = urlparse(url)
+                path_parts = parsed.path.strip("/").replace("/", "_")
+                # Include fragment for section identification (e.g., #1.001)
+                fragment = parsed.fragment.replace("/", "_").replace(".", "-") if parsed.fragment else ""
+                if fragment:
+                    filename = f"{path_parts}_{fragment}.html"
+                else:
+                    filename = f"{path_parts}.html" if path_parts else "index.html"
+                filepath = output_dir / filename
+                filepath.write_text(html, encoding="utf-8")
+                crawler.stats.bytes_uploaded += len(html.encode("utf-8"))
+                return True
+
+            crawler.upload_to_r2 = save_to_disk
 
         # Discover sections
         print(f"[{jurisdiction}] Discovering sections...")
