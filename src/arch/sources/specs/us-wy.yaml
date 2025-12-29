@@ -1,0 +1,48 @@
+# Wyoming - Wyoming Statutes
+# Spec version: 1.0
+
+jurisdiction: us-wy
+name: Wyoming
+source_type: archive_org
+
+# Archive.org bulk download
+crawler_type: archive_org
+archive_org_id: gov.wy.code
+
+# Web interface for reference
+base_url: https://wyoleg.gov
+
+toc_urls:
+  - /statutes/
+
+section_pattern: null  # Not used for Archive.org
+
+selectors:
+  content: body
+  title: title
+
+codes:
+  "1": "Administration of Government"
+  "6": "Crimes and Offenses"
+  "7": "Criminal Procedure"
+  "8": "Decedents Estates"
+  "9": "Administration of Estates"
+  "10": "Corporations and Other Business Entities"
+  "14": "Children"
+  "15": "Cities and Towns"
+  "17": "Corporations and Other Business Entities"
+  "18": "Counties"
+  "19": "Civil Procedure"
+  "20": "Domestic Relations"
+  "21": "Education"
+  "22": "Elections"
+  "26": "Insurance"
+  "27": "Labor and Employment"
+  "31": "Motor Vehicles"
+  "33": "Professions and Occupations"
+  "34": "Property"
+  "34A": "Uniform Commercial Code"
+  "35": "Public Health and Safety"
+  "39": "Taxation and Revenue"
+  "40": "Trade and Commerce"
+  "42": "Wills, Decedents Estates, and Probate Code"

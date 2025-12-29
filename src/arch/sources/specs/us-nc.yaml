@@ -1,0 +1,46 @@
+# North Carolina - North Carolina General Statutes
+# Spec version: 1.0
+
+jurisdiction: us-nc
+name: North Carolina
+source_type: archive_org
+
+# Archive.org bulk download
+crawler_type: archive_org
+archive_org_id: gov.nc.code
+
+# Web interface for reference
+base_url: https://www.ncleg.gov
+
+toc_urls:
+  - /EnactedLegislation/Statutes/HTML/ByChapter/
+
+section_pattern: null  # Not used for Archive.org
+
+selectors:
+  content: body
+  title: title
+
+codes:
+  "1": "Civil Procedure"
+  "1A": "Rules of Civil Procedure"
+  "7A": "Judicial Department"
+  "7B": "Juvenile Code"
+  "14": "Criminal Law"
+  "15A": "Criminal Procedure Act"
+  "20": "Motor Vehicles"
+  "48": "Adoptions"
+  "50": "Divorce"
+  "50B": "Domestic Violence"
+  "58": "Insurance"
+  "96": "Employment Security"
+  "97": "Workers Compensation"
+  "105": "Taxation"
+  "108A": "Social Services"
+  "108B": "Public Assistance"
+  "115C": "Elementary and Secondary Education"
+  "122C": "Mental Health"
+  "130A": "Public Health"
+  "153A": "Counties"
+  "160A": "Cities and Towns"
+  "163": "Elections"

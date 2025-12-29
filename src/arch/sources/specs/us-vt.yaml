@@ -1,0 +1,51 @@
+# Vermont - Vermont Statutes Annotated
+# Spec version: 1.0
+
+jurisdiction: us-vt
+name: Vermont
+source_type: archive_org
+
+# Archive.org bulk download
+crawler_type: archive_org
+archive_org_id: gov.vt.code
+
+# Web interface for reference
+base_url: https://legislature.vermont.gov
+
+toc_urls:
+  - /statutes/
+
+section_pattern: null  # Not used for Archive.org
+
+selectors:
+  content: body
+  title: title
+
+codes:
+  "1": "General Provisions"
+  "2": "Legislature"
+  "3": "Executive"
+  "4": "Judiciary"
+  "8": "Banking and Insurance"
+  "9": "Commerce and Trade"
+  "9A": "Uniform Commercial Code"
+  "11": "Corporations and Partnerships"
+  "11A": "Business Corporations"
+  "11B": "Nonprofit Corporations"
+  "12": "Court Procedure"
+  "13": "Crimes and Criminal Procedure"
+  "14": "Decedents Estates"
+  "14A": "Trusts"
+  "15": "Domestic Relations"
+  "15A": "Adoption Act"
+  "15B": "Interstate Family Support"
+  "16": "Education"
+  "17": "Elections"
+  "18": "Health"
+  "21": "Labor"
+  "23": "Motor Vehicles"
+  "24": "Municipal Government"
+  "26": "Professions and Occupations"
+  "27": "Property"
+  "32": "Taxation and Finance"
+  "33": "Human Services"

@@ -1036,6 +1036,7 @@ def crawl(
         download_from_archive_org,
         get_all_jurisdictions,
     )
+    from arch.sources.specs import load_spec, is_archive_org_state, is_playwright_state
 
     # Setup logging to timestamped file
     log_file = None
@@ -1075,8 +1076,8 @@ def crawl(
     else:
         jurisdictions = [jurisdiction]
 
-    # Playwright-required states
-    playwright_states = {"us-al", "us-ak", "us-tx"}
+    # Playwright-required states (fallback if no spec)
+    playwright_states_fallback = {"us-al", "us-ak", "us-tx"}
 
     async def run_crawls():
         results = {}
@@ -1098,8 +1099,8 @@ def crawl(
 
             console.print(f"\n[bold blue]{progress} {'[DRY RUN] ' if dry_run else ''}Crawling {jur}...[/bold blue]")
 
-            # Check if Archive.org has bulk data
-            if jur in ARCHIVE_ORG_STATES:
+            # Check if Archive.org has bulk data (spec first, then fallback)
+            if is_archive_org_state(jur) or jur in ARCHIVE_ORG_STATES:
                 console.print(f"  [green]→ Using Archive.org bulk download[/green]")
                 if not dry_run:
                     result = await download_from_archive_org(
@@ -1110,8 +1111,8 @@ def crawl(
                     results[jur] = {"source": "archive.org", "dry_run": True}
                 continue
 
-            # Check if Playwright is needed
-            if jur in playwright_states:
+            # Check if Playwright is needed (spec first, then fallback)
+            if is_playwright_state(jur) or jur in playwright_states_fallback:
                 console.print(f"  [yellow]→ Using Playwright (JavaScript SPA)[/yellow]")
                 if not dry_run:
                     try:

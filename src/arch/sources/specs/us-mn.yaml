@@ -1,0 +1,55 @@
+# Minnesota - Minnesota Statutes
+# Spec version: 1.0
+
+jurisdiction: us-mn
+name: Minnesota
+source_type: html
+
+base_url: https://www.revisor.mn.gov
+
+toc_urls:
+  - /statutes/
+
+# Section pages: /statutes/cite/XXX.XXX
+section_pattern: /statutes/cite/\d+\.\d+
+
+crawler_type: html
+
+selectors:
+  content: div.statute, main, body
+  title: h1, title
+
+codes:
+  "1": "Court, Sovereign, State"
+  "2": "Legislature"
+  "3": "Executive Department"
+  "6": "State Agencies"
+  "10": "Local Government"
+  "13": "Government Data Practices"
+  "14": "Administrative Procedure"
+  "46": "Banks"
+  "52": "Credit Unions"
+  "60": "Insurance"
+  "62": "Health Insurance"
+  "65": "Automobile Insurance"
+  "68": "Workers Compensation"
+  "70": "Unemployment Insurance"
+  "72": "Retirement"
+  "82": "Real Estate"
+  "97": "Game and Fish"
+  "105": "Taxation"
+  "115": "Pollution Control"
+  "116": "Environmental Quality"
+  "120": "Education"
+  "122": "Schools"
+  "124": "School Finance"
+  "144": "Health"
+  "145": "Public Health"
+  "148": "Medical Practice"
+  "152": "Controlled Substances"
+  "256": "Human Services"
+  "268": "Unemployment Insurance"
+  "290": "Individual Income Tax"
+  "297": "Sales and Use Tax"
+  "518": "Marriage Dissolution"
+  "609": "Criminal Code"

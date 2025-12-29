@@ -1,0 +1,49 @@
+# Virginia - Code of Virginia
+# Spec version: 1.0
+
+jurisdiction: us-va
+name: Virginia
+source_type: archive_org
+
+# Archive.org bulk download
+crawler_type: archive_org
+archive_org_id: gov.va.code
+
+# Web interface for reference
+base_url: https://law.lis.virginia.gov
+
+toc_urls:
+  - /vacode/
+
+section_pattern: null  # Not used for Archive.org
+
+selectors:
+  content: div.content, main, body
+  title: h1, title
+
+codes:
+  "1": "General Provisions"
+  "2.2": "Administration of Government"
+  "6.2": "Financial Institutions and Services"
+  "8.01": "Civil Remedies and Procedure"
+  "13.1": "Corporations"
+  "15.2": "Counties, Cities and Towns"
+  "16.1": "Courts Not of Record"
+  "18.2": "Crimes and Offenses Generally"
+  "19.2": "Criminal Procedure"
+  "20": "Domestic Relations"
+  "22.1": "Education"
+  "24.2": "Elections"
+  "32.1": "Health"
+  "37.2": "Mental Health, Intellectual Disability"
+  "38.2": "Insurance"
+  "40.1": "Labor and Employment"
+  "46.2": "Motor Vehicles"
+  "51.1": "Pensions, Benefits, and Retirement"
+  "54.1": "Professions and Occupations"
+  "55.1": "Property and Conveyances"
+  "58.1": "Taxation"
+  "60.2": "Unemployment Compensation"
+  "63.2": "Welfare (Social Services)"
+  "64.2": "Wills, Trusts, and Fiduciaries"
+  "65.2": "Workers Compensation"

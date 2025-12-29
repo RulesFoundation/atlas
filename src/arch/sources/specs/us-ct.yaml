@@ -1,0 +1,49 @@
+# Connecticut - Connecticut General Statutes
+# Spec version: 1.0
+
+jurisdiction: us-ct
+name: Connecticut
+source_type: html
+
+base_url: https://www.cga.ct.gov
+
+toc_urls:
+  - /current/pub/titles.htm
+
+# Chapter pages: /current/pub/chap_XXX.htm
+section_pattern: /current/pub/chap_\d+.*\.htm
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+codes:
+  "1": "Provisions of General Application"
+  "4": "Management of State Agencies"
+  "5": "State Employees"
+  "7": "Municipalities"
+  "9": "Elections"
+  "10": "Education and Culture"
+  "12": "Taxation"
+  "14": "Motor Vehicles"
+  "16": "Public Service Companies"
+  "17": "Social and Human Services"
+  "17a": "Social and Human Services"
+  "17b": "Social Services"
+  "19a": "Public Health and Well-Being"
+  "20": "Professional and Occupational Licensing"
+  "21a": "Consumer Protection"
+  "29": "Public Safety and State Police"
+  "31": "Labor"
+  "33": "Corporations"
+  "36a": "Banking"
+  "38a": "Insurance"
+  "42a": "Uniform Commercial Code"
+  "45a": "Probate Courts and Procedures"
+  "46b": "Family Law"
+  "51": "Courts"
+  "52": "Civil Actions"
+  "53a": "Penal Code"
+  "54": "Criminal Procedure"

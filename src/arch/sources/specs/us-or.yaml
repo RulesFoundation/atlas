@@ -1,0 +1,55 @@
+# Oregon - Oregon Revised Statutes (ORS)
+# Spec version: 1.0
+
+jurisdiction: us-or
+name: Oregon
+source_type: html
+
+base_url: https://www.oregonlegislature.gov
+
+toc_urls:
+  - /bills_laws/pages/ors.aspx
+
+# Chapter pages: /bills_laws/ors/orsXXX.html
+section_pattern: /ors/ors\d+\.html
+
+crawler_type: html
+
+selectors:
+  content: body
+  title: title
+
+codes:
+  "1": "Courts of Record; Court Officers; Juries"
+  "2": "Procedure in Civil Proceedings"
+  "3": "Remedies and Special Actions and Proceedings"
+  "7": "Arbitration and Mediation"
+  "8": "Attorneys"
+  "10": "State Government"
+  "12": "Elections"
+  "14": "Counties"
+  "15": "Cities"
+  "16": "State Financial Administration"
+  "18": "Claims and Tax Court"
+  "20": "Labor and Industrial Relations"
+  "21": "Labor and Employment"
+  "22": "Schools"
+  "24": "Higher Education"
+  "25": "Human Services; Services for Children and Families"
+  "26": "Human Services Generally"
+  "27": "Mental Health and Developmental Disabilities"
+  "28": "Public Health"
+  "29": "Housing"
+  "31": "Highways; Roads; Bridges"
+  "33": "Motor Vehicles"
+  "40": "Insurance and Finance Generally"
+  "41": "Financial Institutions and Insurance Producers"
+  "42": "Torts"
+  "43": "Real Property"
+  "46": "Trusts and Estates"
+  "47": "Uniform Commercial Code"
+  "49": "Corporations"
+  "50": "Trade Regulation"
+  "51": "Criminal Procedure"
+  "52": "Crimes"
+  "54": "Corrections"

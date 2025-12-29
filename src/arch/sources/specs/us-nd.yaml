@@ -1,0 +1,47 @@
+# North Dakota - North Dakota Century Code
+# Spec version: 1.0
+
+jurisdiction: us-nd
+name: North Dakota
+source_type: archive_org
+
+# Archive.org bulk download
+crawler_type: archive_org
+archive_org_id: gov.nd.code
+
+# Web interface for reference
+base_url: https://ndlegis.gov
+
+toc_urls:
+  - /cencode/
+
+section_pattern: null  # Not used for Archive.org
+
+selectors:
+  content: body
+  title: title
+
+codes:
+  "1": "General Provisions"
+  "4": "Agriculture"
+  "4.1": "Agricultural Practices"
+  "6": "Banking and Finance"
+  "10": "Corporations"
+  "11": "Counties"
+  "12.1": "Criminal Code"
+  "14": "Domestic Relations and Persons"
+  "15.1": "Elementary and Secondary Education"
+  "16.1": "Elections"
+  "23": "Health and Safety"
+  "26.1": "Insurance"
+  "27": "Judicial Branch of Government"
+  "28": "Judicial Procedure, Civil"
+  "29": "Judicial Procedure, Criminal"
+  "30.1": "Uniform Probate Code"
+  "39": "Motor Vehicles"
+  "40": "Municipal Government"
+  "50": "Public Welfare"
+  "52": "Social Security"
+  "54": "State Government"
+  "57": "Taxation"
+  "65": "Workforce Safety and Insurance"
