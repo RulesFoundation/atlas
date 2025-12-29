@@ -8,10 +8,11 @@ Usage:
 
     ingestor = SupabaseIngestor()
     ingestor.ingest_canada_act("I-3.3")
+    ingestor.ingest_usc_title(26)
+    ingestor.ingest_uk_act(2020, 1)
 """
 
 import os
-from datetime import date
 from pathlib import Path
 from typing import Iterator
 from uuid import uuid4
@@ -19,7 +20,11 @@ from uuid import uuid4
 import httpx
 
 from arch.parsers.canada import CanadaStatuteParser
+from arch.parsers.us.statutes import USLMParser
+from arch.parsers.clml import parse_act_metadata, parse_section
 from arch.models_canada import CanadaSection, CanadaSubsection
+from arch.models import Section, Subsection
+from arch.models_uk import UKSection, UKSubsection
 
 
 class SupabaseIngestor:
@@ -244,5 +249,343 @@ class SupabaseIngestor:
                 total += count
             except Exception as e:
                 print(f"Error ingesting {cons_num}: {e}")
+
+        return total
+
+    # -------------------------------------------------------------------------
+    # US Code Ingestion
+    # -------------------------------------------------------------------------
+
+    def _usc_section_to_rules(
+        self,
+        section: Section,
+        parent_id: str | None = None,
+    ) -> Iterator[dict]:
+        """Convert a US Code Section to rule dictionaries."""
+        section_id = str(uuid4())
+
+        # Parse ordinal from section number
+        ordinal = None
+        sec_num = section.citation.section
+        if sec_num.isdigit():
+            ordinal = int(sec_num)
+
+        yield {
+            "id": section_id,
+            "jurisdiction": "us",
+            "doc_type": "statute",
+            "parent_id": parent_id,
+            "level": 0,
+            "ordinal": ordinal,
+            "heading": section.section_title,
+            "body": section.text,
+            "effective_date": section.effective_date.isoformat() if section.effective_date else None,
+            "source_url": section.source_url,
+            "source_path": None,
+            "rac_path": None,
+            "has_rac": False,
+        }
+
+        # Recursively yield subsections
+        yield from self._usc_subsections_to_rules(
+            section.subsections,
+            parent_id=section_id,
+            level=1,
+        )
+
+    def _usc_subsections_to_rules(
+        self,
+        subsections: list[Subsection],
+        parent_id: str,
+        level: int,
+    ) -> Iterator[dict]:
+        """Convert US Code subsections to rule dictionaries."""
+        for i, sub in enumerate(subsections):
+            sub_id = str(uuid4())
+
+            yield {
+                "id": sub_id,
+                "jurisdiction": "us",
+                "doc_type": "statute",
+                "parent_id": parent_id,
+                "level": level,
+                "ordinal": i + 1,
+                "heading": sub.heading,
+                "body": sub.text,
+                "effective_date": None,
+                "source_url": None,
+                "source_path": None,
+                "rac_path": None,
+                "has_rac": False,
+            }
+
+            if sub.children:
+                yield from self._usc_subsections_to_rules(
+                    sub.children,
+                    parent_id=sub_id,
+                    level=level + 1,
+                )
+
+    def ingest_usc_title(
+        self,
+        title_num: int,
+        uscode_path: Path | None = None,
+        batch_size: int = 100,
+    ) -> int:
+        """Ingest a US Code title into the rules table.
+
+        Args:
+            title_num: Title number (e.g., 26 for IRC)
+            uscode_path: Path to uscode directory (default arch/data/uscode)
+            batch_size: Number of rules to insert per batch
+
+        Returns:
+            Total number of rules inserted
+        """
+        if uscode_path is None:
+            # Default to arch repo's data/uscode directory
+            uscode_path = Path(__file__).parent.parent.parent.parent / "data" / "uscode"
+
+        xml_path = uscode_path / f"usc{title_num}.xml"
+        if not xml_path.exists():
+            raise FileNotFoundError(f"Not found: {xml_path}")
+
+        parser = USLMParser(xml_path)
+        total_inserted = 0
+        batch: list[dict] = []
+
+        title_name = parser.get_title_name()
+        print(f"Ingesting Title {title_num}: {title_name}...")
+
+        for section in parser.iter_sections():
+            for rule in self._usc_section_to_rules(section):
+                batch.append(rule)
+
+                if len(batch) >= batch_size:
+                    inserted = self._insert_rules(batch)
+                    total_inserted += inserted
+                    print(f"  Inserted {total_inserted} rules...")
+                    batch = []
+
+        if batch:
+            inserted = self._insert_rules(batch)
+            total_inserted += inserted
+
+        print(f"Done! Inserted {total_inserted} rules for Title {title_num}")
+        return total_inserted
+
+    def ingest_all_usc(
+        self,
+        uscode_path: Path | None = None,
+        titles: list[int] | None = None,
+    ) -> int:
+        """Ingest all US Code titles.
+
+        Args:
+            uscode_path: Path to uscode directory
+            titles: Specific titles to ingest (default: all available)
+
+        Returns:
+            Total number of rules inserted
+        """
+        if uscode_path is None:
+            uscode_path = Path(__file__).parent.parent.parent.parent / "data" / "uscode"
+
+        if titles is None:
+            # Find all available titles
+            xml_files = sorted(uscode_path.glob("usc*.xml"))
+            titles = []
+            for f in xml_files:
+                # Extract title number from filename like usc26.xml
+                try:
+                    title_num = int(f.stem.replace("usc", ""))
+                    titles.append(title_num)
+                except ValueError:
+                    continue
+
+        total = 0
+        for title_num in titles:
+            try:
+                count = self.ingest_usc_title(title_num, uscode_path)
+                total += count
+            except Exception as e:
+                print(f"Error ingesting Title {title_num}: {e}")
+
+        return total
+
+    # -------------------------------------------------------------------------
+    # UK Legislation Ingestion
+    # -------------------------------------------------------------------------
+
+    def _uk_section_to_rules(
+        self,
+        section: UKSection,
+        parent_id: str | None = None,
+    ) -> Iterator[dict]:
+        """Convert a UK Section to rule dictionaries."""
+        section_id = str(uuid4())
+
+        # Determine jurisdiction from extent
+        jurisdiction = "uk"
+        if section.extent:
+            # E+W+S+N.I. -> uk, just E -> uk-eng, etc.
+            if section.extent == ["E"]:
+                jurisdiction = "uk-eng"
+            elif section.extent == ["S"]:
+                jurisdiction = "uk-sct"
+
+        ordinal = None
+        if section.citation.section and section.citation.section.isdigit():
+            ordinal = int(section.citation.section)
+
+        yield {
+            "id": section_id,
+            "jurisdiction": jurisdiction,
+            "doc_type": "statute",
+            "parent_id": parent_id,
+            "level": 0,
+            "ordinal": ordinal,
+            "heading": section.title,
+            "body": section.text,
+            "effective_date": section.enacted_date.isoformat() if section.enacted_date else None,
+            "source_url": section.source_url,
+            "source_path": None,
+            "rac_path": None,
+            "has_rac": False,
+        }
+
+        yield from self._uk_subsections_to_rules(
+            section.subsections,
+            parent_id=section_id,
+            level=1,
+            jurisdiction=jurisdiction,
+        )
+
+    def _uk_subsections_to_rules(
+        self,
+        subsections: list[UKSubsection],
+        parent_id: str,
+        level: int,
+        jurisdiction: str,
+    ) -> Iterator[dict]:
+        """Convert UK subsections to rule dictionaries."""
+        for i, sub in enumerate(subsections):
+            sub_id = str(uuid4())
+
+            yield {
+                "id": sub_id,
+                "jurisdiction": jurisdiction,
+                "doc_type": "statute",
+                "parent_id": parent_id,
+                "level": level,
+                "ordinal": i + 1,
+                "heading": None,
+                "body": sub.text,
+                "effective_date": None,
+                "source_url": None,
+                "source_path": None,
+                "rac_path": None,
+                "has_rac": False,
+            }
+
+            if sub.children:
+                yield from self._uk_subsections_to_rules(
+                    sub.children,
+                    parent_id=sub_id,
+                    level=level + 1,
+                    jurisdiction=jurisdiction,
+                )
+
+    def ingest_uk_act(
+        self,
+        year: int,
+        chapter: int,
+        uk_path: Path | None = None,
+        batch_size: int = 100,
+    ) -> int:
+        """Ingest a UK Act into the rules table.
+
+        Args:
+            year: Year of the act (e.g., 2020)
+            chapter: Chapter number (e.g., 1)
+            uk_path: Path to UK legislation directory
+            batch_size: Number of rules to insert per batch
+
+        Returns:
+            Total number of rules inserted
+        """
+        if uk_path is None:
+            uk_path = Path.home() / ".arch" / "uk" / "ukpga"
+
+        xml_path = uk_path / str(year) / f"{chapter}.xml"
+        if not xml_path.exists():
+            raise FileNotFoundError(f"Not found: {xml_path}")
+
+        # Read and parse the XML
+        xml_content = xml_path.read_text()
+
+        total_inserted = 0
+        batch: list[dict] = []
+
+        # Parse act metadata
+        try:
+            act = parse_act_metadata(xml_content)
+            print(f"Ingesting {act.citation.type}/{year}/{chapter}: {act.title}...")
+        except Exception:
+            print(f"Ingesting ukpga/{year}/{chapter}...")
+
+        # Parse sections (the XML contains the full act)
+        try:
+            section = parse_section(xml_content)
+            for rule in self._uk_section_to_rules(section):
+                batch.append(rule)
+
+                if len(batch) >= batch_size:
+                    inserted = self._insert_rules(batch)
+                    total_inserted += inserted
+                    print(f"  Inserted {total_inserted} rules...")
+                    batch = []
+        except Exception as e:
+            print(f"  Warning: Could not parse sections: {e}")
+
+        if batch:
+            inserted = self._insert_rules(batch)
+            total_inserted += inserted
+
+        print(f"Done! Inserted {total_inserted} rules for ukpga/{year}/{chapter}")
+        return total_inserted
+
+    def ingest_all_uk(
+        self,
+        uk_path: Path | None = None,
+        limit: int | None = None,
+    ) -> int:
+        """Ingest all UK legislation.
+
+        Args:
+            uk_path: Path to UK legislation directory
+            limit: Max number of acts to process
+
+        Returns:
+            Total number of rules inserted
+        """
+        if uk_path is None:
+            uk_path = Path.home() / ".arch" / "uk" / "ukpga"
+
+        # Find all XML files
+        xml_files = sorted(uk_path.glob("*/*.xml"))
+
+        if limit:
+            xml_files = xml_files[:limit]
+
+        total = 0
+        for xml_file in xml_files:
+            try:
+                year = int(xml_file.parent.name)
+                chapter = int(xml_file.stem)
+                count = self.ingest_uk_act(year, chapter, uk_path)
+                total += count
+            except Exception as e:
+                print(f"Error ingesting {xml_file}: {e}")
 
         return total
