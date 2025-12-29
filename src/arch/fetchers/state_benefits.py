@@ -7,10 +7,44 @@ policy data from official government sources:
 - TANF policies from the Welfare Rules Database (Urban Institute)
 - CCDF child care policies from the CCDF Policies Database (Urban Institute)
 
-Data sources:
-- SNAP SUA: https://www.fns.usda.gov/snap/eligibility/deduction/standard-utility-allowances
-- TANF WRD: https://wrd.urban.org
-- CCDF: https://ccdf.urban.org
+Data Sources
+------------
+
+**SNAP Standard Utility Allowances (SUAs)**
+
+Primary source: FNS/USDA annual tables
+- URL: https://www.fns.usda.gov/snap/eligibility/deduction/standard-utility-allowances
+- Authority: States submit SUAs to FNS as part of State Plan of Operations
+- Regulation: 7 CFR 273.9(d)(6)(iii) - requires annual review by states
+- Format: Excel spreadsheet with all states/territories
+
+The FNS tables ARE the authoritative federal aggregation of state-reported values.
+State-level primary sources (administrative code, policy manuals) are typically
+not publicly accessible in scrapable format.
+
+Allowance types:
+- HCSUA: Heating and Cooling Standard Utility Allowance
+- CSUA: Cooling-only Standard Utility Allowance
+- LUA: Limited Utility Allowance (2+ utilities, excludes heating/cooling)
+- TUA: Telephone Utility Allowance
+
+Some states vary SUAs by:
+- Household size: AZ, GU, HI, NC, TN, VA
+- Geographic location: AK, NY
+
+**TANF (Temporary Assistance for Needy Families)**
+
+Source: Urban Institute Welfare Rules Database (WRD)
+- URL: https://wrd.urban.org
+- Coverage: 1996-present, all 50 states + DC
+- Tables: Income eligibility, asset limits, benefit levels, time limits
+
+**CCDF (Child Care and Development Fund)**
+
+Source: Urban Institute CCDF Policies Database
+- URL: https://ccdf.urban.org
+- Coverage: All 50 states + DC + territories
+- Topics: Income eligibility, copayments, reimbursement rates
 """
 
 from dataclasses import dataclass, field
