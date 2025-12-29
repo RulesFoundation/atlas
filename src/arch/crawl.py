@@ -200,14 +200,27 @@ async def crawl_jurisdiction(
         original_upload = crawler.upload_to_r2
 
         def save_to_disk(url: str, html: str):
-            # Create filename from URL (include fragment for section identification)
+            # Create filename from URL (include query params and fragment)
             parsed = urlparse(url)
             path_parts = parsed.path.strip("/").replace("/", "_")
+            # Include query params for sites that use them for section IDs
+            query = parsed.query.replace("=", "-").replace("&", "_") if parsed.query else ""
             fragment = parsed.fragment.replace("/", "_").replace(".", "-") if parsed.fragment else ""
+
+            # Build filename with all components
+            parts = [path_parts] if path_parts else ["index"]
+            if query:
+                parts.append(query)
             if fragment:
-                filename = f"{path_parts}_{fragment}.html"
-            else:
-                filename = f"{path_parts}.html" if path_parts else "index.html"
+                parts.append(fragment)
+            filename = "_".join(parts) + ".html"
+
+            # Truncate if too long (filesystem limit)
+            if len(filename) > 200:
+                import hashlib
+                url_hash = hashlib.md5(url.encode()).hexdigest()[:12]
+                filename = f"{path_parts[:100]}_{url_hash}.html"
+
             filepath = output_dir / filename
             filepath.write_text(html, encoding="utf-8")
             crawler.stats.bytes_uploaded += len(html.encode("utf-8"))
