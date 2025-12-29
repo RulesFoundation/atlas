@@ -1188,5 +1188,214 @@ def crawl(
         console.print(f"[green]Log saved to: {log_path}[/green]")
 
 
+@main.command("download-cfr")
+@click.argument("title_num", type=int)
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(path_type=Path),
+    default=Path.home() / ".arch" / "cfr",
+    help="Output directory",
+)
+@click.option("--force", "-f", is_flag=True, help="Re-download even if file exists")
+def download_cfr(title_num: int, output: Path, force: bool):
+    """Download a CFR title from govinfo.gov bulk data.
+
+    Downloads the eCFR XML file for the specified CFR title number.
+
+    Examples:
+        arch download-cfr 26              # Title 26 (Treasury/IRS)
+        arch download-cfr 7               # Title 7 (Agriculture/SNAP)
+        arch download-cfr 26 -o data/cfr  # Custom output directory
+    """
+    import asyncio
+
+    from arch.fetchers.ecfr import ECFRFetcher
+
+    fetcher = ECFRFetcher(data_dir=output)
+
+    with console.status(f"Downloading CFR Title {title_num}..."):
+        path = asyncio.run(fetcher.download_title(title_num, force=force))
+
+    console.print(f"[green]Downloaded to {path}[/green]")
+
+    # Show file size and section count
+    size_mb = path.stat().st_size / 1024 / 1024
+    console.print(f"[dim]File size: {size_mb:.1f} MB[/dim]")
+
+    # Quick count of sections
+    section_count = fetcher.count_sections(path)
+    console.print(f"[dim]Sections: {section_count:,}[/dim]")
+
+
+@main.command("ingest-cfr")
+@click.argument("xml_path", type=click.Path(exists=True, path_type=Path))
+@click.option("--parts", "-p", multiple=True, type=int, help="Only ingest specific parts")
+@click.pass_context
+def ingest_cfr(ctx: click.Context, xml_path: Path, parts: tuple[int, ...]):
+    """Ingest a CFR title from downloaded XML file.
+
+    Parses the eCFR XML and stores regulations in the database.
+
+    Examples:
+        arch ingest-cfr ~/.arch/cfr/title-26.xml
+        arch ingest-cfr data/cfr/title-26.xml --parts 1 31
+    """
+    from arch.fetchers.ecfr import ECFRFetcher
+    from arch.storage.regulation import RegulationStorage
+
+    fetcher = ECFRFetcher()
+    storage = RegulationStorage(ctx.obj["db"])
+
+    # Get title metadata
+    metadata = fetcher.get_title_metadata(xml_path)
+    title_num = metadata["title_number"]
+    title_name = metadata["title_name"]
+
+    console.print(f"[blue]Ingesting:[/blue] CFR Title {title_num} - {title_name}")
+
+    parts_list = list(parts) if parts else None
+    if parts_list:
+        console.print(f"[dim]Filtering to parts: {parts_list}[/dim]")
+
+    count = 0
+    with console.status(f"Parsing {xml_path.name}..."):
+        for regulation in fetcher.parse_title(xml_path, parts=parts_list):
+            storage.store_regulation(regulation)
+            count += 1
+            if count % 100 == 0:
+                console.print(f"  [dim]Processed {count:,} regulations...[/dim]")
+
+    # Update title metadata
+    storage.update_cfr_title_metadata(
+        title_num,
+        title_name,
+        metadata.get("amendment_date"),
+    )
+
+    console.print(f"[green]Successfully ingested {count:,} regulations[/green]")
+
+
+@main.command("cfr-titles")
+@click.pass_context
+def cfr_titles(ctx: click.Context):
+    """List all ingested CFR titles."""
+    from arch.storage.regulation import RegulationStorage
+
+    storage = RegulationStorage(ctx.obj["db"])
+    title_list = storage.list_cfr_titles()
+
+    if not title_list:
+        console.print("[yellow]No CFR titles loaded. Use 'arch ingest-cfr' to add titles.[/yellow]")
+        return
+
+    table = Table(title="Code of Federal Regulations")
+    table.add_column("Title", justify="right", style="cyan")
+    table.add_column("Name", style="green")
+    table.add_column("Regulations", justify="right")
+    table.add_column("Updated")
+
+    for t in title_list:
+        table.add_row(
+            str(t["number"]),
+            t["name"],
+            f"{t['regulation_count']:,}",
+            t["last_updated"] or "",
+        )
+
+    console.print(table)
+
+
+@main.command("get-cfr")
+@click.argument("citation")
+@click.option("--json", "as_json", is_flag=True, help="Output as JSON")
+@click.pass_context
+def get_cfr(ctx: click.Context, citation: str, as_json: bool):
+    """Get a CFR regulation by citation.
+
+    Examples:
+        arch get-cfr "26 CFR 1.32-1"
+        arch get-cfr "26 CFR 1.32-1(a)"
+        arch get-cfr "7 CFR 273.1" --json
+    """
+    from arch.models_regulation import CFRCitation
+    from arch.storage.regulation import RegulationStorage
+
+    storage = RegulationStorage(ctx.obj["db"])
+
+    # Parse citation
+    try:
+        parsed = CFRCitation.from_string(citation)
+    except ValueError as e:
+        console.print(f"[red]Invalid CFR citation:[/red] {e}")
+        raise SystemExit(1) from e
+
+    if parsed.section is None:
+        console.print(f"[red]Section number required:[/red] {citation}")
+        raise SystemExit(1)
+
+    regulation = storage.get_regulation(parsed.title, parsed.part, parsed.section)
+
+    if not regulation:
+        console.print(f"[red]Not found:[/red] {citation}")
+        raise SystemExit(1)
+
+    if as_json:
+        console.print_json(regulation.model_dump_json())
+    else:
+        # Format output
+        text_preview = regulation.full_text[:2000]
+        if len(regulation.full_text) > 2000:
+            text_preview += "..."
+
+        console.print(
+            Panel(
+                f"[bold]{regulation.cfr_cite}[/bold]\n"
+                f"[dim]Authority: {regulation.authority}[/dim]\n\n"
+                f"[bold blue]{regulation.heading}[/bold blue]\n\n"
+                f"{text_preview}\n\n"
+                f"[dim]Source: {regulation.source}[/dim]\n"
+                f"[dim]Effective: {regulation.effective_date}[/dim]",
+                title=regulation.cfr_cite,
+            )
+        )
+
+
+@main.command("search-cfr")
+@click.argument("query")
+@click.option("--title", "-t", type=int, help="Limit to specific CFR title")
+@click.option("--limit", "-n", default=10, help="Maximum results")
+@click.pass_context
+def search_cfr(ctx: click.Context, query: str, title: int | None, limit: int):
+    """Search CFR regulations.
+
+    Examples:
+        arch search-cfr "earned income"
+        arch search-cfr "food stamps" --title 7
+        arch search-cfr "withholding" -t 26 -n 20
+    """
+    from arch.storage.regulation import RegulationStorage
+
+    storage = RegulationStorage(ctx.obj["db"])
+    results = storage.search(query, title=title, limit=limit)
+
+    if not results:
+        console.print(f"[yellow]No results for:[/yellow] {query}")
+        return
+
+    table = Table(title=f"CFR Search: {query}")
+    table.add_column("Citation", style="cyan")
+    table.add_column("Heading", style="green")
+    table.add_column("Snippet")
+    table.add_column("Score", justify="right")
+
+    for r in results:
+        heading = r.heading[:35] + "..." if len(r.heading) > 35 else r.heading
+        snippet = r.snippet[:50] + "..." if len(r.snippet) > 50 else r.snippet
+        table.add_row(r.cfr_cite, heading, snippet, f"{r.score:.2f}")
+
+    console.print(table)
+
+
 if __name__ == "__main__":
     main()
