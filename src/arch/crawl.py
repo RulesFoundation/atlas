@@ -45,6 +45,12 @@ SECTION_PATTERNS: dict[str, str] = {
     "us-nv": r"NRS-[\dA-Z]+\.html",
     # Delaware: chapter pages contain sections as anchors
     "us-de": r"/c\d+/index\.html",
+    # Arizona: uses viewdocument with ARS paths
+    "us-az": r"/ars/\d+/[\d\-]+\.htm",
+    # Kentucky: chapter pages
+    "us-ky": r"/chapter\d+\.htm",
+    # Iowa: chapter pages
+    "us-ia": r"/docs/code/\d+",
     # Default pattern matches common section URL formats
     "_default": r"(?:section|§|sec)[\-_/]?[\d.]+",
 }
