@@ -1,1 +1,5 @@
-"""Fetchers for downloading legal documents from official sources."""
+"""Fetchers for downloading regulatory documents."""
+
+from arch.fetchers.ecfr import ECFRFetcher
+
+__all__ = ["ECFRFetcher"]
