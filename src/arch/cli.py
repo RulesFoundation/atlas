@@ -996,6 +996,7 @@ def stats(ctx: click.Context, as_json: bool):
 @click.option("--concurrency", "-c", default=5, help="Concurrent requests (HTML only)")
 @click.option("--force", "-f", is_flag=True, help="Re-download even if files exist")
 @click.option("--min-files", default=10, help="Skip states with at least this many files (default: 10)")
+@click.option("--log", "-l", is_flag=True, help="Write log to timestamped file in data/")
 def crawl(
     jurisdiction: str,
     output: str,
@@ -1004,6 +1005,7 @@ def crawl(
     concurrency: int,
     force: bool,
     min_files: int,
+    log: bool,
 ):
     """Crawl statutes from official sources.
 
@@ -1025,6 +1027,8 @@ def crawl(
         arch crawl us-tx -n 100           # Texas, first 100 sections
     """
     import asyncio
+    import sys
+    from datetime import datetime
 
     from arch.crawl import (
         ARCHIVE_ORG_STATES,
@@ -1032,6 +1036,30 @@ def crawl(
         download_from_archive_org,
         get_all_jurisdictions,
     )
+
+    # Setup logging to timestamped file
+    log_file = None
+    if log:
+        log_dir = Path("data")
+        log_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_path = log_dir / f"crawl_{timestamp}.log"
+        log_file = open(log_path, "w")
+        console.print(f"[cyan]Logging to: {log_path}[/cyan]")
+
+        # Redirect stdout to both console and file
+        class TeeWriter:
+            def __init__(self, *writers):
+                self.writers = writers
+            def write(self, text):
+                for w in self.writers:
+                    w.write(text)
+                    w.flush()
+            def flush(self):
+                for w in self.writers:
+                    w.flush()
+
+        sys.stdout = TeeWriter(sys.__stdout__, log_file)
 
     output_dir = Path(output)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1151,6 +1179,12 @@ def crawl(
         table.add_row(jur, source, str(sections), status)
 
     console.print(table)
+
+    # Cleanup logging
+    if log and log_file:
+        sys.stdout = sys.__stdout__
+        log_file.close()
+        console.print(f"[green]Log saved to: {log_path}[/green]")
 
 
 if __name__ == "__main__":
