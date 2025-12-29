@@ -1,10 +1,20 @@
-"""Parsers for various legal document formats."""
+"""Parsers for various legal document formats.
 
-from arch.parsers.uslm import USLMParser
+Organization:
+- parsers/us/statutes.py - Federal US Code (USLM XML)
+- parsers/us_ca/statutes.py - California
+- parsers/us_fl/statutes.py - Florida
+- parsers/us_ny/statutes.py - New York
+- parsers/us_tx/statutes.py - Texas
+- parsers/generic/statutes.py - Generic HTML parser for other states
+- parsers/base.py - Base classes and state registry
+"""
+
+from arch.parsers.us.statutes import USLMParser
 
 # Generic state parser (new unified architecture)
 try:
-    from arch.parsers.generic_state import (
+    from arch.parsers.generic.statutes import (
         GenericStateParser,
         StateConfig,
         StateSection,
@@ -24,7 +34,7 @@ except ImportError:
 
 # State parsers - imported conditionally to avoid import errors
 try:
-    from arch.parsers.ny_laws import (
+    from arch.parsers.us_ny.statutes import (
         NY_LAW_CODES,
         NYLegislationClient,
         NYStateCitation,
@@ -37,7 +47,7 @@ except ImportError:
     download_ny_law = None  # type: ignore[misc, assignment]
 
 try:
-    from arch.parsers.ca_statutes import (
+    from arch.parsers.us_ca.statutes import (
         CA_CODES,
         CACodeParser,
         CASection,
@@ -50,7 +60,7 @@ except ImportError:
     CaliforniaStatutesParser = None  # type: ignore[misc, assignment]
 
 try:
-    from arch.parsers.fl_statutes import (
+    from arch.parsers.us_fl.statutes import (
         FL_TAX_CHAPTERS,
         FL_WELFARE_CHAPTERS,
         FLStatutesClient,
@@ -63,7 +73,7 @@ except ImportError:
     FLSection = None  # type: ignore[misc, assignment]
 
 try:
-    from arch.parsers.tx_statutes import (
+    from arch.parsers.us_tx.statutes import (
         TX_CODES,
         TXStatutesClient,
         TXSection,

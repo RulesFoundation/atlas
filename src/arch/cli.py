@@ -10,7 +10,7 @@ from rich.table import Table
 from arch.archive import Arch
 from arch.fetchers.irs_bulk import IRSBulkFetcher
 from arch.models_guidance import GuidanceType
-from arch.parsers.uslm import download_title
+from arch.parsers.us.statutes import download_title
 from arch.storage.guidance import GuidanceStorage
 
 console = Console()
@@ -382,7 +382,7 @@ def _download_ny_state(ctx: click.Context, law_codes: tuple[str, ...], list_laws
     """Download New York state statutes."""
     import os
 
-    from arch.parsers.ny_laws import NY_LAW_CODES, NYLegislationClient, download_ny_law
+    from arch.parsers.us_ny.statutes import NY_LAW_CODES, NYLegislationClient, download_ny_law
 
     # Check for API key
     if not os.environ.get("NY_LEGISLATION_API_KEY"):
@@ -446,7 +446,7 @@ def _download_ny_state(ctx: click.Context, law_codes: tuple[str, ...], list_laws
 
 def _download_fl_state(ctx: click.Context, chapters: tuple[str, ...], list_laws: bool) -> None:
     """Download Florida state statutes."""
-    from arch.parsers.fl_statutes import (
+    from arch.parsers.us_fl.statutes import (
         FL_TAX_CHAPTERS,
         FL_WELFARE_CHAPTERS,
         FLStatutesClient,
@@ -506,7 +506,7 @@ def _download_fl_state(ctx: click.Context, chapters: tuple[str, ...], list_laws:
 
 def _download_tx_state(ctx: click.Context, codes: tuple[str, ...], list_laws: bool) -> None:
     """Download Texas state statutes."""
-    from arch.parsers.tx_statutes import (
+    from arch.parsers.us_tx.statutes import (
         TX_CODES,
         TX_PRIORITY_CODES,
         TXStatutesClient,

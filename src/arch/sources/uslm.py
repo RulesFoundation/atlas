@@ -97,7 +97,7 @@ class USLMSource(StatuteSource):
     def parser(self):
         """Lazy-load the USLM parser."""
         if self._parser is None:
-            from arch.parsers.uslm import USLMParser
+            from arch.parsers.us.statutes import USLMParser
 
             self._parser = USLMParser()
         return self._parser

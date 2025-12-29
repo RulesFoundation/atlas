@@ -129,7 +129,7 @@ class Arch:
             >>> atlas.ingest_title("data/uscode/usc26.xml")
             2345  # sections ingested
         """
-        from arch.parsers.uslm import USLMParser
+        from arch.parsers.us.statutes import USLMParser
 
         parser = USLMParser(xml_path)
         count = 0

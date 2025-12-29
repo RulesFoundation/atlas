@@ -1382,7 +1382,7 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "58": "Waters and Water Supply",
                 "59": "Claims and Suits Against Public Entities",
             },
-            custom_parser="arch.parsers.nj_statutes",  # Needs custom parser
+            custom_parser="arch.parsers.us_nj.statutes",  # Needs custom parser
         ),
         # Colorado - Official PDFs from leg.colorado.gov
         "us-co": SourceConfig(
@@ -1401,7 +1401,7 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "10": "Insurance",
                 "22": "Education",
             },
-            custom_parser="arch.parsers.co_statutes",  # Needs PDF parser
+            custom_parser="arch.parsers.us_co.statutes",  # Needs PDF parser
         ),
         # Indiana
         "us-in": SourceConfig(
@@ -1843,7 +1843,7 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "70": "Wildlife Resources",
                 "71": "Welfare",
             },
-            custom_parser="arch.parsers.tn_statutes",  # Needs custom for LexisNexis
+            custom_parser="arch.parsers.us_tn.statutes",  # Needs custom for LexisNexis
         ),
         # Connecticut
         "us-ct": SourceConfig(
@@ -2861,7 +2861,7 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "11": "Labor and Industrial Relations",
                 "23": "Insurance",
             },
-            custom_parser="arch.parsers.ar_statutes",
+            custom_parser="arch.parsers.us_ar.statutes",
         ),
         # Kansas
         "us-ks": SourceConfig(
@@ -3034,7 +3034,7 @@ def _get_builtin_configs() -> dict[str, SourceConfig]:
                 "97": "Crimes",
                 "99": "Criminal Procedure",
             },
-            custom_parser="arch.parsers.ms_statutes",
+            custom_parser="arch.parsers.us_ms.statutes",
         ),
         # New Mexico
         "us-nm": SourceConfig(
