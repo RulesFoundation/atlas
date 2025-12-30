@@ -381,7 +381,7 @@ class SupabaseIngestor:
         self,
         title_num: int,
         uscode_path: Path | None = None,
-        batch_size: int = 25,
+        batch_size: int = 100,
     ) -> int:
         """Ingest a US Code title into the rules table.
 
