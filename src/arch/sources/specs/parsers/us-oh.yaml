@@ -1,0 +1,189 @@
+# Ohio Revised Code (ORC) Parser Specification
+# Source: codes.ohio.gov
+# Spec version: 1.0
+
+jurisdiction: us-oh
+name: Ohio Revised Code
+source_format: html
+
+# HTML Structure Analysis:
+# - Section pages contain a single section with its full text
+# - Hierarchy: Title > Chapter > Section
+# - Subsections are inline in paragraphs, marked by (A), (B), (1), (a), etc.
+# - Cross-references use <a class="section-link"> elements
+
+# Main content selectors
+selectors:
+  # Container for the main section content
+  content: section.laws-body
+
+  # Section header containing number and heading
+  # Format: "Section 5705.02 | Ten-mill limitation."
+  section_header: section.laws-header.laws-section-header h1
+
+  # Section number extracted from header
+  # Regex to extract: "Section 5705.02" -> "5705.02"
+  section_number:
+    selector: section.laws-header.laws-section-header h1
+    pattern: "^Section\\s+([\\d.]+)"
+    group: 1
+
+  # Section heading (title) - text after the separator
+  # "Section 5705.02 | Ten-mill limitation." -> "Ten-mill limitation."
+  section_heading:
+    selector: section.laws-header.laws-section-header h1
+    pattern: "\\|\\s*(.+)$"
+    group: 1
+
+  # Body text containing the actual statute text
+  body_text: section.laws-body > span
+
+  # Individual paragraphs within the body
+  paragraphs: section.laws-body > span > p
+
+  # Cross-references to other sections
+  cross_references: a.section-link
+
+  # Metadata selectors
+  metadata:
+    effective_date:
+      selector: ".laws-section-info-module:has(.label:contains('Effective')) .value"
+    legislation:
+      selector: ".laws-section-info-module:has(.label:contains('Legislation')) .value"
+    pdf_link:
+      selector: ".laws-section-info-module:has(.label:contains('PDF')) .value a"
+      attribute: href
+
+  # Breadcrumb navigation for hierarchy
+  breadcrumbs:
+    container: div.breadcrumbs
+    nodes: div.breadcrumbs-node a
+
+  # Title extraction from breadcrumbs
+  # "Title 57 Taxation" -> title_number: "57", title_name: "Taxation"
+  title:
+    selector: "div.breadcrumbs-node a[href*='/title-']"
+    pattern: "Title\\s+(\\d+)\\s+(.+)"
+    groups:
+      number: 1
+      name: 2
+
+  # Chapter extraction from breadcrumbs
+  # "Chapter 5705 Tax Levy Law" -> chapter_number: "5705", chapter_name: "Tax Levy Law"
+  chapter:
+    selector: "div.breadcrumbs-node a[href*='/chapter-']"
+    pattern: "Chapter\\s+([\\d.]+)\\s+(.+)"
+    groups:
+      number: 1
+      name: 2
+
+  # Version history
+  history:
+    container: section.laws-history
+    versions: section.laws-history ul li
+
+# Hierarchy levels for Ohio Revised Code
+hierarchy:
+  - level: title
+    pattern: "\\d+"
+    name_selector: "div.breadcrumbs-node a[href*='/title-']"
+
+  - level: chapter
+    pattern: "[\\d.]+"
+    name_selector: "div.breadcrumbs-node a[href*='/chapter-']"
+
+  - level: section
+    pattern: "[\\d.]+"
+    content_selector: section.laws-body
+
+# Subsection parsing rules
+# Ohio uses inline subsection markers within paragraphs
+subsection_patterns:
+  # Division pattern: (A), (B), (C), etc.
+  division:
+    pattern: "^\\(([A-Z])\\)"
+    level: 1
+
+  # Subdivision pattern: (1), (2), (3), etc.
+  subdivision:
+    pattern: "^\\(([0-9]+)\\)"
+    level: 2
+
+  # Paragraph pattern: (a), (b), (c), etc.
+  paragraph:
+    pattern: "^\\(([a-z])\\)"
+    level: 3
+
+  # Subparagraph pattern: (i), (ii), (iii), etc. (Roman numerals)
+  subparagraph:
+    pattern: "^\\(([ivxlc]+)\\)"
+    level: 4
+
+# Text normalization transforms
+transforms:
+  # Remove excessive whitespace
+  - type: normalize_whitespace
+
+  # Strip the separator from section headings
+  - type: regex_replace
+    pattern: "<span class=['\"]codes-separator['\"]>\\|</span>"
+    replacement: ""
+
+  # Clean up internal links - keep text, track reference
+  - type: extract_links
+    selector: a.section-link
+    output:
+      text: link_text
+      href: reference
+
+  # Normalize section references to standard format
+  # "/ohio-revised-code/section-1702.49" -> "ORC 1702.49"
+  - type: regex_replace
+    pattern: "/ohio-revised-code/section-([\\d.]+)"
+    replacement: "ORC $1"
+
+# Citation format for Ohio Revised Code
+citation:
+  # Standard format: "ORC 5705.02" or "Ohio Rev. Code 5705.02"
+  formats:
+    - "ORC {section}"
+    - "Ohio Rev. Code {section}"
+    - "O.R.C. {section}"
+    - "Ohio Revised Code {section}"
+
+  # Pattern to match citations in text
+  patterns:
+    - "section\\s+([\\d.]+)\\s+of\\s+the\\s+Revised\\s+Code"
+    - "ORC\\s+([\\d.]+)"
+    - "Ohio\\s+Rev\\.?\\s+Code\\s+([\\d.]+)"
+
+  # Build canonical citation
+  canonical: "ORC {section}"
+
+# Elements to exclude from content extraction
+exclude:
+  - ".no-print"
+  - ".profile-navigator"
+  - ".section-banner"
+  - "script"
+  - "style"
+  - "nav"
+  - "header"
+  - "footer"
+
+# Output structure for parsed sections
+output:
+  section:
+    number: string
+    heading: string
+    text: string
+    subsections: list
+    cross_references: list
+    effective_date: string
+    legislation: string
+    title:
+      number: string
+      name: string
+    chapter:
+      number: string
+      name: string
