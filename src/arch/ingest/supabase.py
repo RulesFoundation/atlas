@@ -13,6 +13,7 @@ Usage:
 """
 
 import os
+import re
 from pathlib import Path
 from typing import Iterator
 from uuid import uuid4, uuid5, NAMESPACE_URL
@@ -655,3 +656,148 @@ class SupabaseIngestor:
                 print(f"Error ingesting {xml_file}: {e}")
 
         return total
+
+    # -------------------------------------------------------------------------
+    # US State Statute Ingestion
+    # -------------------------------------------------------------------------
+
+    def _state_section_to_rules(
+        self,
+        section: Section,
+        state_code: str,
+        parent_id: str | None = None,
+    ) -> Iterator[dict]:
+        """Convert a state statute Section to rule dictionaries.
+
+        Args:
+            section: Parsed Section from USLM-style XML
+            state_code: Two-letter state code (e.g., "oh", "ca")
+            parent_id: Parent rule ID for hierarchy
+        """
+        # Parse ordinal from section number
+        ordinal = None
+        sec_num = section.citation.section
+        # Try to extract a numeric prefix for ordering
+        match = re.match(r'(\d+)', sec_num) if sec_num else None
+        if match:
+            ordinal = int(match.group(1))
+
+        # Build citation path: us-{state}/statute/{title}/{section}
+        title = section.citation.title
+        citation_path = f"us-{state_code}/statute/{title}/{sec_num}"
+        section_id = _deterministic_id(citation_path)
+
+        yield {
+            "id": section_id,
+            "jurisdiction": f"us-{state_code}",
+            "doc_type": "statute",
+            "parent_id": parent_id,
+            "level": 0,
+            "ordinal": ordinal,
+            "heading": section.section_title,
+            "body": section.text,
+            "effective_date": section.effective_date.isoformat() if section.effective_date else None,
+            "source_url": section.source_url,
+            "source_path": None,
+            "citation_path": citation_path,
+            "rac_path": None,
+            "has_rac": False,
+        }
+
+        # Recursively yield subsections
+        yield from self._state_subsections_to_rules(
+            section.subsections,
+            state_code=state_code,
+            parent_id=section_id,
+            level=1,
+            parent_path=citation_path,
+        )
+
+    def _state_subsections_to_rules(
+        self,
+        subsections: list[Subsection],
+        state_code: str,
+        parent_id: str,
+        level: int,
+        parent_path: str | None = None,
+    ) -> Iterator[dict]:
+        """Convert state statute subsections to rule dictionaries."""
+        for i, sub in enumerate(subsections):
+            sub_key = sub.identifier if hasattr(sub, 'identifier') and sub.identifier else str(i + 1)
+            citation_path = f"{parent_path}/{sub_key}" if parent_path else None
+            sub_id = _deterministic_id(citation_path) if citation_path else str(uuid4())
+
+            yield {
+                "id": sub_id,
+                "jurisdiction": f"us-{state_code}",
+                "doc_type": "statute",
+                "parent_id": parent_id,
+                "level": level,
+                "ordinal": i + 1,
+                "heading": sub.heading,
+                "body": sub.text,
+                "effective_date": None,
+                "source_url": None,
+                "source_path": None,
+                "citation_path": citation_path,
+                "rac_path": None,
+                "has_rac": False,
+            }
+
+            if sub.children:
+                yield from self._state_subsections_to_rules(
+                    sub.children,
+                    state_code=state_code,
+                    parent_id=sub_id,
+                    level=level + 1,
+                    parent_path=citation_path,
+                )
+
+    def ingest_state_uslm(
+        self,
+        xml_path: Path | str,
+        state_code: str,
+        batch_size: int = 50,
+    ) -> int:
+        """Ingest a state statute USLM XML file into the rules table.
+
+        Args:
+            xml_path: Path to USLM-style XML file
+            state_code: Two-letter state code (e.g., "oh", "ca")
+            batch_size: Number of rules to insert per batch
+
+        Returns:
+            Total number of rules inserted
+        """
+        xml_path = Path(xml_path)
+        if not xml_path.exists():
+            raise FileNotFoundError(f"Not found: {xml_path}")
+
+        parser = USLMParser(xml_path)
+        total_inserted = 0
+
+        title_name = parser.get_title_name()
+        print(f"Ingesting {state_code.upper()} - {title_name}...")
+
+        for section in parser.iter_sections():
+            # Collect all rules for this section
+            all_rules = list(self._state_section_to_rules(section, state_code))
+
+            # Deduplicate by citation_path (HTML parsing may create duplicates)
+            seen_paths: set[str] = set()
+            unique_rules: list[dict] = []
+            for rule in all_rules:
+                path = rule.get("citation_path", "")
+                if path and path not in seen_paths:
+                    seen_paths.add(path)
+                    unique_rules.append(rule)
+
+            # Insert in batches
+            for i in range(0, len(unique_rules), batch_size):
+                batch = unique_rules[i : i + batch_size]
+                inserted = self._upsert_rules(batch)
+                total_inserted += inserted
+                print(f"  Upserted {total_inserted} rules...")
+
+        print(f"Done! Upserted {total_inserted} rules for {state_code.upper()}")
+        return total_inserted
