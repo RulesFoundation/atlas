@@ -1872,16 +1872,18 @@ def get_uk(citation: str, as_json: bool):
 @main.command("sb")
 @click.argument("source_path")
 @click.option("--jurisdiction", "-j", default="us", help="Jurisdiction (us, uk, canada)")
-@click.option("--children", "-c", is_flag=True, help="Include child sections")
+@click.option("--children", "-c", is_flag=True, help="Include direct child sections")
+@click.option("--deep", "-d", is_flag=True, help="Include ALL descendants (for encoding)")
 @click.option("--json", "as_json", is_flag=True, help="Output as JSON")
-def sb(source_path: str, jurisdiction: str, children: bool, as_json: bool):
+def sb(source_path: str, jurisdiction: str, children: bool, deep: bool, as_json: bool):
     """Query statute from Supabase.
 
     SOURCE_PATH is the path like "usc/26/32" or just "26/32".
 
     Examples:
         arch sb 26/32                    # Get 26 USC § 32 (EITC)
-        arch sb 26/24 -c                 # With children
+        arch sb 26/24 -c                 # With direct children
+        arch sb 26/32 --deep             # Full text with ALL subsections (for encoding)
         arch sb "ita/2007/1" -j uk       # UK ITA 2007
         arch sb 26/32 --json             # Output as JSON
     """
@@ -1890,6 +1892,20 @@ def sb(source_path: str, jurisdiction: str, children: bool, as_json: bool):
     from arch.query import SupabaseQuery
 
     query = SupabaseQuery()
+
+    # Deep mode - get full concatenated text for encoding
+    if deep:
+        text = query.get_section_deep(source_path, jurisdiction)
+        if not text:
+            console.print(f"[red]Not found:[/red] {source_path} ({jurisdiction})")
+            raise SystemExit(1)
+
+        if as_json:
+            data = {"source_path": source_path, "jurisdiction": jurisdiction, "text": text}
+            console.print_json(json_module.dumps(data, indent=2))
+        else:
+            console.print(text)
+        return
 
     if children:
         section = query.get_section_with_children(source_path, jurisdiction)

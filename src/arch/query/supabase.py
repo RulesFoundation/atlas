@@ -176,12 +176,14 @@ class SupabaseQuery:
         self,
         source_path: str,
         jurisdiction: str = "us",
+        deep: bool = False,
     ) -> Optional[Section]:
         """Get a section with its children (subsections).
 
         Args:
             source_path: The source path (e.g., "26/32")
             jurisdiction: The jurisdiction
+            deep: If True, fetch ALL descendants recursively (not just direct children)
 
         Returns:
             Section with rule and children, or None
@@ -190,15 +192,74 @@ class SupabaseQuery:
         if not rule:
             return None
 
-        # Fetch children
-        params = {
-            "parent_id": f"eq.{rule.id}",
-            "order": "ordinal",
-        }
-        children_data = self._request("rules", params) or []
-        children = [self._to_rule(c) for c in children_data]
+        if deep:
+            # Fetch ALL descendants by source_path prefix
+            # e.g., "usc/26/32" gets "usc/26/32/a", "usc/26/32/a/1", etc.
+            base_path = rule.source_path or source_path
+            params = {
+                "source_path": f"like.{base_path}/*",
+                "jurisdiction": f"eq.{jurisdiction}",
+                "order": "source_path",
+                "limit": "1000",  # Reasonable limit for deep fetch
+            }
+            children_data = self._request("rules", params) or []
+            children = [self._to_rule(c) for c in children_data]
+        else:
+            # Fetch only direct children
+            params = {
+                "parent_id": f"eq.{rule.id}",
+                "order": "ordinal",
+            }
+            children_data = self._request("rules", params) or []
+            children = [self._to_rule(c) for c in children_data]
 
         return Section(rule=rule, children=children)
+
+    def get_section_deep(
+        self,
+        source_path: str,
+        jurisdiction: str = "us",
+    ) -> Optional[str]:
+        """Get a section with ALL descendants as concatenated text.
+
+        This is optimized for encoder agents that need the full statute text
+        in a single response.
+
+        Args:
+            source_path: The source path (e.g., "usc/26/32")
+            jurisdiction: The jurisdiction
+
+        Returns:
+            Concatenated text of the section and all subsections, or None
+        """
+        section = self.get_section_with_children(source_path, jurisdiction, deep=True)
+        if not section:
+            return None
+
+        parts = []
+
+        # Add main section
+        if section.rule.heading:
+            parts.append(f"# {section.rule.source_path}: {section.rule.heading}")
+        if section.rule.body:
+            parts.append(section.rule.body)
+
+        # Add all descendants, preserving hierarchy via indentation
+        for child in section.children:
+            # Calculate depth from path
+            child_path = child.source_path or ""
+            base_path = section.rule.source_path or source_path
+            depth = child_path.replace(base_path, "").count("/")
+            indent = "  " * depth
+
+            if child.heading:
+                parts.append(f"\n{indent}## {child.source_path}: {child.heading}")
+            if child.body:
+                # Indent the body text
+                indented_body = "\n".join(f"{indent}{line}" for line in (child.body or "").split("\n"))
+                parts.append(indented_body)
+
+        return "\n\n".join(parts)
 
     def search(
         self,
