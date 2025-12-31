@@ -30,7 +30,7 @@ from dataclasses import dataclass, field
 from datetime import date
 
 import httpx
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup
 
 from arch.models import Citation, Section, Subsection
 
