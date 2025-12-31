@@ -589,12 +589,21 @@ class AKConverter:
             uslm_id=f"ak/{parsed.title_number}/{parsed.chapter_number}/{parsed.section_number}",
         )
 
+    def _build_section_url(self, section_number: str) -> str:
+        """Build the URL for a section's print page.
+
+        Args:
+            section_number: e.g., "43.05.010"
+
+        Returns:
+            URL to the section print page
+        """
+        return f"{BASE_URL}/statutes.asp?media=print&secStart={section_number}&secEnd={section_number}"
+
     def fetch_section(self, section_number: str) -> Section:
         """Fetch and convert a single section.
 
-        Note: Due to akleg.gov's JavaScript-driven interface and PDF responses,
-        this method constructs a Section from available metadata. For full text
-        content, consider using the iter_chapter method to scrape the title page.
+        Uses the akleg.gov print API to get section content.
 
         Args:
             section_number: e.g., "43.05.010", "47.30.660"
@@ -605,10 +614,8 @@ class AKConverter:
         Raises:
             AKConverterError: If section not found or parsing fails
         """
-        title_num, chapter, _ = self._parse_section_number(section_number)
-
-        # Build URL - akleg.gov uses title-based navigation
-        url = self._build_title_url(title_num)
+        # Build URL using the print API endpoint
+        url = self._build_section_url(section_number)
 
         try:
             html = self._get(url)
@@ -622,6 +629,8 @@ class AKConverter:
     def get_chapter_section_numbers(self, title: int, chapter: str) -> list[str]:
         """Get list of section numbers in a chapter.
 
+        Uses the akleg.gov AJAX API to get section list.
+
         Args:
             title: Title number (e.g., 43)
             chapter: Chapter number (e.g., "05")
@@ -629,31 +638,28 @@ class AKConverter:
         Returns:
             List of section numbers (e.g., ["43.05.010", "43.05.020", ...])
         """
-        url = self._build_title_url(title)
+        # Use the AJAX API endpoint to get chapter sections
+        chapter_id = f"{title}.{chapter}"
+        url = f"{BASE_URL}/statutes.asp?media=js&type=TOC&title={chapter_id}"
         html = self._get(url)
-        soup = BeautifulSoup(html, "html.parser")
 
         section_numbers = []
 
-        # Pattern to match section numbers like 43.05.010
-        pattern = re.compile(rf"{title}\.{chapter}\.(\d{{3}}[A-Za-z]?)")
+        # Parse: #43.23.005 >Sec. 43.23.005.   Eligibility.
+        pattern = re.compile(
+            r'#(\d+\.\d+\.\d+[A-Za-z]?)\s*>Sec\.\s+[\d.]+[A-Za-z]?\.\s+([^<]+)<'
+        )
 
-        # Search all text for section references
-        for text_node in soup.stripped_strings:
-            matches = pattern.findall(text_node)
-            for suffix in matches:
-                section_num = f"{title}.{chapter}.{suffix}"
-                if section_num not in section_numbers:
-                    section_numbers.append(section_num)
+        for match in pattern.finditer(html):
+            section_num = match.group(1)  # e.g., "43.23.005"
+            section_title = match.group(2).strip().rstrip(".")
 
-        # Also search href attributes for section links
-        for link in soup.find_all("a", href=True):
-            href = link.get("href", "")
-            matches = pattern.findall(href)
-            for suffix in matches:
-                section_num = f"{title}.{chapter}.{suffix}"
-                if section_num not in section_numbers:
-                    section_numbers.append(section_num)
+            # Skip repealed/renumbered sections
+            if "[Repealed" in section_title or "[Renumbered" in section_title:
+                continue
+
+            if section_num not in section_numbers:
+                section_numbers.append(section_num)
 
         return sorted(section_numbers)
 
