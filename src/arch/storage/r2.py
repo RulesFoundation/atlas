@@ -279,7 +279,18 @@ class R2Storage:
         }
 
 
-# Convenience function for scripts
+# Convenience functions for scripts
 def get_r2() -> R2Storage:
-    """Get default R2Storage instance."""
+    """Get R2Storage for arch bucket (raw gov files)."""
     return R2Storage.from_config()
+
+
+def get_r2_arch() -> R2Storage:
+    """Get R2Storage for arch bucket (raw gov files)."""
+    return R2Storage.from_config()
+
+
+def get_r2_rules_xml() -> R2Storage:
+    """Get R2Storage for rules-xml bucket (converted AKN XML)."""
+    config_path = Path.home() / ".config" / "cosilico" / "r2-rules-xml-credentials.json"
+    return R2Storage.from_config(config_path)
