@@ -295,8 +295,8 @@ class WVConverter:
         # Pattern: "11-21-1. Legislative findings." or "§11-21-1. Legislative findings."
         section_title = ""
 
-        # Try to find h1 or h2 with section heading
-        for heading in soup.find_all(["h1", "h2", "h3"]):
+        # Try to find heading tags (WV uses h4 for section headings)
+        for heading in soup.find_all(["h1", "h2", "h3", "h4", "h5"]):
             heading_text = heading.get_text(strip=True)
             # Match patterns like "11-21-1. Legislative findings" or "§11-21-1. Legislative findings"
             title_pattern = re.compile(

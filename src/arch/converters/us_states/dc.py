@@ -313,6 +313,24 @@ class DCConverter:
         """Build the URL for a title's index.xml."""
         return f"{BASE_URL}/us/dc/council/code/titles/{title}/index.xml"
 
+    def _find_element(self, parent: ET.Element, tag: str) -> ET.Element | None:
+        """Find an element by tag, trying both namespaced and non-namespaced."""
+        # Try with dc-library namespace first (using {namespace}tag format)
+        elem = parent.find(f"{{{DC_NS}}}{tag}")
+        if elem is not None:
+            return elem
+        # Fall back to no namespace
+        return parent.find(tag)
+
+    def _find_all_elements(self, parent: ET.Element, tag: str) -> list[ET.Element]:
+        """Find all elements by tag, trying both namespaced and non-namespaced."""
+        # Try with dc-library namespace first
+        elems = parent.findall(f"{{{DC_NS}}}{tag}")
+        if elems:
+            return elems
+        # Fall back to no namespace
+        return parent.findall(tag)
+
     def _parse_xml(self, xml_content: str, section_number: str, url: str) -> ParsedDCSection:
         """Parse DC Code XML into ParsedDCSection."""
         try:
@@ -324,15 +342,15 @@ class DCConverter:
         title_name = DC_TITLES.get(title_num, f"Title {title_num}")
 
         # Extract section number from <num> element
-        num_elem = root.find("num", NS) or root.find("num")
+        num_elem = self._find_element(root, "num")
         xml_section_num = num_elem.text if num_elem is not None else section_number
 
         # Extract heading/title from <heading> element
-        heading_elem = root.find("heading", NS) or root.find("heading")
+        heading_elem = self._find_element(root, "heading")
         section_title = heading_elem.text if heading_elem is not None else ""
 
         # Extract main text from <text> element
-        main_text_elem = root.find("text", NS) or root.find("text")
+        main_text_elem = self._find_element(root, "text")
         main_text = main_text_elem.text if main_text_elem is not None else ""
 
         # Parse subsections from <para> elements
@@ -344,7 +362,7 @@ class DCConverter:
         # Extract annotations
         annotations = []
         history = None
-        annotations_elem = root.find("annotations", NS) or root.find("annotations")
+        annotations_elem = self._find_element(root, "annotations")
         if annotations_elem is not None:
             for ann in annotations_elem:
                 ann_type = ann.get("type", "")

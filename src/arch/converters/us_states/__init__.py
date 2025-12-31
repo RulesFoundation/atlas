@@ -47,6 +47,16 @@ from .ct import (
     download_ct_welfare_chapters,
 )
 from .fl import FLConverter
+from .de import (
+    DEConverter,
+    DEConverterError,
+    DE_TAX_CHAPTERS,
+    DE_WELFARE_CHAPTERS,
+    fetch_de_section,
+    download_de_chapter,
+    download_de_tax_chapters,
+    download_de_welfare_chapters,
+)
 from .ga import (
     GAConverter,
     GAConverterError,
@@ -316,6 +326,15 @@ __all__ = [
     "download_ia_chapter",
     "download_ia_tax_chapters",
     "download_ia_welfare_chapters",
+    "IDConverter",
+    "IDConverterError",
+    "ID_TITLES",
+    "ID_TAX_CHAPTERS",
+    "ID_WELFARE_CHAPTERS",
+    "fetch_id_section",
+    "download_id_chapter",
+    "download_id_tax_chapters",
+    "download_id_welfare_chapters",
     "INConverter",
     "INConverterError",
     "IN_TITLES",
@@ -830,4 +849,27 @@ __all__ += [
     "download_nd_chapter",
     "download_nd_tax_chapters",
     "download_nd_welfare_chapters",
+]
+
+
+from .nm import (
+    NMConverter,
+    NMConverterError,
+    NM_CHAPTERS,
+    NM_TAX_CHAPTERS,
+    NM_TAX_ARTICLES,
+    NM_WELFARE_CHAPTERS,
+    NM_WELFARE_ARTICLES,
+    parse_nm_section,
+)
+
+__all__ += [
+    "NMConverter",
+    "NMConverterError",
+    "NM_CHAPTERS",
+    "NM_TAX_CHAPTERS",
+    "NM_TAX_ARTICLES",
+    "NM_WELFARE_CHAPTERS",
+    "NM_WELFARE_ARTICLES",
+    "parse_nm_section",
 ]

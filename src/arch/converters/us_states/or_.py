@@ -153,11 +153,16 @@ class ORConverter:
         self._last_request_time = time.time()
 
     def _get(self, url: str) -> str:
-        """Make a rate-limited GET request."""
+        """Make a rate-limited GET request.
+
+        Oregon statutes are served as Windows-1252 encoded HTML (Microsoft Word export).
+        The Content-Type header doesn't specify charset, so we must decode explicitly.
+        """
         self._rate_limit()
         response = self.client.get(url)
         response.raise_for_status()
-        return response.text
+        # Oregon statutes are Windows-1252 encoded (see meta tag in HTML)
+        return response.content.decode("windows-1252")
 
     def _build_chapter_url(self, chapter: int) -> str:
         """Build the URL for a chapter.
