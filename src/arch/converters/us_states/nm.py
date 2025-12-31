@@ -126,12 +126,12 @@ NM_CHAPTERS: dict[int | str, str] = {
 }
 
 # Key chapters for tax/benefit analysis
-NM_TAX_CHAPTERS: dict[str, str] = {
+NM_TAX_CHAPTERS: dict[int, str] = {
     7: "Taxation",
 }
 
 # Articles within Chapter 7 (Taxation)
-NM_TAX_ARTICLES: dict[str, str] = {
+NM_TAX_ARTICLES: dict[int | str, str] = {
     1: "Tax Administration",
     2: "Income Tax General Provisions",
     "2A": "Personal Income Tax",
@@ -179,12 +179,12 @@ NM_TAX_ARTICLES: dict[str, str] = {
     39: "Job Training Incentive Program",
 }
 
-NM_WELFARE_CHAPTERS: dict[str, str] = {
+NM_WELFARE_CHAPTERS: dict[int, str] = {
     27: "Public Assistance",
 }
 
 # Articles within Chapter 27 (Public Assistance)
-NM_WELFARE_ARTICLES: dict[str, str] = {
+NM_WELFARE_ARTICLES: dict[int | str, str] = {
     1: "Public Assistance Act",
     2: "General Provisions",
     "2A": "New Mexico Works Act",

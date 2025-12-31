@@ -69,6 +69,17 @@ from .ia import (
     download_ia_tax_chapters,
     download_ia_welfare_chapters,
 )
+from .id_ import (
+    IDConverter,
+    IDConverterError,
+    ID_TITLES,
+    ID_TAX_CHAPTERS,
+    ID_WELFARE_CHAPTERS,
+    fetch_id_section,
+    download_id_chapter,
+    download_id_tax_chapters,
+    download_id_welfare_chapters,
+)
 from .in_ import (
     INConverter,
     INConverterError,
