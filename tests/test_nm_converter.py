@@ -522,4 +522,7 @@ class TestNMConverterArticles:
         )
 
         assert section.citation.section == "NM-7-9-4"
-        assert "gross receipts" in section.text.lower()
+        # Text may have line breaks, check for both words
+        text_lower = section.text.lower()
+        assert "gross" in text_lower
+        assert "receipts" in text_lower

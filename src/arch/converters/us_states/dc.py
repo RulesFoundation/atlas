@@ -404,31 +404,26 @@ class DCConverter:
         """Recursively parse <para> elements into subsections."""
         subsections = []
 
-        for para in elem.findall("para", NS):
+        for para in self._find_all_elements(elem, "para"):
             subsections.append(self._parse_single_para(para))
-
-        # Also check for paras without namespace
-        for para in elem.findall("para"):
-            if para not in [p for p in elem.findall("para", NS)]:
-                subsections.append(self._parse_single_para(para))
 
         return subsections
 
     def _parse_single_para(self, para: ET.Element) -> ParsedDCSubsection:
         """Parse a single <para> element."""
         # Get identifier from <num>
-        num_elem = para.find("num", NS) or para.find("num")
+        num_elem = self._find_element(para, "num")
         identifier = ""
         if num_elem is not None and num_elem.text:
             # Strip parentheses: "(1)" -> "1", "(a)" -> "a"
             identifier = num_elem.text.strip().strip("()")
 
         # Get heading if present
-        heading_elem = para.find("heading", NS) or para.find("heading")
+        heading_elem = self._find_element(para, "heading")
         heading = heading_elem.text if heading_elem is not None else None
 
         # Get text content
-        text_elem = para.find("text", NS) or para.find("text")
+        text_elem = self._find_element(para, "text")
         text = self._get_element_text(text_elem) if text_elem is not None else ""
 
         # Parse children recursively

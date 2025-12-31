@@ -280,11 +280,18 @@ class WVConverter:
         """Parse section HTML into ParsedWVSection."""
         soup = BeautifulSoup(html, "html.parser")
 
-        # Check for "not found" error
-        error_patterns = ["cannot be found", "not found", "does not exist", "404", "no longer exists"]
-        html_lower = html.lower()
-        if any(pattern in html_lower for pattern in error_patterns):
-            raise WVConverterError(f"Section {section_number} not found", url)
+        # Check for "not found" error - look for specific error page patterns
+        # We check for section number not appearing in h4 headings (valid pages have h4 with section number)
+        section_heading = soup.find("h4", string=re.compile(rf"§?\s*{re.escape(section_number)}", re.I))
+        if not section_heading:
+            # Also check page title as fallback
+            title_tag = soup.find("title")
+            title_text = title_tag.get_text() if title_tag else ""
+            if section_number not in title_text:
+                # Check for explicit error messages
+                error_elem = soup.find(class_="error") or soup.find(class_="not-found")
+                if error_elem or "page not found" in html.lower():
+                    raise WVConverterError(f"Section {section_number} not found", url)
 
         chapter, article, _ = self._parse_section_number(section_number)
         chapter_name = WV_CHAPTERS.get(chapter, f"Chapter {chapter}")
