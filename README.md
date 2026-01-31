@@ -1,57 +1,56 @@
-# Cosilico Arch
+# Atlas
 
-**Foundational archive for all raw government source files.**
+**Comprehensive map of government legal sources.**
 
-Arch is the unified source of truth for statutes, regulations, IRS guidance, microdata, crosstabs, and parameters that power Cosilico's rules engine.
+Atlas is the unified source of truth for statutes, regulations, and IRS guidance that powers the Rules Foundation ecosystem.
 
 ## Features
 
 - **Federal statutes** — All 54 titles of the US Code from official USLM XML
 - **IRS guidance** — Revenue Procedures, Revenue Rulings, Notices (570+ documents)
 - **State codes** — NY Open Legislation API, more states coming
-- **Microdata** — CPS ASEC, IRS PUF, SIPP (via microplex integration)
-- **Crosstabs** — IRS SOI, Census tables
+- **Regulations** — CFR titles, Treasury regulations, agency rules
 - **Provenance** — Every file tracked with fetch date, source URL, checksums
-- **REST API** — Query documents by citation, keyword, or path
+- **REST API** — Query documents by citation, keyword, or path (self-hostable)
 - **Change detection** — Know when upstream sources update
 
 ## Quick Start
 
 ```bash
 # Install
-pip install cosilico-arch
+pip install atlas-archive
 
 # Run the API server
-arch serve
+atlas serve
 
 # Or use the CLI
-arch get "26 USC 32"        # Get IRC § 32 (EITC)
-arch search "earned income" # Search across documents
+atlas get "26 USC 32"        # Get IRC § 32 (EITC)
+atlas search "earned income" # Search across documents
 ```
 
 ## CLI Usage
 
 ```bash
 # Download sources
-arch download 26                    # Download Title 26 (IRC) from uscode.gov
-arch download-state ny              # Download NY state laws
-arch irs-guidance --year 2024       # Fetch IRS guidance for 2024
+atlas download 26                    # Download Title 26 (IRC) from uscode.gov
+atlas download-state ny              # Download NY state laws
+atlas irs-guidance --year 2024       # Fetch IRS guidance for 2024
 
 # Query
-arch get "26 USC 32"                # Get specific section
-arch search "child tax credit"      # Full-text search
-arch stats                          # Show database stats
+atlas get "26 USC 32"                # Get specific section
+atlas search "child tax credit"      # Full-text search
+atlas stats                          # Show database stats
 
 # API
-arch serve                          # Start REST API at localhost:8000
+atlas serve                          # Start REST API at localhost:8000
 ```
 
 ## Python API
 
 ```python
-from arch import Arch
+from atlas import Atlas
 
-archive = Arch()
+archive = Atlas()
 
 # Get a specific section
 eitc = archive.get("26 USC 32")
@@ -91,16 +90,15 @@ curl "http://localhost:8000/v1/sections/26/32?as_of=2020-01-01"
 | Statutes | uscode.house.gov | USLM XML | 8 titles, 20k+ sections |
 | IRS Guidance | irs.gov/pub/irs-drop | PDF/HTML | 570+ documents |
 | State Laws | NY Open Legislation | JSON | Tax, Social Services |
-| Microdata | Census, IRS | ZIP | CPS, PUF, SIPP |
-| Crosstabs | IRS SOI, Census | XLSX | Income tables |
+| Regulations | eCFR | XML | Treasury, agency rules |
 
 ## Architecture
 
 ```
-arch/
-├── src/arch/
+atlas/
+├── src/atlas/
 │   ├── __init__.py
-│   ├── archive.py        # Main Arch class
+│   ├── archive.py        # Main Atlas class
 │   ├── models.py         # Pydantic models for statutes
 │   ├── models_guidance.py # Models for IRS guidance
 │   ├── parsers/
@@ -126,34 +124,27 @@ arch/
 
 ## Storage
 
-Arch uses two storage tiers:
+Atlas uses SQLite + FTS5 for local development. For production deployments:
 
-- **Cloudflare R2** — Raw files (PDFs, XML, ZIPs)
-- **PostgreSQL (Supabase)** — Parsed content, metadata, full-text search
-
-The `arch` schema in cosilico-db tracks:
-- File provenance (source URL, fetch timestamp, checksums)
-- Parsed content with tsvector for search
-- Cross-references between documents
+- **Cloudflare R2** — Raw files (PDFs, XML)
+- **PostgreSQL** — Parsed content, metadata, full-text search
 
 ## Deployment
 
-### Modal (Serverless)
+### Local
 
 ```bash
-# Deploy to Modal
-modal deploy modal_app.py
-
-# Upload database to Modal Volume
-modal volume put arch-db arch.db /data/arch.db
+# Build and run
+pip install -e .
+atlas serve
 ```
 
 ### Docker
 
 ```bash
 # Build and run
-docker build -t arch .
-docker run -p 8000:8000 -v $(pwd)/arch.db:/app/arch.db arch
+docker build -t atlas .
+docker run -p 8000:8000 -v $(pwd)/atlas.db:/app/atlas.db atlas
 ```
 
 ## License
@@ -162,7 +153,6 @@ Apache 2.0
 
 ## Related Repos
 
-- [rac](https://github.com/CosilicoAI/rac) — Core DSL engine
-- [rac-us](https://github.com/CosilicoAI/rac-us) — US federal rules in RAC
-- [microplex](https://github.com/CosilicoAI/microplex) — Microdata processing
-- [cosilico-db](https://github.com/CosilicoAI/cosilico-db) — PostgreSQL schema
+- [rac](https://github.com/RulesFoundation/rac) — Rules as Code DSL
+- [autorac](https://github.com/RulesFoundation/autorac) — AI-powered statute encoding
+- [rac-us](https://github.com/RulesFoundation/rac-us) — US federal rules in RAC
