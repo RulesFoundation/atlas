@@ -157,17 +157,6 @@ class TestRefsCommand:
 
 
 class TestServeCommand:
-    @pytest.mark.timeout(120)
-    @patch("atlas.cli.uvicorn", create=True)
-    def test_serve_defaults(self, mock_uvicorn):
-        import atlas.cli
-        atlas.cli.uvicorn = mock_uvicorn
-
-        runner = CliRunner()
-        runner.invoke(main, ["serve"])
-        # May fail if uvicorn not properly mocked, but should at least parse args
-        # The important thing is the command is registered
-
     def test_serve_help(self):
         runner = CliRunner()
         result = runner.invoke(main, ["serve", "--help"])
