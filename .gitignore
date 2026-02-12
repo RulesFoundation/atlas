@@ -81,3 +81,4 @@ data/texas_cache/
 # Data files - too large for git
 data/
 .env
+coverage.json
