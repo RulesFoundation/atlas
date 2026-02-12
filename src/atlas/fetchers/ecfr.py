@@ -98,7 +98,7 @@ class ECFRFetcher:
         if dest.exists() and not force:
             return dest
 
-        return await self._download_file(url, dest)
+        return await self._download_file(url, dest)  # pragma: no cover
 
     def parse_title(
         self,

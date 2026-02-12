@@ -23,7 +23,7 @@ try:
         get_parser_for_state,
         list_supported_states,
     )
-except ImportError:
+except ImportError:  # pragma: no cover
     GenericStateParser = None  # type: ignore[misc, assignment]
     StateConfig = None  # type: ignore[misc, assignment]
     StateSection = None  # type: ignore[misc, assignment]

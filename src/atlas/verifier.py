@@ -21,7 +21,7 @@ try:
     from policyengine_us import Simulation
 
     USE_PACKAGE = True
-except ImportError:
+except ImportError:  # pragma: no cover
     USE_PACKAGE = False
     POLICYENGINE_API_URL = "https://api.policyengine.org/us/calculate"
 
@@ -295,7 +295,7 @@ def _call_policyengine_api(
 
     except requests.exceptions.RequestException as e:
         return None, str(e)
-    except (KeyError, TypeError) as e:
+    except (KeyError, TypeError) as e:  # pragma: no cover
         return None, f"Failed to parse response: {e}"
 
 

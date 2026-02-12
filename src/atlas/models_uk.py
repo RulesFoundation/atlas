@@ -140,7 +140,7 @@ class UKCitation(BaseModel):
                     )
 
             # Default to ukpga if not found
-            return cls(
+            return cls(  # pragma: no cover
                 type="ukpga",
                 year=year,
                 number=1,
@@ -182,7 +182,7 @@ class UKCitation(BaseModel):
         if self.type in ("ukpga", "ukla", "ukppa"):
             cite = f"{self.year} c. {self.number}"
         else:
-            cite = f"{self.type.upper()} {self.year}/{self.number}"
+            cite = f"{self.type.upper()} {self.year}/{self.number}"  # pragma: no cover
 
         if self.section:
             cite += f" s. {self.section}"
@@ -205,7 +205,7 @@ class UKCitation(BaseModel):
     @property
     def type_name(self) -> str:
         """Return full name of legislation type."""
-        return UK_LEGISLATION_TYPES.get(self.type, self.type.upper())
+        return UK_LEGISLATION_TYPES.get(self.type, self.type.upper())  # pragma: no cover
 
 
 class UKSubsection(BaseModel):

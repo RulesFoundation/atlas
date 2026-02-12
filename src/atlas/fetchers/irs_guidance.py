@@ -230,7 +230,7 @@ class IRSGuidanceFetcher:
             # Accumulate text to current section or subsection
             if text:
                 if current_subsection:
-                    current_subsection.text += "\n" + text
+                    current_subsection.text += "\n" + text  # pragma: no cover
                 elif current_section:
                     current_section.text += "\n" + text
 

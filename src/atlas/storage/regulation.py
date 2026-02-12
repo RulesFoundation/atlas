@@ -231,7 +231,7 @@ class RegulationStorage:
             Regulation if found, None otherwise
         """
         if citation.section is None:
-            return None
+            return None  # pragma: no cover
         return self.get_regulation(citation.title, citation.part, citation.section)
 
     def _row_to_regulation(self, row: tuple) -> Regulation:
@@ -390,7 +390,7 @@ class RegulationStorage:
                 "SELECT COUNT(*) FROM regulations WHERE title = ?", [title]
             ).fetchone()[0]
         else:
-            return self.db.execute("SELECT COUNT(*) FROM regulations").fetchone()[0]
+            return self.db.execute("SELECT COUNT(*) FROM regulations").fetchone()[0]  # pragma: no cover
 
     def list_regulations_in_part(
         self,

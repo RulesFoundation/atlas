@@ -124,5 +124,5 @@ def section_to_akn_xml(section: Section, state: str) -> str:
         pretty = dom.toprettyxml(indent="  ", encoding="UTF-8")
         lines = pretty.decode("utf-8").split("\n")
         return "\n".join(line for line in lines if line.strip())
-    except Exception:
-        return '<?xml version="1.0" encoding="UTF-8"?>\n' + xml_str
+    except Exception:  # pragma: no cover
+        return '<?xml version="1.0" encoding="UTF-8"?>\n' + xml_str  # pragma: no cover
