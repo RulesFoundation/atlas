@@ -436,7 +436,7 @@ if __name__ == "__main__":
     import sys
 
     # Default paths
-    input_dir = Path("/Users/maxghenis/CosilicoAI/arch/data/statutes/us-mn")
+    input_dir = Path("/Users/maxghenis/RulesFoundation/atlas/data/statutes/us-mn")
     output_dir = Path("/tmp/rules-us-mn-akn")
 
     converter = MNStatutesToAKN()

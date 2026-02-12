@@ -186,10 +186,10 @@ def create_akn_xml(title_num: int, chapter_num: int, chapter_title: str, section
     tlc_id.set("href", "https://legislature.idaho.gov")
     tlc_id.set("showAs", "Idaho State Legislature")
 
-    tlc_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    tlc_cosilico.set("eId", "rules-foundation")
-    tlc_cosilico.set("href", "https://rules.foundation")
-    tlc_cosilico.set("showAs", "Rules Foundation")
+    tlc_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    tlc_rf.set("eId", "rules-foundation")
+    tlc_rf.set("href", "https://rules.foundation")
+    tlc_rf.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

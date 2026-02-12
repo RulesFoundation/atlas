@@ -197,10 +197,10 @@ def create_akn_xml(title_data: dict) -> str:
     tlc_org.set("href", "/ontology/organization/ri/general-assembly")
     tlc_org.set("showAs", "Rhode Island General Assembly")
 
-    tlc_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    tlc_cosilico.set("eId", "rules-foundation")
-    tlc_cosilico.set("href", "/ontology/organization/cosilico")
-    tlc_cosilico.set("showAs", "Rules Foundation")
+    tlc_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    tlc_rf.set("eId", "rules-foundation")
+    tlc_rf.set("href", "https://rules.foundation")
+    tlc_rf.set("showAs", "Rules Foundation")
 
     # Body section
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")
@@ -301,7 +301,7 @@ def convert_all_titles(source_dir: Path, output_dir: Path) -> dict:
 def main():
     """Main entry point."""
     # Paths
-    source_dir = Path("/Users/maxghenis/CosilicoAI/arch/data/statutes/us-ri")
+    source_dir = Path("/Users/maxghenis/RulesFoundation/atlas/data/statutes/us-ri")
     output_dir = Path("/tmp/rules-us-ri-akn")
 
     print("=" * 60)

@@ -2,7 +2,7 @@
 
 ## 30-Second Overview
 
-cosilico-lawarchive now stores IRS Revenue Procedures (and other guidance) with links to statute sections. This enables AI agents to find authoritative parameter sources.
+Atlas now stores IRS Revenue Procedures (and other guidance) with links to statute sections. This enables AI agents to find authoritative parameter sources.
 
 ## Quick Examples
 
@@ -109,7 +109,7 @@ python scripts/query_guidance.py
 
 ## For AI Agents
 
-When encoding EITC parameters in cosilico-us:
+When encoding EITC parameters in rac-us:
 
 ```python
 # 1. Find source document
@@ -121,7 +121,7 @@ doc = [d for d in eitc_docs if 2024 in d.tax_years][0]
 pdf_url = doc.pdf_url  # Download and parse tables
 
 # 3. Cite in encoding
-# cosilico-us/26/32/eitc.cosilico
+# rac-us/26/32/eitc.rac
 #   max_credit: 7830  # Rev. Proc. 2023-34, Table 1
 ```
 
@@ -131,6 +131,6 @@ See `GUIDANCE_DOCS.md` for complete API reference and `SUMMARY.md` for implement
 
 ## Database Location
 
-`/Users/maxghenis/CosilicoAI/cosilico-lawarchive/lawarchive.db`
+`/Users/maxghenis/RulesFoundation/atlas/atlas.db`
 
 Schema: `schema/002_guidance_documents.sql`

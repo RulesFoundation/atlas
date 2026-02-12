@@ -13,7 +13,7 @@ Serve locally for testing:
 import modal
 
 # Create the Modal app
-app = modal.App("cosilico-atlas")
+app = modal.App("atlas")
 
 # Volume for the SQLite database (persistent storage)
 volume = modal.Volume.from_name("atlas-db", create_if_missing=True)

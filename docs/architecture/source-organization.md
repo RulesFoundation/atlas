@@ -14,7 +14,7 @@ Never mix document types. A guidance document (IRS Rev. Proc., USDA COLA memo) n
 | Repo | Purpose |
 |------|---------|
 | **arch** | Archive tooling + document catalog (this repo) |
-| **rac-us** | Executable encodings (.cosilico formulas, parameters.yaml, tests.yaml) |
+| **rac-us** | Executable encodings (.rac formulas, parameters.yaml, tests.yaml) |
 
 ## Arch Repo Structure
 
@@ -84,7 +84,7 @@ rac-us/
 
 When a statute defines a base value but guidance provides an adjusted value:
 
-```cosilico
+```rac
 references {
   # From statute encoding
   base_amount: statute/26/63/c/2/basic_amounts

@@ -240,10 +240,10 @@ def create_akn_xml(section: dict, state: str, config: dict) -> str:
     org_publicresource.set("href", "https://public.resource.org")
     org_publicresource.set("showAs", "Public.Resource.Org")
 
-    org_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org_cosilico.set("eId", "rules-foundation")
-    org_cosilico.set("href", "https://rules.foundation")
-    org_cosilico.set("showAs", "Rules Foundation")
+    org_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    org_rf.set("eId", "rules-foundation")
+    org_rf.set("href", "https://rules.foundation")
+    org_rf.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

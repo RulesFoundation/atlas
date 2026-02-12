@@ -322,10 +322,10 @@ def create_akn_xml(section: dict, title_num: str, title_name: str) -> str:
     tlc_njleg.set("href", "/ontology/organization/nj/legislature")
     tlc_njleg.set("showAs", "New Jersey Legislature")
 
-    tlc_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    tlc_cosilico.set("eId", "rules-foundation")
-    tlc_cosilico.set("href", "/ontology/organization/cosilico")
-    tlc_cosilico.set("showAs", "Rules Foundation")
+    tlc_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    tlc_rf.set("eId", "rules-foundation")
+    tlc_rf.set("href", "https://rules.foundation")
+    tlc_rf.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")
@@ -473,10 +473,10 @@ def create_title_index_xml(title_num: str, title_name: str, sections: list[dict]
     tlc_njleg.set("href", "/ontology/organization/nj/legislature")
     tlc_njleg.set("showAs", "New Jersey Legislature")
 
-    tlc_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    tlc_cosilico.set("eId", "rules-foundation")
-    tlc_cosilico.set("href", "/ontology/organization/cosilico")
-    tlc_cosilico.set("showAs", "Rules Foundation")
+    tlc_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    tlc_rf.set("eId", "rules-foundation")
+    tlc_rf.set("href", "https://rules.foundation")
+    tlc_rf.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

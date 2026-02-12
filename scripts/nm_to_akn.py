@@ -117,11 +117,11 @@ def create_references() -> ET.Element:
     org_nmcc.set("href", "https://www.nmcompcomm.us")
     org_nmcc.set("showAs", "New Mexico Compilation Commission")
 
-    # Cosilico
-    org_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org_cosilico.set("eId", "rules-foundation")
-    org_cosilico.set("href", "https://rules.foundation")
-    org_cosilico.set("showAs", "Rules Foundation")
+    # Rules Foundation
+    org_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    org_rf.set("eId", "rules-foundation")
+    org_rf.set("href", "https://rules.foundation")
+    org_rf.set("showAs", "Rules Foundation")
 
     return references
 

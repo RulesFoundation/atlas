@@ -198,10 +198,10 @@ def create_title_akn(title_num: int, articles: dict[str, str]) -> str:
     org_legislature.set("href", "https://iga.in.gov")
     org_legislature.set("showAs", "Indiana General Assembly")
 
-    org_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org_cosilico.set("eId", "rules-foundation")
-    org_cosilico.set("href", "https://rules.foundation")
-    org_cosilico.set("showAs", "Rules Foundation")
+    org_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    org_rf.set("eId", "rules-foundation")
+    org_rf.set("href", "https://rules.foundation")
+    org_rf.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

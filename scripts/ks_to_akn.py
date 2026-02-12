@@ -128,10 +128,10 @@ def section_to_akn_xml(
     org_legislature.set("href", "/ontology/organization/us-ks/legislature")
     org_legislature.set("showAs", "Kansas Legislature")
 
-    org_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org_cosilico.set("eId", "rules-foundation")
-    org_cosilico.set("href", "https://rules.foundation")
-    org_cosilico.set("showAs", "Rules Foundation")
+    org_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    org_rf.set("eId", "rules-foundation")
+    org_rf.set("href", "https://rules.foundation")
+    org_rf.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

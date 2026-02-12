@@ -185,7 +185,7 @@ def get_converter(
 
 def _deterministic_id(citation_path: str) -> str:
     """Generate deterministic UUID from citation path for idempotent upserts."""
-    return str(uuid5(NAMESPACE_URL, f"cosilico:{citation_path}"))
+    return str(uuid5(NAMESPACE_URL, f"atlas:{citation_path}"))
 
 
 class LegalDocConverter(ABC):

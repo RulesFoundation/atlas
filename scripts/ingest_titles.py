@@ -2,7 +2,7 @@
 """Ingest US Code Titles 27-40 into Supabase."""
 
 import sys
-sys.path.insert(0, '/Users/maxghenis/CosilicoAI/arch/src')
+sys.path.insert(0, '/Users/maxghenis/RulesFoundation/atlas/src')
 
 from atlas.ingest.supabase import SupabaseIngestor
 

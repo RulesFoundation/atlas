@@ -106,10 +106,10 @@ def create_akn_xml(section: Section) -> str:
     org_unicourt.set("href", "https://unicourt.github.io/cic-code-ms")
     org_unicourt.set("showAs", "UniCourt CIC Project")
 
-    org_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org_cosilico.set("eId", "rules-foundation")
-    org_cosilico.set("href", "https://rules.foundation")
-    org_cosilico.set("showAs", "Rules Foundation")
+    org_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    org_rf.set("eId", "rules-foundation")
+    org_rf.set("href", "https://rules.foundation")
+    org_rf.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

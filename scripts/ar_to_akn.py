@@ -133,10 +133,10 @@ def section_to_akn_xml(section, title_num: int, chapter_num: int) -> str:
     tlc_ar.set("href", "/ontology/organization/us-ar/general-assembly")
     tlc_ar.set("showAs", "Arkansas General Assembly")
 
-    tlc_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    tlc_cosilico.set("eId", "rules-foundation")
-    tlc_cosilico.set("href", "/ontology/organization/cosilico")
-    tlc_cosilico.set("showAs", "Rules Foundation")
+    tlc_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    tlc_rf.set("eId", "rules-foundation")
+    tlc_rf.set("href", "https://rules.foundation")
+    tlc_rf.set("showAs", "Rules Foundation")
 
     tlc_justia = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
     tlc_justia.set("eId", "justia")

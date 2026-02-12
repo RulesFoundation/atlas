@@ -21,7 +21,7 @@ from xml.etree import ElementTree as ET
 AKN_NS = "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
 
 # Source and output directories
-SOURCE_DIR = Path("/Users/maxghenis/CosilicoAI/arch/data/michigan")
+SOURCE_DIR = Path("/Users/maxghenis/RulesFoundation/atlas/data/michigan")
 OUTPUT_DIR = Path("/tmp/rules-us-mi-akn")
 
 
@@ -362,9 +362,9 @@ def create_akn_document(data: dict) -> ET.Element:
         "showAs": "Michigan Legislature"
     })
     make_subelement(references, "TLCOrganization", {
-        "eId": "cosilico",
+        "eId": "rules-foundation",
         "href": "https://rules.foundation",
-        "showAs": "Cosilico"
+        "showAs": "Rules Foundation"
     })
 
     # Preface with title info

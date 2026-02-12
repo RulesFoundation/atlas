@@ -1,4 +1,4 @@
-"""Cosilico Arch - Foundational archive for all raw government source files."""
+"""Atlas - Foundational archive for all raw government source files."""
 
 from atlas.archive import Arch
 

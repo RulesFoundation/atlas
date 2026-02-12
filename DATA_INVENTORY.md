@@ -60,10 +60,10 @@ Akoma Ntoso XML files pushed to GitHub:
 
 | Repository | Sections | Source |
 |------------|----------|--------|
-| `CosilicoAI/rules-us` | 60,204 | US Code USLM XML |
-| `CosilicoAI/rules-ca` | 601 | Canada LIMS XML |
-| `CosilicoAI/rules-us-dc` | 21,163 | DC Law XML |
-| `CosilicoAI/rules-uk` | ~3,236 | UK CLML XML |
+| `RulesFoundation/rules-us` | 60,204 | US Code USLM XML |
+| `RulesFoundation/rules-ca` | 601 | Canada LIMS XML |
+| `RulesFoundation/rules-us-dc` | 21,163 | DC Law XML |
+| `RulesFoundation/rules-uk` | ~3,236 | UK CLML XML |
 
 ### State Repositories with Content
 

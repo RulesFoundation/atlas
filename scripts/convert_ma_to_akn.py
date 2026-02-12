@@ -115,9 +115,9 @@ def create_akn_chapter_document(chapter_num: str, chapter_name: str, sections: l
         "showAs": "Massachusetts Legislature"
     })
     make_subelement(references, "TLCOrganization", {
-        "eId": "cosilico",
+        "eId": "rules-foundation",
         "href": "https://rules.foundation",
-        "showAs": "Cosilico"
+        "showAs": "Rules Foundation"
     })
 
     # Body

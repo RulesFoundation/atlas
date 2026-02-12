@@ -46,7 +46,7 @@ def get_db_url() -> str:
 class SupabaseStorage:
     """Supabase/PostgreSQL storage backend for statutes.
 
-    Schema (created in cosilico-db):
+    Schema:
     - arch.statutes: Main statute storage with tsvector for FTS
     - arch.cross_references: Citation cross-reference graph
     - arch.jurisdictions: Jurisdiction metadata
@@ -87,7 +87,7 @@ class SupabaseStorage:
     def _init_schema(self):
         """Create schema if it doesn't exist.
 
-        Note: This is usually done via migrations in cosilico-db.
+        Note: This is usually done via migrations.
         This method is for convenience/testing.
         """
         with self.conn.cursor() as cur:

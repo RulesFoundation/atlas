@@ -124,9 +124,9 @@ def create_akn_document(section: Section) -> ET.Element:
         "showAs": "Missouri General Assembly"
     })
     make_subelement(references, "TLCOrganization", {
-        "eId": "cosilico",
+        "eId": "rules-foundation",
         "href": "https://rules.foundation",
-        "showAs": "Cosilico"
+        "showAs": "Rules Foundation"
     })
 
     # Publication/lifecycle

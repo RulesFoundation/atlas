@@ -94,7 +94,7 @@ def create_app(db_path: Path | str = "atlas.db") -> FastAPI:
         Configured FastAPI application
     """
     app = FastAPI(
-        title="Cosilico Law Archive",
+        title="Atlas",
         description="Open source US statute text via API",
         version="0.1.0",
         docs_url="/docs",
@@ -117,7 +117,7 @@ def create_app(db_path: Path | str = "atlas.db") -> FastAPI:
     async def root():
         """API root - returns basic info."""
         return {
-            "name": "Cosilico Law Archive",
+            "name": "Atlas",
             "version": "0.1.0",
             "docs": "/docs",
         }

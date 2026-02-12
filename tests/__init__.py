@@ -1,1 +1,1 @@
-"""Tests for Cosilico Law Archive."""
+"""Tests for Atlas."""

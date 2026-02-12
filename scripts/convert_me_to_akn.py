@@ -22,7 +22,7 @@ from bs4 import BeautifulSoup
 AKN_NS = "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
 
 # Source and output directories
-SOURCE_DIR = Path("/Users/maxghenis/CosilicoAI/arch/data/statutes/us-me")
+SOURCE_DIR = Path("/Users/maxghenis/RulesFoundation/atlas/data/statutes/us-me")
 OUTPUT_DIR = Path("/tmp/rules-us-me-akn")
 
 
@@ -222,9 +222,9 @@ def create_akn_document(data: dict) -> ET.Element:
         "showAs": "Maine Legislature"
     })
     make_subelement(references, "TLCOrganization", {
-        "eId": "cosilico",
+        "eId": "rules-foundation",
         "href": "https://rules.foundation",
-        "showAs": "Cosilico"
+        "showAs": "Rules Foundation"
     })
 
     # Body

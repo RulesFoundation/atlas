@@ -14,7 +14,7 @@ Atlas archives **legal sources only**:
 - **IRS Guidance**: Revenue Procedures, Revenue Rulings, Notices, Publications
 - **Regulations**: CFR titles (from eCFR)
 
-This repo is part of Rules Foundation (see parent CLAUDE.md). For microdata and calibration targets, see Cosilico's `arch` repo.
+This repo is part of Rules Foundation (see parent CLAUDE.md). For microdata and calibration targets, see the `arch` repo.
 
 ### Infrastructure
 
@@ -160,7 +160,7 @@ pytest tests/test_models.py::TestCitation::test_parse_simple_citation -v
 
 ## Notes
 
-This repo was moved from CosilicoAI to RulesFoundation in Jan 2026.
+This repo was moved from CosilicoAI to RulesFoundation in Jan 2026. All references have since been updated to Rules Foundation.
 
 - **GitHub**: `RulesFoundation/atlas`
 - **Local**: `/Users/maxghenis/RulesFoundation/atlas`

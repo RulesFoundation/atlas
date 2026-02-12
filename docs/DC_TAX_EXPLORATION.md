@@ -1,8 +1,8 @@
 # DC Tax Law Exploration for Lawarchive
 
 **Date:** 2025-12-25
-**Issue:** cosilico-us-mat
-**Purpose:** Assess feasibility of importing DC tax law into cosilico-atlas
+**Issue:** rac-us-mat
+**Purpose:** Assess feasibility of importing DC tax law into atlas
 
 ## Executive Summary
 
@@ -249,7 +249,7 @@ brackets = [
 ### File Structure
 
 ```
-cosilico-atlas/
+atlas/
 ├── src/atlas/parsers/
 │   ├── uslm.py           # Existing federal parser
 │   └── dc/
@@ -270,7 +270,7 @@ cosilico-atlas/
 ### R2 Storage
 
 ```
-cosilico-atlas (R2)/
+atlas (R2)/
 └── dc/statute/
     └── 47/
         ├── 1806.01.xml   # Taxable income definition
@@ -281,7 +281,7 @@ cosilico-atlas (R2)/
 
 ## Provisions to Encode First
 
-Priority order for cosilico-us encoding:
+Priority order for rac-us encoding:
 
 1. **DC Individual Income Tax Rates** (47-1806.03)
    - 7-bracket graduated rate structure
@@ -309,7 +309,7 @@ Priority order for cosilico-us encoding:
 2. [ ] Clone law-xml-codified and test parsing
 3. [ ] Add DC sections to atlas.db
 4. [ ] Create catalog entries for key tax sections
-5. [ ] Implement DC individual income tax in cosilico-us
+5. [ ] Implement DC individual income tax in rac-us
 
 ## Sources
 

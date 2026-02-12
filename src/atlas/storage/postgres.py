@@ -27,7 +27,7 @@ Base = declarative_base() if POSTGRES_AVAILABLE else None
 def get_engine(database_url: str | None = None):
     """Create SQLAlchemy engine from URL or environment."""
     if not POSTGRES_AVAILABLE:
-        raise ImportError("PostgreSQL support requires: pip install cosilico-atlas[postgres]")
+        raise ImportError("PostgreSQL support requires: pip install atlas[postgres]")
 
     url = database_url or os.environ.get("DATABASE_URL") or os.environ.get("SUPABASE_DB_URL")
     if not url:
