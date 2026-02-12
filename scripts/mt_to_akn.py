@@ -19,12 +19,12 @@ from xml.dom import minidom
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.converters.us_states.mt import (
+from atlas.converters.us_states.mt import (
     MTConverter,
     MT_TAX_CHAPTERS,
     MT_WELFARE_CHAPTERS,
 )
-from arch.models import Section
+from atlas.models import Section
 
 
 # Akoma Ntoso namespace
@@ -146,8 +146,8 @@ def create_akn_xml(title: int, chapter: int, chapter_name: str, sections: list[d
     # TLC references
     arch_ref = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     arch_ref.set("eId", "arch")
-    arch_ref.set("href", "https://cosilico.ai")
-    arch_ref.set("showAs", "Cosilico Arch")
+    arch_ref.set("href", "https://rules.foundation")
+    arch_ref.set("showAs", "Atlas")
 
     mt_leg = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     mt_leg.set("eId", "montana-legislature")

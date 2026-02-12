@@ -18,7 +18,7 @@ from xml.etree import ElementTree as ET
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.models_akoma_ntoso import (
+from atlas.models_akoma_ntoso import (
     AKN_NAMESPACE,
     Act,
     Article,
@@ -247,7 +247,7 @@ def create_akn_document(
     today = date.today()
 
     identification = Identification(
-        source="#cosilico",
+        source="#rules-foundation",
         work=FRBRWork(
             uri=FRBRUri(value=work_uri),
             date=FRBRDate(value=date(2022, 10, 1), name="enactment"),
@@ -258,14 +258,14 @@ def create_akn_document(
         expression=FRBRExpression(
             uri=FRBRUri(value=f"{work_uri}/eng@2022-10-01"),
             date=FRBRDate(value=date(2022, 10, 1), name="publication"),
-            author=FRBRAuthor(href="#cosilico"),
+            author=FRBRAuthor(href="#rules-foundation"),
             language=FRBRLanguage(language="en"),
             this=f"{work_uri}/eng@2022-10-01/main",
         ),
         manifestation=FRBRManifestation(
             uri=FRBRUri(value=f"{work_uri}/eng@2022-10-01.akn"),
             date=FRBRDate(value=today, name="transformation"),
-            author=FRBRAuthor(href="#cosilico"),
+            author=FRBRAuthor(href="#rules-foundation"),
             this=f"{work_uri}/eng@2022-10-01/main.akn",
         ),
     )

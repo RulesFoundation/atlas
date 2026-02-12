@@ -5,14 +5,14 @@ from datetime import date
 from unittest.mock import Mock, patch
 from xml.etree import ElementTree as ET
 
-from arch.converters.ecfr import (
+from atlas.converters.ecfr import (
     ECFRConverter,
     ECFRMetadata,
     FetchResult,
     PRIORITY_TITLES,
     fetch_regulation,
 )
-from arch.models_regulation import CFRCitation
+from atlas.models_regulation import CFRCitation
 
 
 # Sample XML fragments for testing

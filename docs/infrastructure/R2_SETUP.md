@@ -50,11 +50,11 @@ arch (R2 bucket)/
 
 ✅ **Bucket created**: 2024-12-28
 ✅ **API credentials configured**: `arch-s3-api` token
-✅ **Data migrated** from `cosilico-lawarchive` (11 objects, 61.5 MB)
+✅ **Data migrated** from legacy bucket (11 objects, 61.5 MB)
 
 ## API Credentials
 
-Credentials are stored locally at `~/.config/cosilico/r2-credentials.json`
+Credentials are stored locally at `~/.config/rulesfoundation/r2-credentials.json`
 
 Environment variables for scripts:
 
@@ -63,7 +63,7 @@ Environment variables for scripts:
 export R2_ACCOUNT_ID="010d8d7f3b423be5ce36c7a5a49e91e4"
 export R2_ENDPOINT="https://010d8d7f3b423be5ce36c7a5a49e91e4.r2.cloudflarestorage.com"
 export R2_BUCKET="arch"
-# Access key and secret from ~/.config/cosilico/r2-credentials.json
+# Access key and secret from ~/.config/rulesfoundation/r2-credentials.json
 ```
 
 For CI/CD, add secrets:
@@ -135,4 +135,4 @@ arch sync --to-r2 --type=guidance
 ## Related Documentation
 
 - [Source Organization](./architecture/source-organization.md) - Document structure
-- [PostgreSQL Schema](../../cosilico-db/arch/README.md) - Metadata storage
+- [PostgreSQL Schema](../../schema/) - Metadata storage

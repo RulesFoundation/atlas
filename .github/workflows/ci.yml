@@ -108,7 +108,7 @@ jobs:
           DATABASE_URL: postgresql://test:test@localhost:5432/atlas_test
         run: |
           python -c "
-          from arch.storage import PostgresStorage
+          from atlas.storage import PostgresStorage
           storage = PostgresStorage()
           print('PostgreSQL connection successful')
           print('Stats:', storage.get_stats())

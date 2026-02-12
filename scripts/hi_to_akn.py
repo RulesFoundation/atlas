@@ -32,12 +32,12 @@ from xml.dom import minidom
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.converters.us_states.hi import (
+from atlas.converters.us_states.hi import (
     HIConverter,
     HI_TAX_CHAPTERS,
     HI_WELFARE_CHAPTERS,
 )
-from arch.models import Section
+from atlas.models import Section
 
 
 # Akoma Ntoso namespace
@@ -114,21 +114,21 @@ def section_to_akn_xml(section: Section, chapter_num: int, chapter_title: str) -
     manif_date.set("date", str(date.today()))
     manif_date.set("name", "generation")
     manif_author = ET.SubElement(manif, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # References
     references = ET.SubElement(meta, f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
 
     org_legislature = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
     org_legislature.set("eId", "hi-legislature")
     org_legislature.set("href", "/ontology/organization/us-hi/legislature")
     org_legislature.set("showAs", "Hawaii Legislature")
 
-    org_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org_cosilico.set("eId", "cosilico")
-    org_cosilico.set("href", "https://cosilico.ai")
-    org_cosilico.set("showAs", "Cosilico")
+    org_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    org_rf.set("eId", "rules-foundation")
+    org_rf.set("href", "https://rules.foundation")
+    org_rf.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

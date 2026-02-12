@@ -4,8 +4,8 @@ import pytest
 from datetime import date
 from unittest.mock import AsyncMock, patch, MagicMock
 
-from arch.converters.uk_clml import UKCLMLConverter
-from arch.models_uk import UKCitation, UKSection, UKAct
+from atlas.converters.uk_clml import UKCLMLConverter
+from atlas.models_uk import UKCitation, UKSection, UKAct
 
 
 # Sample CLML XML for testing (Finance Act 2024 section 1)

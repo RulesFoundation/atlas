@@ -122,7 +122,7 @@ def create_akn_xml(title_data: dict) -> str:
 
     # Identification block
     identification = ET.SubElement(meta, f"{{{AKN_NS}}}identification")
-    identification.set("source", "#cosilico")
+    identification.set("source", "#rules-foundation")
 
     title_num = title_data["title_number"] or "unknown"
     today = date.today().isoformat()
@@ -166,7 +166,7 @@ def create_akn_xml(title_data: dict) -> str:
     expr_date.set("name", "generation")
 
     expr_author = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRauthor")
-    expr_author.set("href", "#cosilico")
+    expr_author.set("href", "#rules-foundation")
 
     expr_lang = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRlanguage")
     expr_lang.set("language", "eng")
@@ -185,11 +185,11 @@ def create_akn_xml(title_data: dict) -> str:
     manif_date.set("name", "generation")
 
     manif_author = ET.SubElement(manifestation, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # References
     references = ET.SubElement(meta, f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
 
     # TLC Organization for Rhode Island
     tlc_org = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
@@ -197,10 +197,10 @@ def create_akn_xml(title_data: dict) -> str:
     tlc_org.set("href", "/ontology/organization/ri/general-assembly")
     tlc_org.set("showAs", "Rhode Island General Assembly")
 
-    tlc_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    tlc_cosilico.set("eId", "cosilico")
-    tlc_cosilico.set("href", "/ontology/organization/cosilico")
-    tlc_cosilico.set("showAs", "Cosilico")
+    tlc_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    tlc_rf.set("eId", "rules-foundation")
+    tlc_rf.set("href", "https://rules.foundation")
+    tlc_rf.set("showAs", "Rules Foundation")
 
     # Body section
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")
@@ -301,7 +301,7 @@ def convert_all_titles(source_dir: Path, output_dir: Path) -> dict:
 def main():
     """Main entry point."""
     # Paths
-    source_dir = Path("/Users/maxghenis/CosilicoAI/arch/data/statutes/us-ri")
+    source_dir = Path("/Users/maxghenis/RulesFoundation/atlas/data/statutes/us-ri")
     output_dir = Path("/tmp/rules-us-ri-akn")
 
     print("=" * 60)

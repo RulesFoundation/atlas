@@ -1,6 +1,6 @@
 # IRS Guidance Documents in Lawarchive
 
-This document describes the IRS guidance document feature added to cosilico-lawarchive.
+This document describes the IRS guidance document feature added to Atlas.
 
 ## Overview
 
@@ -194,10 +194,10 @@ params = {
 
 ### 3. Link Parameters to Source
 
-When encoding in cosilico-us:
+When encoding in rac-us:
 
 ```python
-# cosilico-us/26/32/eitc.cosilico
+# rac-us/26/32/eitc.rac
 
 Variable:
   path: 26/32/eitc_max_credit
@@ -234,7 +234,7 @@ Create `scripts/extract_rev_proc_params.py` to:
 2. Extract tables using pdfplumber or tabula
 3. Parse EITC parameter tables
 4. Store in `parameters_json` field
-5. Generate Cosilico DSL snippets
+5. Generate RAC DSL snippets
 
 ### Full IRB Scraper
 
@@ -293,10 +293,10 @@ sqlite3 lawarchive.db "
 ## Files Added
 
 ```
-cosilico-lawarchive/
+atlas/
 ├── schema/
 │   └── 002_guidance_documents.sql       # Database schema
-├── src/lawarchive/
+├── src/atlas/
 │   ├── models_guidance.py               # Pydantic models
 │   ├── storage/
 │   │   └── guidance.py                  # Storage backend
@@ -341,4 +341,4 @@ storage.store_revenue_procedure(new_rp)
 
 ## License
 
-Same as cosilico-lawarchive (Apache 2.0).
+Same as Atlas (Apache 2.0).

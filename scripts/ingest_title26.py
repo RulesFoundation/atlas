@@ -7,8 +7,8 @@ Usage:
 
 from pathlib import Path
 
-from arch.archive import LawArchive
-from arch.parsers.uslm import download_title
+from atlas.archive import LawArchive
+from atlas.parsers.uslm import download_title
 
 
 def main():

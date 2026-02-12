@@ -4,18 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-Cosilico Arch is the foundational archive for ALL raw government source files. It downloads, parses, and stores legal and regulatory documents from official sources, enabling programmatic access with full-text search.
+Atlas is Rules Foundation's legal document archive. It downloads, parses, and stores legal and regulatory documents from official government sources, enabling programmatic access with full-text search.
 
 ### Scope
 
-Cosilico Arch archives:
-- **Statutes**: US Code (USLM XML), state statutes (NY, CA, etc.)
+Atlas archives **legal sources only**:
+- **Federal Statutes**: US Code (USLM XML from uscode.house.gov)
+- **State Statutes**: All 50 states (crawled from official legislative sites)
 - **IRS Guidance**: Revenue Procedures, Revenue Rulings, Notices, Publications
-- **Microdata**: CPS Annual Social and Economic Supplement (ASEC), ACS, SCF
-- **Crosstabs**: Tax Statistics of Income (SOI), Census tables
-- **Parameters**: Policy parameters, thresholds, brackets by tax year
+- **Regulations**: CFR titles (from eCFR)
 
-This repo is part of the Cosilico ecosystem (see parent CLAUDE.md for full repo architecture). Its role is **source document archive** - storing PDFs, HTML, XML, and structured text that feeds into the rules encoding pipeline.
+This repo is part of Rules Foundation (see parent CLAUDE.md). For microdata and calibration targets, see the `arch` repo.
+
+### Infrastructure
+
+- **R2 Bucket**: `atlas` (Cloudflare R2)
+- **Credentials**: `~/.config/rulesfoundation/r2-credentials.json`
+- **113k+ documents**, 2GB total
 
 ## Commands
 
@@ -31,9 +36,9 @@ arch search "earned income" --title 26  # Full-text search
 arch serve                 # Start REST API at localhost:8000
 
 # AI encoding pipeline
-arch encode "26 USC 32"    # Encode statute into Cosilico DSL
-arch validate ~/.cosilico/workspace/federal/statute/26/32
-arch verify ~/.cosilico/workspace/federal/statute/26/32 -v eitc
+arch encode "26 USC 32"    # Encode statute into RAC (Rules as Code)
+arch validate ~/.rac/workspace/federal/statute/26/32
+arch verify ~/.rac/workspace/federal/statute/26/32 -v eitc
 
 # Testing
 pytest                           # Run all tests
@@ -63,7 +68,7 @@ mypy src/arch/                   # Type check
         │
         ▼
 ┌─────────────────┐     ┌─────────────────┐
-│  .cosilico      │────▶│  Verifier       │────▶ PolicyEngine
+│  .rac      │────▶│  Verifier       │────▶ PolicyEngine
 │  rules + tests  │     │  verifier.py    │      comparison
 └─────────────────┘     └─────────────────┘
 ```
@@ -75,7 +80,7 @@ mypy src/arch/                   # Type check
 - **`models_guidance.py`** - IRS guidance document models (Rev. Procs, Rulings)
 - **`parsers/uslm.py`** - USLM XML parser for US Code
 - **`storage/sqlite.py`** - SQLite backend with FTS5 full-text search
-- **`encoder.py`** - AI pipeline: statute -> Cosilico DSL
+- **`encoder.py`** - AI pipeline: statute -> RAC (Rules as Code)
 - **`verifier.py`** - Compare DSL outputs vs PolicyEngine
 - **`cli.py`** - Click CLI commands
 
@@ -135,7 +140,7 @@ Citations follow USC format and convert to filesystem paths:
 ### DSL Encoding Output
 
 `arch encode` generates four files per section:
-- `rules.cosilico` - Executable DSL code
+- `rules.rac` - Executable DSL code
 - `tests.yaml` - Test cases for verification
 - `statute.md` - Original statute text
 - `metadata.json` - Provenance (model, tokens, timestamp)
@@ -153,55 +158,11 @@ Run a single test:
 pytest tests/test_models.py::TestCitation::test_parse_simple_citation -v
 ```
 
-## Session Continuation Notes (2024-12-28)
+## Notes
 
-### Completed This Session
-- ✅ Renamed GitHub repo: `cosilico-atlas` → `arch` (CosilicoAI/arch)
-- ✅ Renamed source: `src/atlas` → `src/arch`
-- ✅ Updated all imports and class names (`Atlas` → `Arch`)
-- ✅ Updated README with expanded scope
-- ✅ Git remote updated to `https://github.com/CosilicoAI/arch.git`
+This repo was moved from CosilicoAI to RulesFoundation in Jan 2026. All references have since been updated to Rules Foundation.
 
-### Next Steps (see beads issues)
-1. **CosilicoAI-uj0**: Update cosilico.ai stack pages for Arch
-   - Add `/stack/arch` route
-   - Update StackPage.tsx grid
-   - Create ArchPage.tsx with hero, features, data sources
-
-2. **CosilicoAI-jtu**: Create arch PostgreSQL schema in cosilico-db
-   - Schema already drafted (previous session created migration file)
-   - Tables: sources, files, fetch_log, content, cross_references
-   - Full-text search with tsvector
-
-3. **CosilicoAI-4en**: Set up Cloudflare R2 bucket for raw files
-   - **Status**: Documentation complete, manual bucket creation required
-   - Bucket name: `arch`
-   - Structure: `sources/{statutes,guidance,microdata,crosstabs}/`
-   - See `docs/infrastructure/R2_SETUP.md` for full setup guide
-   - **Blocker**: Current Cloudflare API token lacks R2 permissions
-
-4. **CosilicoAI-yf6**: Rename other repos
-   - `cosilico-engine` → `rac` (the core DSL)
-   - `cosilico-us` → `rac-us` (US federal rules)
-   - `cosilico-compile` → `rac-compile`
-
-### Folder Rename Required
-After exiting Claude Code, rename local folder:
-```bash
-cd ~/CosilicoAI
-mv cosilico-arch arch
-cd arch
-```
-
-### Naming Convention Decided
-```
-CosilicoAI/
-├── rac                 # Core DSL engine
-├── rac-compile         # Multi-target compiler
-├── rac-us              # US federal rules
-├── arch                # Source document archive (this repo)
-├── microplex           # Microdata library
-├── cosilico-db         # Infrastructure (PostgreSQL)
-├── cosilico-api        # Infrastructure (API)
-└── cosilico.ai         # Website
-```
+- **GitHub**: `RulesFoundation/atlas`
+- **Local**: `/Users/maxghenis/RulesFoundation/atlas`
+- **R2 Bucket**: `atlas` (migrated from `arch`)
+- **Credentials**: `~/.config/rulesfoundation/r2-credentials.json`

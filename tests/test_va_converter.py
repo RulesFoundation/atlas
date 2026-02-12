@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.va import (
+from atlas.converters.us_states.va import (
     VA_TAX_TITLES,
     VA_TITLES,
     VA_WELFARE_TITLES,
@@ -18,7 +18,7 @@ from arch.converters.us_states.va import (
     download_va_chapter,
     fetch_va_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from law.lis.virginia.gov for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

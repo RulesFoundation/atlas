@@ -24,7 +24,7 @@ from xml.etree import ElementTree as ET
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.converters.us_states.ar import ARConverter, AR_TAX_CHAPTERS, AR_WELFARE_CHAPTERS, AR_TITLES
+from atlas.converters.us_states.ar import ARConverter, AR_TAX_CHAPTERS, AR_WELFARE_CHAPTERS, AR_TITLES
 
 # Akoma Ntoso namespace
 AKN_NS = "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
@@ -56,7 +56,7 @@ def section_to_akn_xml(section, title_num: int, chapter_num: int) -> str:
 
     # Identification block
     identification = ET.SubElement(meta, f"{{{AKN_NS}}}identification")
-    identification.set("source", "#cosilico")
+    identification.set("source", "#rules-foundation")
 
     # Extract section number from citation (e.g., "AR-26-51-101" -> "26-51-101")
     section_id = section.citation.section.replace("AR-", "")
@@ -102,7 +102,7 @@ def section_to_akn_xml(section, title_num: int, chapter_num: int) -> str:
     expr_date.set("name", "generation")
 
     expr_author = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRauthor")
-    expr_author.set("href", "#cosilico")
+    expr_author.set("href", "#rules-foundation")
 
     expr_lang = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRlanguage")
     expr_lang.set("language", "eng")
@@ -121,11 +121,11 @@ def section_to_akn_xml(section, title_num: int, chapter_num: int) -> str:
     manif_date.set("name", "generation")
 
     manif_author = ET.SubElement(manifestation, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # References
     references = ET.SubElement(meta, f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
 
     # TLC Organizations
     tlc_ar = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
@@ -133,10 +133,10 @@ def section_to_akn_xml(section, title_num: int, chapter_num: int) -> str:
     tlc_ar.set("href", "/ontology/organization/us-ar/general-assembly")
     tlc_ar.set("showAs", "Arkansas General Assembly")
 
-    tlc_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    tlc_cosilico.set("eId", "cosilico")
-    tlc_cosilico.set("href", "/ontology/organization/cosilico")
-    tlc_cosilico.set("showAs", "Cosilico")
+    tlc_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    tlc_rf.set("eId", "rules-foundation")
+    tlc_rf.set("href", "https://rules.foundation")
+    tlc_rf.set("showAs", "Rules Foundation")
 
     tlc_justia = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
     tlc_justia.set("eId", "justia")
@@ -245,7 +245,7 @@ def create_chapter_index(title_num: int, chapter_num: int, section_ids: list[str
 
     meta = ET.SubElement(act, f"{{{AKN_NS}}}meta")
     identification = ET.SubElement(meta, f"{{{AKN_NS}}}identification")
-    identification.set("source", "#cosilico")
+    identification.set("source", "#rules-foundation")
 
     today = date.today().isoformat()
 
@@ -273,7 +273,7 @@ def create_chapter_index(title_num: int, chapter_num: int, section_ids: list[str
     expr_date.set("date", today)
     expr_date.set("name", "generation")
     expr_author = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRauthor")
-    expr_author.set("href", "#cosilico")
+    expr_author.set("href", "#rules-foundation")
     expr_lang = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRlanguage")
     expr_lang.set("language", "eng")
 
@@ -287,7 +287,7 @@ def create_chapter_index(title_num: int, chapter_num: int, section_ids: list[str
     manif_date.set("date", today)
     manif_date.set("name", "generation")
     manif_author = ET.SubElement(manifestation, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

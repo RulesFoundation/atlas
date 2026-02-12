@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.me import (
+from atlas.converters.us_states.me import (
     ME_TAX_CHAPTERS,
     ME_TITLES,
     ME_WELFARE_CHAPTERS,
@@ -18,7 +18,7 @@ from arch.converters.us_states.me import (
     download_me_chapter,
     fetch_me_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 
 # Sample HTML from legislature.maine.gov for testing

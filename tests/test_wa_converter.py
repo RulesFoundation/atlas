@@ -29,7 +29,7 @@ WAConverterError = _wa_module.WAConverterError
 download_wa_chapter = _wa_module.download_wa_chapter
 fetch_wa_section = _wa_module.fetch_wa_section
 
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from app.leg.wa.gov for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

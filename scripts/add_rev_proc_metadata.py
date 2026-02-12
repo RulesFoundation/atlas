@@ -15,8 +15,8 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.models_guidance import GuidanceType, RevenueProcedure
-from arch.storage.guidance import GuidanceStorage
+from atlas.models_guidance import GuidanceType, RevenueProcedure
+from atlas.storage.guidance import GuidanceStorage
 
 
 # EITC-related Revenue Procedures with metadata

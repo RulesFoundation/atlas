@@ -10,7 +10,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 from bs4 import BeautifulSoup
 
-from arch.converters.us_states.ms import (
+from atlas.converters.us_states.ms import (
     MS_TITLES,
     MS_TAX_CHAPTERS,
     MS_WELFARE_CHAPTERS,
@@ -19,7 +19,7 @@ from arch.converters.us_states.ms import (
     download_ms_chapter,
     fetch_ms_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from UniCourt CIC for testing (simplified structure)
 SAMPLE_TITLE_HTML = """<!DOCTYPE html>

@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.nd import (
+from atlas.converters.us_states.nd import (
     ND_TAX_CHAPTERS,
     ND_WELFARE_CHAPTERS,
     NDConverter,
@@ -22,7 +22,7 @@ from arch.converters.us_states.nd import (
     download_nd_chapter,
     fetch_nd_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 
 # Sample HTML from ndlegis.gov for testing

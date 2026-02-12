@@ -18,7 +18,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.ar import (
+from atlas.converters.us_states.ar import (
     AR_TAX_CHAPTERS,
     AR_WELFARE_CHAPTERS,
     ARConverter,
@@ -26,7 +26,7 @@ from arch.converters.us_states.ar import (
     download_ar_chapter,
     fetch_ar_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from Arkansas Code for testing (based on LexisNexis structure)
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

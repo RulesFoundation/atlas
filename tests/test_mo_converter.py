@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.mo import (
+from atlas.converters.us_states.mo import (
     MO_TAX_CHAPTERS,
     MO_WELFARE_CHAPTERS,
     MOConverter,
@@ -17,7 +17,7 @@ from arch.converters.us_states.mo import (
     download_mo_chapter,
     fetch_mo_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from revisor.mo.gov for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

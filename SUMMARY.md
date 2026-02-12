@@ -2,7 +2,7 @@
 
 ## What Was Done
 
-Successfully added IRS Revenue Procedure support to cosilico-lawarchive. The system now stores guidance documents alongside statute text, enabling AI encoding agents to access authoritative parameter sources.
+Successfully added IRS Revenue Procedure support to Atlas. The system now stores guidance documents alongside statute text, enabling AI encoding agents to access authoritative parameter sources.
 
 ## Key Accomplishments
 
@@ -181,7 +181,7 @@ sqlite3 lawarchive.db "
    - Announcements
    - Private Letter Rulings (if available)
 
-3. **Integration with Cosilico Engine**
+3. **Integration with RAC**
    - Add `@source` decorator to reference guidance docs
    - Automatic parameter syncing from lawarchive
    - Validation against official sources
@@ -189,9 +189,9 @@ sqlite3 lawarchive.db "
 4. **API Endpoints**
    - REST API for guidance queries
    - GraphQL interface
-   - Integration with cosilico-api
+   - Integration with RAC API
 
-## Benefits for Cosilico
+## Benefits for Rules Foundation
 
 1. **Source Documentation**
    - Every parameter can cite its authoritative source
@@ -206,7 +206,7 @@ sqlite3 lawarchive.db "
 3. **Automation Potential**
    - AI agents can automatically fetch latest Rev. Procs
    - Extract parameters from PDFs
-   - Update cosilico-us encodings
+   - Update rac-us encodings
    - Flag when new guidance is published
 
 4. **Research Capabilities**
@@ -234,7 +234,7 @@ sqlite3 lawarchive.db "
 
 ## Conclusion
 
-The IRS guidance document feature is now fully operational in cosilico-lawarchive. The system provides:
+The IRS guidance document feature is now fully operational in Atlas. The system provides:
 
 - ✅ Database schema for guidance documents
 - ✅ Python models and storage API
@@ -244,4 +244,4 @@ The IRS guidance document feature is now fully operational in cosilico-lawarchiv
 - ✅ Foundation for automated parameter extraction
 - ✅ Complete documentation
 
-AI encoding agents can now access authoritative parameter sources, enabling fully-cited and verifiable tax and benefit encodings in Cosilico.
+AI encoding agents can now access authoritative parameter sources, enabling fully-cited and verifiable tax and benefit encodings in RAC.

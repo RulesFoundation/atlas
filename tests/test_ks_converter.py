@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.ks import (
+from atlas.converters.us_states.ks import (
     KS_TAX_ARTICLES,
     KS_WELFARE_ARTICLES,
     KSConverter,
@@ -17,7 +17,7 @@ from arch.converters.us_states.ks import (
     download_ks_article,
     fetch_ks_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from kslegislature.gov for testing - simple section
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.dc import (
+from atlas.converters.us_states.dc import (
     DC_TITLES,
     DC_TAX_CHAPTERS,
     DC_WELFARE_CHAPTERS,
@@ -18,7 +18,7 @@ from arch.converters.us_states.dc import (
     download_dc_title,
     fetch_dc_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample XML from dccouncil/law-xml-codified for testing
 # Based on structure from https://raw.githubusercontent.com/dccouncil/law-xml-codified/master/

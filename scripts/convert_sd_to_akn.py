@@ -17,14 +17,14 @@ from xml.etree import ElementTree as ET
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.converters.us_states.sd import (
+from atlas.converters.us_states.sd import (
     SDConverter,
     SD_TITLES,
     SD_TAX_CHAPTERS,
     SD_WELFARE_CHAPTERS,
 )
-from arch.models import Section as ArchSection
-from arch.models_akoma_ntoso import (
+from atlas.models import Section as ArchSection
+from atlas.models_akoma_ntoso import (
     AKN_NAMESPACE,
     Act,
     Chapter,
@@ -97,7 +97,7 @@ def create_akn_document(
     today = date.today()
 
     identification = Identification(
-        source="#cosilico",
+        source="#rules-foundation",
         work=FRBRWork(
             uri=FRBRUri(value=work_uri),
             date=FRBRDate(value=today, name="enactment"),
@@ -108,14 +108,14 @@ def create_akn_document(
         expression=FRBRExpression(
             uri=FRBRUri(value=f"{work_uri}/eng@{today.isoformat()}"),
             date=FRBRDate(value=today, name="publication"),
-            author=FRBRAuthor(href="#cosilico"),
+            author=FRBRAuthor(href="#rules-foundation"),
             language=FRBRLanguage(language="en"),
             this=f"{work_uri}/eng@{today.isoformat()}/main",
         ),
         manifestation=FRBRManifestation(
             uri=FRBRUri(value=f"{work_uri}/eng@{today.isoformat()}.akn"),
             date=FRBRDate(value=today, name="transformation"),
-            author=FRBRAuthor(href="#cosilico"),
+            author=FRBRAuthor(href="#rules-foundation"),
             this=f"{work_uri}/eng@{today.isoformat()}/main.akn",
         ),
     )

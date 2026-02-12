@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.sd import (
+from atlas.converters.us_states.sd import (
     SD_TAX_CHAPTERS,
     SD_WELFARE_CHAPTERS,
     SDConverter,
@@ -17,7 +17,7 @@ from arch.converters.us_states.sd import (
     download_sd_chapter,
     fetch_sd_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from sdlegislature.gov for testing (modern format)
 SAMPLE_SECTION_HTML = """<html xmlns="http://www.w3.org/1999/xhtml"><head>

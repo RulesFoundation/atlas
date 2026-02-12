@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.hi import (
+from atlas.converters.us_states.hi import (
     HI_TAX_CHAPTERS,
     HI_WELFARE_CHAPTERS,
     HIConverter,
@@ -17,7 +17,7 @@ from arch.converters.us_states.hi import (
     download_hi_chapter,
     fetch_hi_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from capitol.hawaii.gov for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

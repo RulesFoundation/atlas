@@ -2,9 +2,9 @@
 """Ingest US Code Titles 27-40 into Supabase."""
 
 import sys
-sys.path.insert(0, '/Users/maxghenis/CosilicoAI/arch/src')
+sys.path.insert(0, '/Users/maxghenis/RulesFoundation/atlas/src')
 
-from arch.ingest.supabase import SupabaseIngestor
+from atlas.ingest.supabase import SupabaseIngestor
 
 def main():
     ingestor = SupabaseIngestor()

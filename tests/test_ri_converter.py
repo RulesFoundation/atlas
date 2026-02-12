@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.ri import (
+from atlas.converters.us_states.ri import (
     RI_TAX_CHAPTERS,
     RI_WELFARE_CHAPTERS,
     RIConverter,
@@ -17,7 +17,7 @@ from arch.converters.us_states.ri import (
     download_ri_chapter,
     fetch_ri_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from rilegislature.gov for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

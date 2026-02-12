@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.nm import (
+from atlas.converters.us_states.nm import (
     NM_TAX_CHAPTERS,
     NM_TAX_ARTICLES,
     NM_WELFARE_CHAPTERS,
@@ -18,7 +18,7 @@ from arch.converters.us_states.nm import (
     NMConverterError,
     parse_nm_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from nmonesource.com for testing
 SAMPLE_TAX_SECTION_HTML = """<!DOCTYPE html>

@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.de import (
+from atlas.converters.us_states.de import (
     DE_TAX_CHAPTERS,
     DE_WELFARE_CHAPTERS,
     DEConverter,
@@ -17,7 +17,7 @@ from arch.converters.us_states.de import (
     download_de_chapter,
     fetch_de_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from delcode.delaware.gov for testing
 SAMPLE_CHAPTER_HTML = """<html>

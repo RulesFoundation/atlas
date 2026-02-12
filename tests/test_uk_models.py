@@ -9,7 +9,7 @@ class TestUKCitation:
 
     def test_parse_primary_act(self):
         """Parse UK Public General Act citation."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation.from_string("ukpga/2003/1")
         assert cite.type == "ukpga"
@@ -19,7 +19,7 @@ class TestUKCitation:
 
     def test_parse_act_with_section(self):
         """Parse citation with section number."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation.from_string("ukpga/2007/3/section/1")
         assert cite.type == "ukpga"
@@ -29,7 +29,7 @@ class TestUKCitation:
 
     def test_parse_statutory_instrument(self):
         """Parse UK Statutory Instrument citation."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation.from_string("uksi/2024/832")
         assert cite.type == "uksi"
@@ -38,7 +38,7 @@ class TestUKCitation:
 
     def test_parse_scottish_act(self):
         """Parse Acts of the Scottish Parliament."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation.from_string("asp/2020/13")
         assert cite.type == "asp"
@@ -47,7 +47,7 @@ class TestUKCitation:
 
     def test_parse_welsh_act(self):
         """Parse Acts of Senedd Cymru (Welsh Parliament)."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation.from_string("asc/2021/4")
         assert cite.type == "asc"
@@ -56,7 +56,7 @@ class TestUKCitation:
 
     def test_parse_ni_act(self):
         """Parse Acts of the Northern Ireland Assembly."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation.from_string("nia/2022/7")
         assert cite.type == "nia"
@@ -65,7 +65,7 @@ class TestUKCitation:
 
     def test_parse_human_readable_citation(self):
         """Parse human-readable citation format."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         # Common short forms
         cite = UKCitation.from_string("ITEPA 2003 s.1")
@@ -74,7 +74,7 @@ class TestUKCitation:
 
     def test_parse_section_with_subsection(self):
         """Parse citation with subsection."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation.from_string("ukpga/2003/1/section/1/1")
         assert cite.section == "1"
@@ -82,28 +82,28 @@ class TestUKCitation:
 
     def test_legislation_url(self):
         """Generate legislation.gov.uk URL."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation(type="ukpga", year=2003, number=1)
         assert cite.legislation_url == "https://www.legislation.gov.uk/ukpga/2003/1"
 
     def test_legislation_url_with_section(self):
         """Generate URL for specific section."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation(type="ukpga", year=2003, number=1, section="1")
         assert cite.legislation_url == "https://www.legislation.gov.uk/ukpga/2003/1/section/1"
 
     def test_data_xml_url(self):
         """Generate XML data URL."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation(type="ukpga", year=2007, number=3, section="23")
         assert cite.data_xml_url == "https://www.legislation.gov.uk/ukpga/2007/3/section/23/data.xml"
 
     def test_short_cite(self):
         """Generate short citation format."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation(type="ukpga", year=2003, number=1, section="62")
         # e.g., "2003 c. 1 s. 62"
@@ -112,21 +112,21 @@ class TestUKCitation:
 
     def test_path(self):
         """Generate filesystem path."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         cite = UKCitation(type="ukpga", year=2003, number=1, section="62", subsection="1/a")
         assert cite.path == "uk/ukpga/2003/1/62/1/a"
 
     def test_invalid_citation_raises(self):
         """Invalid citation raises ValueError."""
-        from arch.models_uk import UKCitation
+        from atlas.models_uk import UKCitation
 
         with pytest.raises(ValueError):
             UKCitation.from_string("not a citation")
 
     def test_type_names(self):
         """Legislation type names are correct."""
-        from arch.models_uk import UK_LEGISLATION_TYPES
+        from atlas.models_uk import UK_LEGISLATION_TYPES
 
         assert UK_LEGISLATION_TYPES["ukpga"] == "UK Public General Act"
         assert UK_LEGISLATION_TYPES["uksi"] == "UK Statutory Instrument"
@@ -138,7 +138,7 @@ class TestUKSection:
 
     def test_create_section(self):
         """Create a basic UK section."""
-        from arch.models_uk import UKSection, UKCitation
+        from atlas.models_uk import UKSection, UKCitation
 
         section = UKSection(
             citation=UKCitation(type="ukpga", year=2003, number=1, section="1"),
@@ -151,7 +151,7 @@ class TestUKSection:
 
     def test_section_with_extent(self):
         """Section includes territorial extent."""
-        from arch.models_uk import UKSection, UKCitation
+        from atlas.models_uk import UKSection, UKCitation
 
         section = UKSection(
             citation=UKCitation(type="ukpga", year=2003, number=1, section="1"),
@@ -165,7 +165,7 @@ class TestUKSection:
 
     def test_section_with_amendments(self):
         """Section tracks amendment history."""
-        from arch.models_uk import UKSection, UKCitation, UKAmendment
+        from atlas.models_uk import UKSection, UKCitation, UKAmendment
 
         amendment = UKAmendment(
             type="substitution",
@@ -185,7 +185,7 @@ class TestUKSection:
 
     def test_section_with_subsections(self):
         """Section contains subsections."""
-        from arch.models_uk import UKSection, UKCitation, UKSubsection
+        from atlas.models_uk import UKSection, UKCitation, UKSubsection
 
         subsec = UKSubsection(
             id="1",
@@ -202,7 +202,7 @@ class TestUKSection:
 
     def test_section_path(self):
         """Section has path property."""
-        from arch.models_uk import UKSection, UKCitation
+        from atlas.models_uk import UKSection, UKCitation
 
         section = UKSection(
             citation=UKCitation(type="ukpga", year=2003, number=1, section="62"),
@@ -218,7 +218,7 @@ class TestUKAct:
 
     def test_create_act(self):
         """Create a UK Act with metadata."""
-        from arch.models_uk import UKAct, UKCitation
+        from atlas.models_uk import UKAct, UKCitation
 
         act = UKAct(
             citation=UKCitation(type="ukpga", year=2003, number=1),
@@ -234,7 +234,7 @@ class TestUKAct:
 
     def test_act_with_parts(self):
         """Act can have parts structure."""
-        from arch.models_uk import UKAct, UKCitation, UKPart
+        from atlas.models_uk import UKAct, UKCitation, UKPart
 
         part = UKPart(
             number="1",
@@ -256,7 +256,7 @@ class TestUKSubsection:
 
     def test_nested_subsections(self):
         """Subsections can be nested."""
-        from arch.models_uk import UKSubsection
+        from atlas.models_uk import UKSubsection
 
         para_a = UKSubsection(id="a", text="(a) employment income (see Part 2),")
         para_b = UKSubsection(id="b", text="(b) pension income (see Part 9),")
@@ -275,7 +275,7 @@ class TestUKSearchResult:
 
     def test_create_search_result(self):
         """Create a search result."""
-        from arch.models_uk import UKSearchResult
+        from atlas.models_uk import UKSearchResult
 
         result = UKSearchResult(
             citation="ukpga/2003/1/section/62",

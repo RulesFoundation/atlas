@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 import pytest
 
 # Import directly from the module to avoid full package import
-from arch.converters.base import (
+from atlas.converters.base import (
     LegalDocConverter,
     AkomaNtoso,
     AknSection,

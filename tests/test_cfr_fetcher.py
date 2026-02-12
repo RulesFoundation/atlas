@@ -42,7 +42,7 @@ class TestECFRFetcher:
 
     def test_fetcher_init(self):
         """Initialize fetcher with default settings."""
-        from arch.fetchers.ecfr import ECFRFetcher
+        from atlas.fetchers.ecfr import ECFRFetcher
 
         fetcher = ECFRFetcher()
         assert fetcher.base_url == "https://www.govinfo.gov/bulkdata/ECFR"
@@ -50,14 +50,14 @@ class TestECFRFetcher:
 
     def test_fetcher_custom_data_dir(self, tmp_path):
         """Initialize fetcher with custom data directory."""
-        from arch.fetchers.ecfr import ECFRFetcher
+        from atlas.fetchers.ecfr import ECFRFetcher
 
         fetcher = ECFRFetcher(data_dir=tmp_path)
         assert fetcher.data_dir == tmp_path
 
     def test_get_title_url(self):
         """Get URL for a specific CFR title."""
-        from arch.fetchers.ecfr import ECFRFetcher
+        from atlas.fetchers.ecfr import ECFRFetcher
 
         fetcher = ECFRFetcher()
         url = fetcher.get_title_url(26)
@@ -66,7 +66,7 @@ class TestECFRFetcher:
 
     def test_available_titles(self):
         """List of available CFR titles."""
-        from arch.fetchers.ecfr import ECFRFetcher
+        from atlas.fetchers.ecfr import ECFRFetcher
 
         fetcher = ECFRFetcher()
         # Treasury regulations are in Title 26
@@ -82,7 +82,7 @@ class TestECFRDownload:
     @pytest.mark.asyncio
     async def test_download_title(self, tmp_path):
         """Download a CFR title XML file."""
-        from arch.fetchers.ecfr import ECFRFetcher
+        from atlas.fetchers.ecfr import ECFRFetcher
 
         fetcher = ECFRFetcher(data_dir=tmp_path)
 
@@ -100,7 +100,7 @@ class TestECFRDownload:
     @pytest.mark.asyncio
     async def test_download_creates_directory(self, tmp_path):
         """Download creates data directory if missing."""
-        from arch.fetchers.ecfr import ECFRFetcher
+        from atlas.fetchers.ecfr import ECFRFetcher
 
         nested_dir = tmp_path / "nested" / "cfr"
         fetcher = ECFRFetcher(data_dir=nested_dir)
@@ -119,7 +119,7 @@ class TestECFRParsing:
 
     def test_parse_downloaded_title(self, tmp_path):
         """Parse a downloaded CFR title file."""
-        from arch.fetchers.ecfr import ECFRFetcher
+        from atlas.fetchers.ecfr import ECFRFetcher
 
         fetcher = ECFRFetcher(data_dir=tmp_path)
 
@@ -134,7 +134,7 @@ class TestECFRParsing:
 
     def test_parse_with_filter(self, tmp_path):
         """Parse CFR title with part filter."""
-        from arch.fetchers.ecfr import ECFRFetcher
+        from atlas.fetchers.ecfr import ECFRFetcher
 
         fetcher = ECFRFetcher(data_dir=tmp_path)
 
@@ -152,7 +152,7 @@ class TestECFRMetadata:
 
     def test_extract_amendment_date(self, tmp_path):
         """Extract amendment date from title XML."""
-        from arch.fetchers.ecfr import ECFRFetcher
+        from atlas.fetchers.ecfr import ECFRFetcher
 
         fetcher = ECFRFetcher(data_dir=tmp_path)
 
@@ -166,7 +166,7 @@ class TestECFRMetadata:
 
     def test_count_sections(self, tmp_path):
         """Count sections in a title."""
-        from arch.fetchers.ecfr import ECFRFetcher
+        from atlas.fetchers.ecfr import ECFRFetcher
 
         fetcher = ECFRFetcher(data_dir=tmp_path)
 

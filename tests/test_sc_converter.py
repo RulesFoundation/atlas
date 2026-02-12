@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.sc import (
+from atlas.converters.us_states.sc import (
     SC_TITLES,
     SC_TAX_CHAPTERS,
     SC_WELFARE_CHAPTERS,
@@ -18,7 +18,7 @@ from arch.converters.us_states.sc import (
     download_sc_chapter,
     fetch_sc_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from scstatehouse.gov for testing
 # Based on actual SC Code structure: sections use <p><b>SECTION X-X-X. Title.</b></p>

@@ -14,7 +14,7 @@ class TestPDFTextExtractor:
 
     def test_extract_text_from_pdf_bytes(self):
         """Extract text from raw PDF bytes."""
-        from arch.fetchers.pdf_extractor import PDFTextExtractor
+        from atlas.fetchers.pdf_extractor import PDFTextExtractor
 
         # Sample PDF bytes would need a real PDF for integration testing
         # For unit tests, we mock the pymupdf calls
@@ -37,7 +37,7 @@ class TestPDFTextExtractor:
 
     def test_extract_text_handles_multi_page_pdf(self):
         """Extract text from multi-page PDF, preserving page order."""
-        from arch.fetchers.pdf_extractor import PDFTextExtractor
+        from atlas.fetchers.pdf_extractor import PDFTextExtractor
 
         extractor = PDFTextExtractor()
 
@@ -59,7 +59,7 @@ class TestPDFTextExtractor:
 
     def test_extract_text_cleans_whitespace(self):
         """Clean up excessive whitespace from PDF extraction."""
-        from arch.fetchers.pdf_extractor import PDFTextExtractor
+        from atlas.fetchers.pdf_extractor import PDFTextExtractor
 
         extractor = PDFTextExtractor()
 
@@ -86,7 +86,7 @@ class TestIRSDocumentParser:
 
     def test_parse_revenue_procedure_sections(self):
         """Parse SECTION headings from Rev. Proc. text."""
-        from arch.fetchers.irs_parser import IRSDocumentParser
+        from atlas.fetchers.irs_parser import IRSDocumentParser
 
         text = """
         Rev. Proc. 2024-40
@@ -123,7 +123,7 @@ class TestIRSDocumentParser:
 
     def test_parse_subsections(self):
         """Parse .01, .02 subsections within main sections."""
-        from arch.fetchers.irs_parser import IRSDocumentParser
+        from atlas.fetchers.irs_parser import IRSDocumentParser
 
         text = """
         SECTION 2. 2025 ADJUSTED ITEMS
@@ -157,7 +157,7 @@ class TestIRSDocumentParser:
 
     def test_extract_tax_year(self):
         """Extract applicable tax year from document."""
-        from arch.fetchers.irs_parser import IRSDocumentParser
+        from atlas.fetchers.irs_parser import IRSDocumentParser
 
         text = """
         Rev. Proc. 2024-40
@@ -174,7 +174,7 @@ class TestIRSDocumentParser:
 
     def test_extract_document_number(self):
         """Extract Rev. Proc. document number."""
-        from arch.fetchers.irs_parser import IRSDocumentParser
+        from atlas.fetchers.irs_parser import IRSDocumentParser
 
         text = """
         Rev. Proc. 2024-40
@@ -191,7 +191,7 @@ class TestIRSDocumentParser:
 
     def test_extract_code_references(self):
         """Extract IRC section references from document."""
-        from arch.fetchers.irs_parser import IRSDocumentParser
+        from atlas.fetchers.irs_parser import IRSDocumentParser
 
         text = """
         (Also Part I, ss 1, 23, 24, 25A, 32, 36B, 42, 45R, 55, 59, 62, 63)
@@ -216,7 +216,7 @@ class TestIRSParameterExtractor:
 
     def test_extract_eitc_parameters(self):
         """Extract EITC threshold and credit amounts."""
-        from arch.fetchers.irs_parser import IRSParameterExtractor
+        from atlas.fetchers.irs_parser import IRSParameterExtractor
 
         # Format matches real Rev. Proc. 2024-40 PDF extraction
         text = """
@@ -289,7 +289,7 @@ class TestIRSParameterExtractor:
 
     def test_extract_standard_deduction(self):
         """Extract standard deduction amounts."""
-        from arch.fetchers.irs_parser import IRSParameterExtractor
+        from atlas.fetchers.irs_parser import IRSParameterExtractor
 
         text = """
         .15 Standard Deduction.
@@ -331,7 +331,7 @@ class TestIRSParameterExtractor:
 
     def test_extract_ctc_parameters(self):
         """Extract Child Tax Credit amounts."""
-        from arch.fetchers.irs_parser import IRSParameterExtractor
+        from atlas.fetchers.irs_parser import IRSParameterExtractor
 
         text = """
         .04 Child Tax Credit.
@@ -367,10 +367,10 @@ class TestIRSGuidanceIntegration:
         This test requires network access to IRS.gov.
         Run with: pytest -m integration
         """
-        from arch.fetchers.irs_bulk import IRSBulkFetcher, IRSDropDocument
-        from arch.fetchers.pdf_extractor import PDFTextExtractor
-        from arch.fetchers.irs_parser import IRSDocumentParser, IRSParameterExtractor
-        from arch.models_guidance import GuidanceType
+        from atlas.fetchers.irs_bulk import IRSBulkFetcher, IRSDropDocument
+        from atlas.fetchers.pdf_extractor import PDFTextExtractor
+        from atlas.fetchers.irs_parser import IRSDocumentParser, IRSParameterExtractor
+        from atlas.models_guidance import GuidanceType
 
         doc = IRSDropDocument(
             doc_type=GuidanceType.REV_PROC,

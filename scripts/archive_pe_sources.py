@@ -183,7 +183,7 @@ def main():
 
     client = httpx.Client(
         timeout=60,
-        headers={"User-Agent": "Cosilico-Arch/1.0 (policy document archiver)"},
+        headers={"User-Agent": "Atlas/1.0 (policy document archiver; contact@rules.foundation)"},
         follow_redirects=True,
     )
 

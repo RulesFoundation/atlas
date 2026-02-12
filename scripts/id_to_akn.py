@@ -4,7 +4,7 @@
 This script fetches Idaho Statutes directly from the official legislature website
 and converts them to Akoma Ntoso XML format, outputting to /tmp/rules-us-id-akn/.
 
-Uses the existing IDConverter from arch.converters.us_states.id_.
+Uses the existing IDConverter from atlas.converters.us_states.id_.
 
 Usage:
     python scripts/id_to_akn.py
@@ -29,14 +29,14 @@ from xml.etree import ElementTree as ET
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.converters.us_states.id_ import (
+from atlas.converters.us_states.id_ import (
     ID_TAX_CHAPTERS,
     ID_TITLES,
     ID_WELFARE_CHAPTERS,
     IDConverter,
     IDConverterError,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Akoma Ntoso namespace
 AKN_NS = "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
@@ -112,7 +112,7 @@ def create_akn_xml(title_num: int, chapter_num: int, chapter_title: str, section
 
     # Identification
     identification = ET.SubElement(meta, f"{{{AKN_NS}}}identification")
-    identification.set("source", "#cosilico")
+    identification.set("source", "#rules-foundation")
 
     today = date.today().isoformat()
 
@@ -155,7 +155,7 @@ def create_akn_xml(title_num: int, chapter_num: int, chapter_title: str, section
     expr_date.set("name", "generation")
 
     expr_author = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRauthor")
-    expr_author.set("href", "#cosilico")
+    expr_author.set("href", "#rules-foundation")
 
     expr_lang = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRlanguage")
     expr_lang.set("language", "eng")
@@ -174,11 +174,11 @@ def create_akn_xml(title_num: int, chapter_num: int, chapter_title: str, section
     manif_date.set("name", "generation")
 
     manif_author = ET.SubElement(manifestation, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # References
     references = ET.SubElement(meta, f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
 
     # TLC Organizations
     tlc_id = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
@@ -186,10 +186,10 @@ def create_akn_xml(title_num: int, chapter_num: int, chapter_title: str, section
     tlc_id.set("href", "https://legislature.idaho.gov")
     tlc_id.set("showAs", "Idaho State Legislature")
 
-    tlc_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    tlc_cosilico.set("eId", "cosilico")
-    tlc_cosilico.set("href", "https://cosilico.ai")
-    tlc_cosilico.set("showAs", "Cosilico")
+    tlc_rf = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
+    tlc_rf.set("eId", "rules-foundation")
+    tlc_rf.set("href", "https://rules.foundation")
+    tlc_rf.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

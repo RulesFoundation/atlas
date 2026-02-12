@@ -5,12 +5,12 @@ from pathlib import Path
 from unittest.mock import Mock, patch, MagicMock
 from io import BytesIO
 
-from arch.converters.ca_laws import (
+from atlas.converters.ca_laws import (
     CanadaLawsConverter,
     CanadaLawsSource,
     BilingualContent,
 )
-from arch.models_canada import CanadaAct, CanadaSection, CanadaCitation
+from atlas.models_canada import CanadaAct, CanadaSection, CanadaCitation
 
 
 # Sample minimal XML for testing
