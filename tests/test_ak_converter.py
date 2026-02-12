@@ -47,28 +47,11 @@ revenue source;</p>
 </html>
 """
 
-SAMPLE_TITLE_INDEX_HTML = """<!DOCTYPE html>
-<html>
-<head><title>Alaska Statutes 2024 - Title 43</title></head>
-<body>
-<h1>Title 43. Revenue and Taxation</h1>
-<div id="content">
-<h2>Chapter 05. Administration of Revenue Laws</h2>
-<ul>
-<li><a href="#43.05.010">43.05.010. Duties of the department of revenue</a></li>
-<li><a href="#43.05.020">43.05.020. Powers of the department</a></li>
-<li><a href="#43.05.030">43.05.030. Rules and regulations</a></li>
-<li><a href="#43.05.040">43.05.040. Taxpayer assistance</a></li>
-</ul>
-<h2>Chapter 20. Alaska Net Income Tax Act</h2>
-<ul>
-<li><a href="#43.20.011">43.20.011. Imposition of tax on corporations</a></li>
-<li><a href="#43.20.012">43.20.012. Tax rates</a></li>
-<li><a href="#43.20.014">43.20.014. Definitions</a></li>
-</ul>
-</div>
-</body>
-</html>
+SAMPLE_TITLE_INDEX_HTML = """
+<a name=#43.05.010 >Sec. 43.05.010.   Duties of the department of revenue.</a>
+<a name=#43.05.020 >Sec. 43.05.020.   Powers of the department.</a>
+<a name=#43.05.030 >Sec. 43.05.030.   Rules and regulations.</a>
+<a name=#43.05.040 >Sec. 43.05.040.   Taxpayer assistance.</a>
 """
 
 

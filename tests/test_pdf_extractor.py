@@ -20,7 +20,7 @@ class TestPDFTextExtractor:
         # For unit tests, we mock the pymupdf calls
         extractor = PDFTextExtractor()
 
-        with patch("arch.fetchers.pdf_extractor.fitz") as mock_fitz:
+        with patch("atlas.fetchers.pdf_extractor.fitz") as mock_fitz:
             # Mock a simple PDF document
             mock_doc = MagicMock()
             mock_page = MagicMock()
@@ -41,7 +41,7 @@ class TestPDFTextExtractor:
 
         extractor = PDFTextExtractor()
 
-        with patch("arch.fetchers.pdf_extractor.fitz") as mock_fitz:
+        with patch("atlas.fetchers.pdf_extractor.fitz") as mock_fitz:
             mock_doc = MagicMock()
             mock_page1 = MagicMock()
             mock_page1.get_text.return_value = "Page 1 content"
@@ -63,7 +63,7 @@ class TestPDFTextExtractor:
 
         extractor = PDFTextExtractor()
 
-        with patch("arch.fetchers.pdf_extractor.fitz") as mock_fitz:
+        with patch("atlas.fetchers.pdf_extractor.fitz") as mock_fitz:
             mock_doc = MagicMock()
             mock_page = MagicMock()
             # PDF extraction often has weird spacing

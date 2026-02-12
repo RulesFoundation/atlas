@@ -1,38 +1,20 @@
-"""Tests for New York state converter (converters/us_states/ny.py).
+"""Tests for New York state converter (converters/us_states/ny.py)."""
 
-These tests use direct module loading to avoid triggering the full arch package
-import chain, which has heavy dependencies.
-"""
-
-import importlib.util
 import os
-import sys
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 from xml.etree import ElementTree as ET
 
 import pytest
 
-# Load the module directly to avoid full arch package import chain
-_src_path = Path(__file__).parent.parent / "src"
-sys.path.insert(0, str(_src_path))
-
-_spec = importlib.util.spec_from_file_location(
-    "ny_converter",
-    _src_path / "arch" / "converters" / "us_states" / "ny.py",
+from atlas.converters.us_states.ny import (
+    NY_LAW_CODES,
+    NYFetchResult,
+    NYLawInfo,
+    NYLegislationAPIError,
+    NYSection,
+    NYStateConverter,
+    USLM_NS,
 )
-_ny_module = importlib.util.module_from_spec(_spec)
-sys.modules["ny_converter"] = _ny_module
-_spec.loader.exec_module(_ny_module)
-
-# Import from the loaded module
-NY_LAW_CODES = _ny_module.NY_LAW_CODES
-NYFetchResult = _ny_module.NYFetchResult
-NYLawInfo = _ny_module.NYLawInfo
-NYLegislationAPIError = _ny_module.NYLegislationAPIError
-NYSection = _ny_module.NYSection
-NYStateConverter = _ny_module.NYStateConverter
-USLM_NS = _ny_module.USLM_NS
 
 
 class TestNYLawCodes:

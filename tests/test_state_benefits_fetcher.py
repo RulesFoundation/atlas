@@ -36,7 +36,7 @@ class TestSNAPSUAFetcher:
     def test_parse_sua_data(self, fetcher, tmp_path):
         """Test parsing SUA Excel data."""
         # Create a mock Excel file with expected structure
-        import pandas as pd
+        pd = pytest.importorskip("pandas")
 
         df = pd.DataFrame(
             {

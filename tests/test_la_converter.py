@@ -6,41 +6,19 @@ and converts to the internal Section model.
 
 from datetime import date
 from unittest.mock import patch
-import importlib.util
-import os
-import sys
 
 import pytest
 
-# Direct import to avoid __init__ chain import issues with other state converters
-_la_spec = importlib.util.spec_from_file_location(
-    "la",
-    os.path.join(os.path.dirname(__file__), "..", "src", "arch", "converters", "us_states", "la.py")
+from atlas.converters.us_states.la import (
+    LAConverter,
+    LAConverterError,
+    LA_TITLES,
+    LA_TAX_SECTIONS,
+    LA_WELFARE_SECTIONS,
+    LA_KNOWN_DOC_IDS,
+    fetch_la_section,
 )
-_la_module = importlib.util.module_from_spec(_la_spec)
-
-# We need arch.models for the la module
-if "arch.models" not in sys.modules:
-    _models_spec = importlib.util.spec_from_file_location(
-        "arch.models",
-        os.path.join(os.path.dirname(__file__), "..", "src", "arch", "models.py")
-    )
-    _models_module = importlib.util.module_from_spec(_models_spec)
-    sys.modules["arch.models"] = _models_module
-    _models_spec.loader.exec_module(_models_module)
-
-_la_spec.loader.exec_module(_la_module)
-
-LAConverter = _la_module.LAConverter
-LAConverterError = _la_module.LAConverterError
-LA_TITLES = _la_module.LA_TITLES
-LA_TAX_SECTIONS = _la_module.LA_TAX_SECTIONS
-LA_WELFARE_SECTIONS = _la_module.LA_WELFARE_SECTIONS
-LA_KNOWN_DOC_IDS = _la_module.LA_KNOWN_DOC_IDS
-fetch_la_section = _la_module.fetch_la_section
-
-# Import Section from our loaded models module
-Section = sys.modules["arch.models"].Section
+from atlas.models import Section
 
 # Sample HTML from legis.la.gov for testing (based on RS 47:287.445)
 # Note: The actual website returns HTML with newlines between paragraph elements

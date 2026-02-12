@@ -359,7 +359,7 @@ class TestModuleFunctions:
 
     def test_fetch_regulation(self):
         """Module function fetches regulation."""
-        with patch('arch.converters.ecfr.ECFRConverter') as MockConverter:
+        with patch('atlas.converters.ecfr.ECFRConverter') as MockConverter:
             mock_converter = Mock()
             mock_converter.fetch.return_value = FetchResult(
                 success=True,
