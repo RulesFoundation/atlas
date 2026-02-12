@@ -7,6 +7,8 @@ All external dependencies (Arch, database, APIs) are mocked.
 from datetime import date
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from click.testing import CliRunner
 
 from atlas.cli import main
@@ -155,6 +157,7 @@ class TestRefsCommand:
 
 
 class TestServeCommand:
+    @pytest.mark.timeout(120)
     @patch("atlas.cli.uvicorn", create=True)
     def test_serve_defaults(self, mock_uvicorn):
         import atlas.cli

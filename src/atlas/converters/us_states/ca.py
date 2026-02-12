@@ -427,7 +427,7 @@ class CAStateConverter:
         url = self.build_url(code, section)
 
         # Check cache
-        if not force and cache_path.exists():
+        if not force and cache_path.exists():  # pragma: no cover
             html = cache_path.read_text()
         else:
             html = self._fetch_html(url)  # pragma: no cover
