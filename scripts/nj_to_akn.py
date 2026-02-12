@@ -65,7 +65,7 @@ def fetch_title_toc(title: str) -> list[dict]:
     client = httpx.Client(
         timeout=60.0,
         headers={
-            "User-Agent": "Arch/1.0 (Statute Research; contact@cosilico.ai)",
+            "User-Agent": "Arch/1.0 (Statute Research; contact@rules.foundation)",
             "Accept": "text/html,application/xhtml+xml",
         },
         follow_redirects=True,
@@ -148,7 +148,7 @@ def fetch_section_content(url: str, section_number: str) -> dict:
     client = httpx.Client(
         timeout=60.0,
         headers={
-            "User-Agent": "Arch/1.0 (Statute Research; contact@cosilico.ai)",
+            "User-Agent": "Arch/1.0 (Statute Research; contact@rules.foundation)",
             "Accept": "text/html,application/xhtml+xml",
         },
         follow_redirects=True,
@@ -292,7 +292,7 @@ def create_akn_xml(section: dict, title_num: str, title_name: str) -> str:
     expr_date.set("name", "generation")
 
     expr_author = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRauthor")
-    expr_author.set("href", "#cosilico")
+    expr_author.set("href", "#rules-foundation")
 
     expr_lang = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRlanguage")
     expr_lang.set("language", "eng")
@@ -311,11 +311,11 @@ def create_akn_xml(section: dict, title_num: str, title_name: str) -> str:
     manif_date.set("name", "generation")
 
     manif_author = ET.SubElement(manifestation, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # References
     references = ET.SubElement(meta, f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
 
     tlc_njleg = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
     tlc_njleg.set("eId", "njleg")
@@ -323,9 +323,9 @@ def create_akn_xml(section: dict, title_num: str, title_name: str) -> str:
     tlc_njleg.set("showAs", "New Jersey Legislature")
 
     tlc_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    tlc_cosilico.set("eId", "cosilico")
+    tlc_cosilico.set("eId", "rules-foundation")
     tlc_cosilico.set("href", "/ontology/organization/cosilico")
-    tlc_cosilico.set("showAs", "Cosilico")
+    tlc_cosilico.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")
@@ -443,7 +443,7 @@ def create_title_index_xml(title_num: str, title_name: str, sections: list[dict]
     expr_date.set("name", "generation")
 
     expr_author = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRauthor")
-    expr_author.set("href", "#cosilico")
+    expr_author.set("href", "#rules-foundation")
 
     expr_lang = ET.SubElement(expression, f"{{{AKN_NS}}}FRBRlanguage")
     expr_lang.set("language", "eng")
@@ -462,11 +462,11 @@ def create_title_index_xml(title_num: str, title_name: str, sections: list[dict]
     manif_date.set("name", "generation")
 
     manif_author = ET.SubElement(manifestation, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # References
     references = ET.SubElement(meta, f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
 
     tlc_njleg = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
     tlc_njleg.set("eId", "njleg")
@@ -474,9 +474,9 @@ def create_title_index_xml(title_num: str, title_name: str, sections: list[dict]
     tlc_njleg.set("showAs", "New Jersey Legislature")
 
     tlc_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    tlc_cosilico.set("eId", "cosilico")
+    tlc_cosilico.set("eId", "rules-foundation")
     tlc_cosilico.set("href", "/ontology/organization/cosilico")
-    tlc_cosilico.set("showAs", "Cosilico")
+    tlc_cosilico.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

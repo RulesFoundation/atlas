@@ -4,7 +4,7 @@
 import sys
 sys.path.insert(0, '/Users/maxghenis/CosilicoAI/arch/src')
 
-from arch.ingest.supabase import SupabaseIngestor
+from atlas.ingest.supabase import SupabaseIngestor
 
 def main():
     ingestor = SupabaseIngestor()

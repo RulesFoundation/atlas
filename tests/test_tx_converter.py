@@ -17,7 +17,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.models import Section
+from atlas.models import Section
 
 # Import tx module directly using importlib to bypass __init__.py chain
 # (other state converters may have syntax errors during development)

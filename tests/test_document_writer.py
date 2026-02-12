@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from arch.writer import (
+from atlas.writer import (
     CanonicalDocument,
     DocumentWriter,
     LocalBackend,

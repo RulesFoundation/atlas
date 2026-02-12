@@ -30,7 +30,7 @@ from xml.dom import minidom
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 try:
-    from arch.converters.us_states.ny import NYStateConverter, NYFetchResult, NY_LAW_CODES
+    from atlas.converters.us_states.ny import NYStateConverter, NYFetchResult, NY_LAW_CODES
 except ImportError:
     # Try direct import for standalone use
     import importlib.util
@@ -143,8 +143,8 @@ def section_to_akn(result: NYFetchResult, converter: NYStateConverter) -> str:
     # TLC references
     arch_ref = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     arch_ref.set("eId", "arch")
-    arch_ref.set("href", "https://cosilico.ai")
-    arch_ref.set("showAs", "Cosilico Arch")
+    arch_ref.set("href", "https://rules.foundation")
+    arch_ref.set("showAs", "Atlas")
 
     ny_leg = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     ny_leg.set("eId", "ny-legislature")

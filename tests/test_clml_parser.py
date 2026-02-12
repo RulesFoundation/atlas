@@ -137,7 +137,7 @@ class TestCLMLParser:
 
     def test_parse_section_basic(self):
         """Parse a basic CLML section."""
-        from arch.parsers.clml import parse_section
+        from atlas.parsers.clml import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         assert section is not None
@@ -148,7 +148,7 @@ class TestCLMLParser:
 
     def test_parse_section_title(self):
         """Extract section heading/title."""
-        from arch.parsers.clml import parse_section
+        from atlas.parsers.clml import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         # Section 62 defines "Earnings"
@@ -156,7 +156,7 @@ class TestCLMLParser:
 
     def test_parse_section_text(self):
         """Extract full section text."""
-        from arch.parsers.clml import parse_section
+        from atlas.parsers.clml import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         assert "salary" in section.text
@@ -165,7 +165,7 @@ class TestCLMLParser:
 
     def test_parse_section_subsections(self):
         """Parse subsection structure."""
-        from arch.parsers.clml import parse_section
+        from atlas.parsers.clml import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         # Should have subsections a, b, c
@@ -175,14 +175,14 @@ class TestCLMLParser:
 
     def test_parse_enacted_date(self):
         """Extract enactment date from metadata."""
-        from arch.parsers.clml import parse_section
+        from atlas.parsers.clml import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         assert section.enacted_date == date(2003, 4, 10)
 
     def test_parse_section_source_url(self):
         """Extract source URL from DocumentURI."""
-        from arch.parsers.clml import parse_section
+        from atlas.parsers.clml import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         assert section.source_url == "http://www.legislation.gov.uk/ukpga/2003/1/section/62"
@@ -193,7 +193,7 @@ class TestCLMLActParser:
 
     def test_parse_act_metadata(self):
         """Parse Act-level metadata."""
-        from arch.parsers.clml import parse_act_metadata
+        from atlas.parsers.clml import parse_act_metadata
 
         act = parse_act_metadata(SAMPLE_ACT_METADATA_XML)
         assert act.title == "Income Tax (Earnings and Pensions) Act 2003"
@@ -202,7 +202,7 @@ class TestCLMLActParser:
 
     def test_parse_act_dates(self):
         """Parse enactment and commencement dates."""
-        from arch.parsers.clml import parse_act_metadata
+        from atlas.parsers.clml import parse_act_metadata
 
         act = parse_act_metadata(SAMPLE_ACT_METADATA_XML)
         assert act.enacted_date == date(2003, 4, 10)
@@ -210,7 +210,7 @@ class TestCLMLActParser:
 
     def test_parse_act_parts(self):
         """Parse parts structure."""
-        from arch.parsers.clml import parse_act_metadata
+        from atlas.parsers.clml import parse_act_metadata
 
         act = parse_act_metadata(SAMPLE_ACT_METADATA_XML)
         assert len(act.parts) >= 2
@@ -218,7 +218,7 @@ class TestCLMLActParser:
 
     def test_parse_act_section_count(self):
         """Extract section count from NumberOfProvisions."""
-        from arch.parsers.clml import parse_act_metadata
+        from atlas.parsers.clml import parse_act_metadata
 
         act = parse_act_metadata(SAMPLE_ACT_METADATA_XML)
         assert act.section_count == 725
@@ -229,7 +229,7 @@ class TestCLMLAmendmentParsing:
 
     def test_parse_amendments(self):
         """Parse amendment/substitution elements."""
-        from arch.parsers.clml import parse_section
+        from atlas.parsers.clml import parse_section
 
         section = parse_section(SAMPLE_SECTION_WITH_AMENDMENT_XML)
         # Should detect the substitution
@@ -237,7 +237,7 @@ class TestCLMLAmendmentParsing:
 
     def test_amendment_details(self):
         """Extract amendment details from commentary."""
-        from arch.parsers.clml import parse_section
+        from atlas.parsers.clml import parse_section
 
         section = parse_section(SAMPLE_SECTION_WITH_AMENDMENT_XML)
         if section.amendments:
@@ -251,7 +251,7 @@ class TestCLMLTextExtraction:
 
     def test_extract_text_content(self):
         """Extract plain text from mixed content."""
-        from arch.parsers.clml import extract_text
+        from atlas.parsers.clml import extract_text
 
         xml = "<Text>any <Term>salary</Term>, wages or fee,</Text>"
         text = extract_text(xml)
@@ -261,7 +261,7 @@ class TestCLMLTextExtraction:
 
     def test_normalize_whitespace(self):
         """Normalize whitespace in extracted text."""
-        from arch.parsers.clml import extract_text
+        from atlas.parsers.clml import extract_text
 
         xml = "<Text>some    text\n\nwith   spaces</Text>"
         text = extract_text(xml)
@@ -273,7 +273,7 @@ class TestCLMLCitationExtraction:
 
     def test_extract_citations(self):
         """Extract citation URIs from text."""
-        from arch.parsers.clml import extract_citations
+        from atlas.parsers.clml import extract_citations
 
         xml = SAMPLE_SECTION_WITH_AMENDMENT_XML
         citations = extract_citations(xml)
@@ -285,7 +285,7 @@ class TestCLMLExtentParsing:
 
     def test_parse_extent(self):
         """Parse RestrictExtent attribute."""
-        from arch.parsers.clml import parse_extent
+        from atlas.parsers.clml import parse_extent
 
         # E+W+S+N.I. format
         extent = parse_extent("E+W+S+N.I.")
@@ -296,7 +296,7 @@ class TestCLMLExtentParsing:
 
     def test_parse_extent_partial(self):
         """Parse partial extent."""
-        from arch.parsers.clml import parse_extent
+        from atlas.parsers.clml import parse_extent
 
         extent = parse_extent("E+W")
         assert len(extent) == 2

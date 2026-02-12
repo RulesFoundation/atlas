@@ -43,7 +43,7 @@ image = (
 @modal.asgi_app()
 def fastapi_app():
     """Serve the Arch FastAPI application."""
-    from arch.api.main import create_app
+    from atlas.api.main import create_app
 
     # Create app with volume-mounted database
     return create_app(db_path=DB_PATH)

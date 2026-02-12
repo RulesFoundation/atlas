@@ -17,13 +17,13 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 from xml.dom import minidom
 
-from arch.converters.us_states.ct import (
+from atlas.converters.us_states.ct import (
     CTConverter,
     CT_TAX_CHAPTERS,
     CT_WELFARE_CHAPTERS,
     CT_TITLES,
 )
-from arch.models import Section
+from atlas.models import Section
 
 
 # Akoma Ntoso namespace
@@ -114,8 +114,8 @@ def section_to_akn_xml(section: Section, chapter_num: str, chapter_title: str) -
 
     org_arch = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
     org_arch.set("eId", "arch")
-    org_arch.set("href", "https://cosilico.ai")
-    org_arch.set("showAs", "Cosilico Arch")
+    org_arch.set("href", "https://rules.foundation")
+    org_arch.set("showAs", "Atlas")
 
     org_ct = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
     org_ct.set("eId", "ct-legislature")

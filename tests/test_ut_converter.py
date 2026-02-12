@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.ut import (
+from atlas.converters.us_states.ut import (
     UT_TITLES,
     UT_TAX_CHAPTERS,
     UT_WELFARE_CHAPTERS,
@@ -19,7 +19,7 @@ from arch.converters.us_states.ut import (
     download_ut_chapter,
     fetch_ut_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample wrapper HTML that contains version info
 SAMPLE_WRAPPER_HTML = """<!DOCTYPE html>

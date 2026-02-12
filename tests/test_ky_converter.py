@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from arch.converters.us_states.ky import (
+from atlas.converters.us_states.ky import (
     KY_CHAPTER_IDS,
     KY_TAX_CHAPTERS,
     KY_WELFARE_CHAPTERS,
@@ -18,7 +18,7 @@ from arch.converters.us_states.ky import (
     download_ky_chapter,
     fetch_ky_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from chapter.aspx for testing (chapter 141 - Income Taxes)
 SAMPLE_CHAPTER_HTML = """<!DOCTYPE html>

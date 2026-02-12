@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.il import (
+from atlas.converters.us_states.il import (
     IL_CHAPTERS,
     IL_CHAPTER_IDS,
     IL_PUBLIC_AID_ACTS,
@@ -19,7 +19,7 @@ from arch.converters.us_states.il import (
     download_il_act,
     fetch_il_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from ilga.gov for testing - based on actual 35 ILCS 5/201 structure
 # Note: Subsections need proper spacing for regex parsing

@@ -224,11 +224,11 @@ def create_akn_xml(section: dict, state: str, config: dict) -> str:
     manif_date.set("date", str(date.today()))
     manif_date.set("name", "generation")
     manif_author = ET.SubElement(manif, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # References
     references = ET.SubElement(meta, f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
 
     org_legislature = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
     org_legislature.set("eId", f"{state}-legislature")
@@ -241,9 +241,9 @@ def create_akn_xml(section: dict, state: str, config: dict) -> str:
     org_publicresource.set("showAs", "Public.Resource.Org")
 
     org_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org_cosilico.set("eId", "cosilico")
-    org_cosilico.set("href", "https://cosilico.ai")
-    org_cosilico.set("showAs", "Cosilico")
+    org_cosilico.set("eId", "rules-foundation")
+    org_cosilico.set("href", "https://rules.foundation")
+    org_cosilico.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.nj import (
+from atlas.converters.us_states.nj import (
     NJ_TAX_TITLES,
     NJ_WELFARE_TITLES,
     NJConverter,
@@ -17,7 +17,7 @@ from arch.converters.us_states.nj import (
     fetch_nj_section,
     search_nj_statutes,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from lis.njleg.state.nj.us for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

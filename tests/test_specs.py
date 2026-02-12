@@ -2,7 +2,7 @@
 
 import pytest
 
-from arch.sources.specs import (
+from atlas.sources.specs import (
     StateSpec,
     load_spec,
     load_all_specs,
@@ -85,7 +85,7 @@ class TestLoadSpec:
     def test_spec_caching(self):
         """Specs are cached after first load."""
         # Clear cache first
-        from arch.sources.specs import _specs_cache
+        from atlas.sources.specs import _specs_cache
         _specs_cache.clear()
 
         spec1 = load_spec("us-or")

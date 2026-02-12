@@ -25,12 +25,12 @@ from xml.dom import minidom
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.converters.us_states.wi import (
+from atlas.converters.us_states.wi import (
     WIConverter,
     WI_TAX_CHAPTERS,
     WI_WELFARE_CHAPTERS,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Akoma Ntoso namespace
 AKN_NS = "http://docs.oasis-open.org/legaldocml/ns/akn/3.0"
@@ -119,8 +119,8 @@ def create_akn_xml(chapter_num: int, chapter_title: str, sections: list[Section]
     # TLC references
     arch_ref = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     arch_ref.set("eId", "arch")
-    arch_ref.set("href", "https://cosilico.ai")
-    arch_ref.set("showAs", "Cosilico Arch")
+    arch_ref.set("href", "https://rules.foundation")
+    arch_ref.set("showAs", "Atlas")
 
     wi_leg = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     wi_leg.set("eId", "wisconsin-legislature")

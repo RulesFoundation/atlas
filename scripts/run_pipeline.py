@@ -14,7 +14,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from arch.storage.r2 import get_r2_arch, get_r2_rules_xml
+from atlas.storage.r2 import get_r2_arch, get_r2_rules_xml
 
 
 # State converter imports - we'll dynamically import based on state
@@ -115,7 +115,7 @@ def section_to_akn_xml(section, state: str) -> str:
     expr_date.set("date", str(date.today()))
     expr_date.set("name", "publication")
     expr_author = ET.SubElement(expr, f"{{{AKN_NS}}}FRBRauthor")
-    expr_author.set("href", "#cosilico")
+    expr_author.set("href", "#rules-foundation")
     expr_lang = ET.SubElement(expr, f"{{{AKN_NS}}}FRBRlanguage")
     expr_lang.set("language", "eng")
 
@@ -129,15 +129,15 @@ def section_to_akn_xml(section, state: str) -> str:
     manif_date.set("date", str(date.today()))
     manif_date.set("name", "generation")
     manif_author = ET.SubElement(manif, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # References
     references = ET.SubElement(meta, f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
     org = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org.set("eId", "cosilico")
-    org.set("href", "https://cosilico.ai")
-    org.set("showAs", "Cosilico")
+    org.set("eId", "rules-foundation")
+    org.set("href", "https://rules.foundation")
+    org.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

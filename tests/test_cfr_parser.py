@@ -45,7 +45,7 @@ class TestCFRParser:
 
     def test_parse_section_basic(self):
         """Parse a basic CFR section."""
-        from arch.parsers.cfr import parse_section
+        from atlas.parsers.cfr import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         assert section is not None
@@ -56,7 +56,7 @@ class TestCFRParser:
 
     def test_parse_section_full_text(self):
         """Section full text is extracted."""
-        from arch.parsers.cfr import parse_section
+        from atlas.parsers.cfr import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         assert "earned income means" in section.full_text
@@ -64,7 +64,7 @@ class TestCFRParser:
 
     def test_parse_section_subsections(self):
         """Subsections are parsed from paragraph structure."""
-        from arch.parsers.cfr import parse_section
+        from atlas.parsers.cfr import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         # Should have subsection (a) and (b)
@@ -74,7 +74,7 @@ class TestCFRParser:
 
     def test_parse_section_source(self):
         """Source citation is extracted from CITA element."""
-        from arch.parsers.cfr import parse_section
+        from atlas.parsers.cfr import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         assert "T.D. 9954" in section.source
@@ -82,7 +82,7 @@ class TestCFRParser:
 
     def test_parse_section_node_path(self):
         """NODE attribute is used to derive citation."""
-        from arch.parsers.cfr import parse_section
+        from atlas.parsers.cfr import parse_section
 
         section = parse_section(SAMPLE_SECTION_XML)
         # NODE is "26:1.0.1.1.1.0.1.100" -> title 26
@@ -94,7 +94,7 @@ class TestCFRPartParser:
 
     def test_parse_part_with_authority(self):
         """Parse part to extract authority statement."""
-        from arch.parsers.cfr import parse_part
+        from atlas.parsers.cfr import parse_part
 
         part = parse_part(SAMPLE_PART_XML)
         assert part is not None
@@ -102,7 +102,7 @@ class TestCFRPartParser:
 
     def test_parse_part_sections(self):
         """Parse all sections within a part."""
-        from arch.parsers.cfr import parse_part
+        from atlas.parsers.cfr import parse_part
 
         part = parse_part(SAMPLE_PART_XML)
         assert len(part["sections"]) >= 1
@@ -114,7 +114,7 @@ class TestCFRTitleParser:
 
     def test_parse_title_metadata(self):
         """Parse title metadata from header."""
-        from arch.parsers.cfr import CFRParser
+        from atlas.parsers.cfr import CFRParser
 
         # Minimal title XML
         title_xml = """<?xml version="1.0" encoding="UTF-8" ?>
@@ -140,7 +140,7 @@ class TestCFRTitleParser:
 
     def test_iterate_sections(self):
         """Iterate over all sections in a title."""
-        from arch.parsers.cfr import CFRParser
+        from atlas.parsers.cfr import CFRParser
 
         # Title with one section
         title_xml = f"""<?xml version="1.0" encoding="UTF-8" ?>
@@ -173,7 +173,7 @@ class TestParagraphParsing:
 
     def test_extract_subsection_id(self):
         """Extract subsection ID from paragraph text."""
-        from arch.parsers.cfr import extract_subsection_id
+        from atlas.parsers.cfr import extract_subsection_id
 
         assert extract_subsection_id("(a) In general.") == "a"
         assert extract_subsection_id("(1) First item.") == "1"
@@ -182,7 +182,7 @@ class TestParagraphParsing:
 
     def test_extract_heading(self):
         """Extract heading from italic text."""
-        from arch.parsers.cfr import extract_heading
+        from atlas.parsers.cfr import extract_heading
 
         assert extract_heading("(a) <I>In general.</I> The rule...") == "In general"
         assert extract_heading("(a) No heading here.") is None

@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cosilico-arch"
+name = "atlas"
 version = "0.1.0"
 description = "Foundational archive for all raw government source files - statutes, IRS guidance, microdata, crosstabs, and parameters"
 readme = "README.md"
@@ -64,14 +64,14 @@ verify = [
 ]
 
 [project.scripts]
-arch = "arch.cli:main"
-arch-build = "arch.scripts.build_archive:main"
-arch-pipeline = "arch.pipeline.cli:main"
+atlas = "atlas.cli:main"
+atlas-build = "atlas.scripts.build_archive:main"
+atlas-pipeline = "atlas.pipeline.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/CosilicoAI/arch"
-Documentation = "https://docs.cosilico.ai/arch"
-Repository = "https://github.com/CosilicoAI/arch"
+Homepage = "https://github.com/RulesFoundation/atlas"
+Documentation = "https://github.com/RulesFoundation/atlas"
+Repository = "https://github.com/RulesFoundation/atlas"
 
 [tool.setuptools.packages.find]
 where = ["src"]

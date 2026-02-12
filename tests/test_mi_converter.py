@@ -340,7 +340,7 @@ class TestMCLToArchSection:
 
     def test_convert_to_arch_section(self):
         """Convert MCL section to Arch Section model."""
-        from arch.models import Section, Citation
+        from atlas.models import Section, Citation
 
         converter = MichiganConverter()
         chapter = converter.parse_chapter_xml(SAMPLE_CHAPTER_XML)

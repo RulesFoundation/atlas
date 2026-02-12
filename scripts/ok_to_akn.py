@@ -20,12 +20,12 @@ from xml.dom import minidom
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.converters.us_states.ok import (
+from atlas.converters.us_states.ok import (
     OKConverter,
     OK_TITLES,
     OK_SECTIONS,
 )
-from arch.models import Section
+from atlas.models import Section
 
 
 # Akoma Ntoso namespace
@@ -118,8 +118,8 @@ def create_akn_xml(section: Section, title_num: int, title_name: str) -> str:
     # TLC references
     arch_ref = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     arch_ref.set("eId", "arch")
-    arch_ref.set("href", "https://cosilico.ai")
-    arch_ref.set("showAs", "Cosilico Arch")
+    arch_ref.set("href", "https://rules.foundation")
+    arch_ref.set("showAs", "Atlas")
 
     ok_leg = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     ok_leg.set("eId", "oklahoma-legislature")

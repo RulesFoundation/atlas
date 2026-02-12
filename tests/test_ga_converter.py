@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.ga import (
+from atlas.converters.us_states.ga import (
     GA_TAX_CHAPTERS,
     GA_SOCIAL_SERVICES_CHAPTERS,
     GA_TITLES,
@@ -18,7 +18,7 @@ from arch.converters.us_states.ga import (
     download_ga_chapter,
     fetch_ga_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 
 # Sample HTML from ga.elaws.us for testing

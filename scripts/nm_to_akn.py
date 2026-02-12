@@ -34,7 +34,7 @@ from xml.dom import minidom
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.converters.us_states.nm import (
+from atlas.converters.us_states.nm import (
     NM_CHAPTERS,
     NM_TAX_CHAPTERS,
     NM_TAX_ARTICLES,
@@ -81,7 +81,7 @@ def create_frbr_identification(chapter_num: int | str, chapter_name: str) -> ET.
     expr_date.set("date", today)
     expr_date.set("name", "publication")
     expr_author = ET.SubElement(expr, f"{{{AKN_NS}}}FRBRauthor")
-    expr_author.set("href", "#cosilico")
+    expr_author.set("href", "#rules-foundation")
     expr_lang = ET.SubElement(expr, f"{{{AKN_NS}}}FRBRlanguage")
     expr_lang.set("language", "eng")
 
@@ -95,7 +95,7 @@ def create_frbr_identification(chapter_num: int | str, chapter_name: str) -> ET.
     manif_date.set("date", today)
     manif_date.set("name", "generation")
     manif_author = ET.SubElement(manif, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     return identification
 
@@ -103,7 +103,7 @@ def create_frbr_identification(chapter_num: int | str, chapter_name: str) -> ET.
 def create_references() -> ET.Element:
     """Create references section with TLC entries."""
     references = ET.Element(f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
 
     # NM Legislature
     org_leg = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
@@ -119,9 +119,9 @@ def create_references() -> ET.Element:
 
     # Cosilico
     org_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org_cosilico.set("eId", "cosilico")
-    org_cosilico.set("href", "https://cosilico.ai")
-    org_cosilico.set("showAs", "Cosilico")
+    org_cosilico.set("eId", "rules-foundation")
+    org_cosilico.set("href", "https://rules.foundation")
+    org_cosilico.set("showAs", "Rules Foundation")
 
     return references
 

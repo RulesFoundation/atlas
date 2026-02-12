@@ -138,7 +138,7 @@ def create_title_akn(title_num: int, articles: dict[str, str]) -> str:
 
     # Identification
     identification = ET.SubElement(meta, f"{{{AKN_NS}}}identification")
-    identification.set("source", "#cosilico")
+    identification.set("source", "#rules-foundation")
 
     today = date.today().isoformat()
     work_uri = f"/akn/us-in/act/ic/title-{title_num}"
@@ -173,7 +173,7 @@ def create_title_akn(title_num: int, articles: dict[str, str]) -> str:
     expr_date.set("date", today)
     expr_date.set("name", "generation")
     expr_author = ET.SubElement(expr, f"{{{AKN_NS}}}FRBRauthor")
-    expr_author.set("href", "#cosilico")
+    expr_author.set("href", "#rules-foundation")
     expr_lang = ET.SubElement(expr, f"{{{AKN_NS}}}FRBRlanguage")
     expr_lang.set("language", "eng")
 
@@ -187,11 +187,11 @@ def create_title_akn(title_num: int, articles: dict[str, str]) -> str:
     manif_date.set("date", today)
     manif_date.set("name", "generation")
     manif_author = ET.SubElement(manif, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # References
     references = ET.SubElement(meta, f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
 
     org_legislature = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
     org_legislature.set("eId", "in-legislature")
@@ -199,9 +199,9 @@ def create_title_akn(title_num: int, articles: dict[str, str]) -> str:
     org_legislature.set("showAs", "Indiana General Assembly")
 
     org_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org_cosilico.set("eId", "cosilico")
-    org_cosilico.set("href", "https://cosilico.ai")
-    org_cosilico.set("showAs", "Cosilico")
+    org_cosilico.set("eId", "rules-foundation")
+    org_cosilico.set("href", "https://rules.foundation")
+    org_cosilico.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

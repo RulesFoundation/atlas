@@ -10,8 +10,8 @@ import httpx
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.parsers.canada import CanadaStatuteParser
-from arch.models_canada import CanadaSection, CanadaSubsection
+from atlas.parsers.canada import CanadaStatuteParser
+from atlas.models_canada import CanadaSection, CanadaSubsection
 
 # Configuration
 SUPABASE_URL = "https://nsupqhfchdtqclomlrgs.supabase.co"

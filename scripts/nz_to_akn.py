@@ -31,7 +31,7 @@ from xml.dom import minidom
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 # Import directly to avoid dependency chain issues
-from arch.converters.nz_pco import NZPCOConverter, NZLegislation, NZProvision, NZLabeledParagraph
+from atlas.converters.nz_pco import NZPCOConverter, NZLegislation, NZProvision, NZLabeledParagraph
 
 
 # Akoma Ntoso namespace
@@ -127,8 +127,8 @@ def nz_legislation_to_akn_xml(legislation: NZLegislation) -> str:
     # TLC references
     arch_ref = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     arch_ref.set("eId", "arch")
-    arch_ref.set("href", "https://cosilico.ai")
-    arch_ref.set("showAs", "Cosilico Arch")
+    arch_ref.set("href", "https://rules.foundation")
+    arch_ref.set("showAs", "Atlas")
 
     nz_parl = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     nz_parl.set("eId", "nz-parliament")

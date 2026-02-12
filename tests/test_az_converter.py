@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.az import (
+from atlas.converters.us_states.az import (
     AZ_TITLES,
     AZ_TAX_CHAPTERS,
     AZ_WELFARE_CHAPTERS,
@@ -18,7 +18,7 @@ from arch.converters.us_states.az import (
     download_az_title,
     fetch_az_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from azleg.gov for testing
 SAMPLE_SECTION_HTML = """<HTML>

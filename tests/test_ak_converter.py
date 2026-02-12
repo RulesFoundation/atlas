@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.ak import (
+from atlas.converters.us_states.ak import (
     AK_TAX_CHAPTERS,
     AK_TITLES,
     AK_WELFARE_CHAPTERS,
@@ -18,7 +18,7 @@ from arch.converters.us_states.ak import (
     download_ak_chapter,
     fetch_ak_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from akleg.gov for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

@@ -27,7 +27,7 @@ OK_TITLES = _ok_module.OK_TITLES
 fetch_ok_section = _ok_module.fetch_ok_section
 download_ok_title = _ok_module.download_ok_title
 
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from OSCN for testing - Tax Code definition section
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

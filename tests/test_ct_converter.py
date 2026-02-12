@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.ct import (
+from atlas.converters.us_states.ct import (
     CT_TAX_CHAPTERS,
     CT_WELFARE_CHAPTERS,
     CT_TITLES,
@@ -18,7 +18,7 @@ from arch.converters.us_states.ct import (
     download_ct_chapter,
     fetch_ct_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from cga.ct.gov for testing
 SAMPLE_CHAPTER_HTML = """<!DOCTYPE html>

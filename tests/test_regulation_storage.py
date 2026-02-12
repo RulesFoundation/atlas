@@ -10,7 +10,7 @@ class TestRegulationStorageSchema:
 
     def test_creates_regulations_table(self, tmp_path):
         """Creates regulations table on init."""
-        from arch.storage.regulation import RegulationStorage
+        from atlas.storage.regulation import RegulationStorage
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -19,7 +19,7 @@ class TestRegulationStorageSchema:
 
     def test_creates_fts_table(self, tmp_path):
         """Creates FTS5 virtual table for full-text search."""
-        from arch.storage.regulation import RegulationStorage
+        from atlas.storage.regulation import RegulationStorage
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -33,7 +33,7 @@ class TestRegulationStorageSchema:
 
     def test_creates_cfr_titles_table(self, tmp_path):
         """Creates cfr_titles metadata table."""
-        from arch.storage.regulation import RegulationStorage
+        from atlas.storage.regulation import RegulationStorage
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -46,8 +46,8 @@ class TestRegulationStore:
 
     def test_store_regulation(self, tmp_path):
         """Store a single regulation."""
-        from arch.storage.regulation import RegulationStorage
-        from arch.models_regulation import Regulation, CFRCitation
+        from atlas.storage.regulation import RegulationStorage
+        from atlas.models_regulation import Regulation, CFRCitation
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -70,8 +70,8 @@ class TestRegulationStore:
 
     def test_store_regulation_with_subsections(self, tmp_path):
         """Store regulation with subsections."""
-        from arch.storage.regulation import RegulationStorage
-        from arch.models_regulation import Regulation, CFRCitation, RegulationSubsection
+        from atlas.storage.regulation import RegulationStorage
+        from atlas.models_regulation import Regulation, CFRCitation, RegulationSubsection
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -99,8 +99,8 @@ class TestRegulationStore:
 
     def test_upsert_regulation(self, tmp_path):
         """Update existing regulation on re-store."""
-        from arch.storage.regulation import RegulationStorage
-        from arch.models_regulation import Regulation, CFRCitation
+        from atlas.storage.regulation import RegulationStorage
+        from atlas.models_regulation import Regulation, CFRCitation
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -130,7 +130,7 @@ class TestRegulationRetrieve:
 
     def test_get_regulation_not_found(self, tmp_path):
         """Returns None for non-existent regulation."""
-        from arch.storage.regulation import RegulationStorage
+        from atlas.storage.regulation import RegulationStorage
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -140,8 +140,8 @@ class TestRegulationRetrieve:
 
     def test_get_by_citation(self, tmp_path):
         """Get regulation by CFR citation object."""
-        from arch.storage.regulation import RegulationStorage
-        from arch.models_regulation import Regulation, CFRCitation
+        from atlas.storage.regulation import RegulationStorage
+        from atlas.models_regulation import Regulation, CFRCitation
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -167,8 +167,8 @@ class TestRegulationSearch:
 
     def test_search_by_text(self, tmp_path):
         """Search regulations by text content."""
-        from arch.storage.regulation import RegulationStorage
-        from arch.models_regulation import Regulation, CFRCitation
+        from atlas.storage.regulation import RegulationStorage
+        from atlas.models_regulation import Regulation, CFRCitation
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -201,8 +201,8 @@ class TestRegulationSearch:
 
     def test_search_by_title(self, tmp_path):
         """Filter search by CFR title."""
-        from arch.storage.regulation import RegulationStorage
-        from arch.models_regulation import Regulation, CFRCitation
+        from atlas.storage.regulation import RegulationStorage
+        from atlas.models_regulation import Regulation, CFRCitation
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -240,8 +240,8 @@ class TestCFRTitleMetadata:
 
     def test_list_cfr_titles(self, tmp_path):
         """List all ingested CFR titles."""
-        from arch.storage.regulation import RegulationStorage
-        from arch.models_regulation import Regulation, CFRCitation
+        from atlas.storage.regulation import RegulationStorage
+        from atlas.models_regulation import Regulation, CFRCitation
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -268,8 +268,8 @@ class TestCFRTitleMetadata:
 
     def test_count_regulations_by_title(self, tmp_path):
         """Count regulations in a title."""
-        from arch.storage.regulation import RegulationStorage
-        from arch.models_regulation import Regulation, CFRCitation
+        from atlas.storage.regulation import RegulationStorage
+        from atlas.models_regulation import Regulation, CFRCitation
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)
@@ -296,8 +296,8 @@ class TestRegulationsByPart:
 
     def test_list_regulations_in_part(self, tmp_path):
         """List all regulations in a CFR part."""
-        from arch.storage.regulation import RegulationStorage
-        from arch.models_regulation import Regulation, CFRCitation
+        from atlas.storage.regulation import RegulationStorage
+        from atlas.models_regulation import Regulation, CFRCitation
 
         db_path = tmp_path / "test.db"
         storage = RegulationStorage(db_path)

@@ -21,7 +21,7 @@ from xml.dom import minidom
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.converters.us_states.wv import (
+from atlas.converters.us_states.wv import (
     WVConverter,
     WV_CHAPTERS,
     WV_TAX_CHAPTERS,
@@ -29,7 +29,7 @@ from arch.converters.us_states.wv import (
     WV_TAX_ARTICLES,
     WV_WELFARE_ARTICLES,
 )
-from arch.models import Section, Subsection
+from atlas.models import Section, Subsection
 
 
 # Akoma Ntoso namespace
@@ -107,11 +107,11 @@ def section_to_akn_xml(section: Section) -> str:
     manif_date.set("date", str(date.today()))
     manif_date.set("name", "generation")
     manif_author = ET.SubElement(manif, f"{{{AKN_NS}}}FRBRauthor")
-    manif_author.set("href", "#cosilico")
+    manif_author.set("href", "#rules-foundation")
 
     # References
     references = ET.SubElement(meta, f"{{{AKN_NS}}}references")
-    references.set("source", "#cosilico")
+    references.set("source", "#rules-foundation")
 
     org_legislature = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
     org_legislature.set("eId", "wv-legislature")
@@ -119,9 +119,9 @@ def section_to_akn_xml(section: Section) -> str:
     org_legislature.set("showAs", "West Virginia Legislature")
 
     org_cosilico = ET.SubElement(references, f"{{{AKN_NS}}}TLCOrganization")
-    org_cosilico.set("eId", "cosilico")
-    org_cosilico.set("href", "https://cosilico.ai")
-    org_cosilico.set("showAs", "Cosilico")
+    org_cosilico.set("eId", "rules-foundation")
+    org_cosilico.set("href", "https://rules.foundation")
+    org_cosilico.set("showAs", "Rules Foundation")
 
     # Body
     body = ET.SubElement(act, f"{{{AKN_NS}}}body")

@@ -8,11 +8,11 @@ import pytest
 from datetime import datetime
 from unittest.mock import Mock, patch, MagicMock
 
-from arch.converters.us_states.ca import (
+from atlas.converters.us_states.ca import (
     CAStateConverter,
     CA_CODES,
 )
-from arch.models_statute import Statute, StatuteSubsection
+from atlas.models_statute import Statute, StatuteSubsection
 
 
 # Sample HTML from leginfo for testing

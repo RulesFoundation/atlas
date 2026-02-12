@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.nc import (
+from atlas.converters.us_states.nc import (
     NC_TAX_CHAPTERS,
     NC_SOCIAL_CHAPTERS,
     NCConverter,
@@ -17,7 +17,7 @@ from arch.converters.us_states.nc import (
     download_nc_chapter,
     fetch_nc_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from ncleg.gov for testing (based on actual structure)
 SAMPLE_SECTION_HTML = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.tn import (
+from atlas.converters.us_states.tn import (
     TN_TAX_CHAPTERS,
     TN_TITLES,
     TN_WELFARE_CHAPTERS,
@@ -18,7 +18,7 @@ from arch.converters.us_states.tn import (
     download_tn_chapter,
     fetch_tn_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from Public.Resource.Org's TCA for testing
 SAMPLE_TITLE_67_HTML = """<!DOCTYPE html>

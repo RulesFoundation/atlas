@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from arch.fetchers.state_benefits import (
+from atlas.fetchers.state_benefits import (
     SNAPSUAFetcher,
     TANFFetcher,
     CCDFFetcher,
@@ -186,7 +186,7 @@ class TestFIPSCodes:
 
     def test_state_name_to_fips(self):
         """Test converting state names to FIPS codes."""
-        from arch.fetchers.state_benefits import state_name_to_fips
+        from atlas.fetchers.state_benefits import state_name_to_fips
 
         assert state_name_to_fips("Alabama") == "01"
         assert state_name_to_fips("California") == "06"
@@ -195,7 +195,7 @@ class TestFIPSCodes:
 
     def test_state_abbrev_to_fips(self):
         """Test converting state abbreviations to FIPS codes."""
-        from arch.fetchers.state_benefits import state_abbrev_to_fips
+        from atlas.fetchers.state_benefits import state_abbrev_to_fips
 
         assert state_abbrev_to_fips("AL") == "01"
         assert state_abbrev_to_fips("CA") == "06"

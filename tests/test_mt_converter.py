@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import pytest
 
-from arch.converters.us_states.mt import (
+from atlas.converters.us_states.mt import (
     MT_TAX_CHAPTERS,
     MT_WELFARE_CHAPTERS,
     MTConverter,
@@ -17,7 +17,7 @@ from arch.converters.us_states.mt import (
     download_mt_chapter,
     fetch_mt_section,
 )
-from arch.models import Section
+from atlas.models import Section
 
 # Sample HTML from archive.legmt.gov for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

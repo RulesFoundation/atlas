@@ -21,7 +21,7 @@ from pathlib import Path
 from xml.dom import minidom
 from xml.etree import ElementTree as ET
 
-from arch.converters.us_states.mn import (
+from atlas.converters.us_states.mn import (
     MNConverter,
     MN_TAX_CHAPTERS,
     MN_WELFARE_CHAPTERS,
@@ -116,8 +116,8 @@ def create_akn_xml(chapter_num: str, chapter_title: str, sections: list[dict]) -
     # TLC references
     arch_ref = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     arch_ref.set("eId", "arch")
-    arch_ref.set("href", "https://cosilico.ai")
-    arch_ref.set("showAs", "Cosilico Arch")
+    arch_ref.set("href", "https://rules.foundation")
+    arch_ref.set("showAs", "Atlas")
 
     mn_leg = ET.SubElement(refs, f"{{{AKN_NS}}}TLCOrganization")
     mn_leg.set("eId", "mn-legislature")

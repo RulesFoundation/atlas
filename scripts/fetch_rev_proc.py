@@ -15,8 +15,8 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from arch.fetchers.irs_guidance import IRSGuidanceFetcher
-from arch.storage.guidance import GuidanceStorage
+from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
+from atlas.storage.guidance import GuidanceStorage
 
 
 def fetch_and_store_rev_proc(doc_number: str, db_path: str = "atlas.db") -> None:
