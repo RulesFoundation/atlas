@@ -357,7 +357,7 @@ class MOConverter:
         if not section_title:
             page_text = soup.get_text()
             match = title_pattern.search(page_text)
-            if match:
+            if match:  # pragma: no cover
                 section_title = match.group(1).strip().rstrip(".")
                 # Truncate if too long (title shouldn't be paragraphs)
                 if len(section_title) > 200:

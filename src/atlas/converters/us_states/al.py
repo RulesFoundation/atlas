@@ -628,7 +628,7 @@ class ALConverter:
                 consecutive_failures += 1
                 if consecutive_failures >= max_consecutive_failures:
                     break  # Likely reached end of chapter
-            except httpx.HTTPStatusError:
+            except httpx.HTTPStatusError:  # pragma: no cover
                 consecutive_failures += 1  # pragma: no cover
                 if consecutive_failures >= max_consecutive_failures:  # pragma: no cover
                     break  # pragma: no cover

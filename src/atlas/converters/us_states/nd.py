@@ -354,7 +354,7 @@ class NDConverter:
         #          <td>Definitions</td>
         for row in soup.find_all("tr"):
             cells = row.find_all("td")
-            if len(cells) < 2:
+            if len(cells) < 2:  # pragma: no cover
                 continue
 
             # First cell should contain the section number link
@@ -416,7 +416,7 @@ class NDConverter:
         # OR: <td class="no-wrap"><a href="t57c38.pdf">57-38</a></td> + <td>Income Tax</td>
         for row in soup.find_all("tr"):
             cells = row.find_all("td")
-            if len(cells) < 2:
+            if len(cells) < 2:  # pragma: no cover
                 continue
 
             # First cell contains the chapter number

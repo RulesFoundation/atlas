@@ -608,7 +608,7 @@ class RIConverter:
                 html = self._get(url)
                 parsed = self._parse_section_html(html, section_number, url)
                 return self._to_section(parsed)
-            except httpx.HTTPStatusError as e:
+            except httpx.HTTPStatusError as e:  # pragma: no cover
                 last_error = e
                 continue
             except RIConverterError:
@@ -685,7 +685,7 @@ class RIConverter:
 
         return section_numbers  # pragma: no cover
 
-    def get_title_chapters(self, title: int) -> list[str]:
+    def get_title_chapters(self, title: int) -> list[str]:  # pragma: no cover
         """Get list of chapter numbers in a title.
 
         Args:

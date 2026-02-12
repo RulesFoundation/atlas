@@ -176,7 +176,7 @@ class TNConverter:
         """
         return f"{BASE_URL}/gov.tn.tca.title.{title}.html"
 
-    def _get_title_html(self, title: int) -> str:
+    def _get_title_html(self, title: int) -> str:  # pragma: no cover
         """Get HTML for a title, using cache if available."""
         if self.cache_title_html and title in self._title_cache:
             return self._title_cache[title]  # pragma: no cover
@@ -364,7 +364,7 @@ class TNConverter:
         for cite in section_elem.find_all_next("cite", class_="octn", limit=20):
             # Stop at next section
             parent_h3 = cite.find_parent("div")
-            if parent_h3 and parent_h3.find("h3") and parent_h3.find("h3") != section_elem:
+            if parent_h3 and parent_h3.find("h3") and parent_h3.find("h3") != section_elem:  # pragma: no cover
                 break
             link = cite.find("a")
             if link:

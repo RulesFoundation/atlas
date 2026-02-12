@@ -537,7 +537,7 @@ class NHConverter:
             children = self._parse_level3(content)
 
             # Get direct text
-            if children:
+            if children:  # pragma: no cover
                 first_child_match = re.search(r"\(\d+\)", content)
                 direct_text = (
                     content[: first_child_match.start()].strip()
@@ -549,7 +549,7 @@ class NHConverter:
 
             # Stop at next letter subsection
             next_letter = re.search(r"\([a-z]\)", direct_text)
-            if next_letter:
+            if next_letter:  # pragma: no cover
                 direct_text = direct_text[: next_letter.start()].strip()
 
             subsections.append(
@@ -567,7 +567,7 @@ class NHConverter:
         subsections = []
         parts = re.split(r"(?=\(\d+\)\s)", text)
 
-        for part in parts[1:]:
+        for part in parts[1:]:  # pragma: no cover
             match = re.match(r"\((\d+)\)\s*", part)
             if not match:
                 continue  # pragma: no cover

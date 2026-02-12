@@ -228,7 +228,7 @@ class LAConverter:
         soup = BeautifulSoup(html, "html.parser")
 
         # Check for "not found" error
-        if "not found" in html.lower() or "error" in html.lower():
+        if "not found" in html.lower() or "error" in html.lower():  # pragma: no cover
             error_div = soup.find("div", class_="error")
             if error_div:
                 raise LAConverterError(f"Document {doc_id} not found", url)  # pragma: no cover

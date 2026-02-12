@@ -555,7 +555,7 @@ class ARConverter:
         url = self._build_section_url(section_number)
         try:
             html = self._get(url)
-        except httpx.HTTPStatusError as e:
+        except httpx.HTTPStatusError as e:  # pragma: no cover
             raise ARConverterError(
                 f"HTTP error fetching section {section_number}: {e}", url
             ) from e

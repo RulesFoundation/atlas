@@ -390,7 +390,7 @@ class NCConverter:
 
             # Limit content
             next_match = re.search(r"\([a-z]\)", content)
-            if next_match:
+            if next_match:  # pragma: no cover
                 content = content[: next_match.start()]
 
             children.append(

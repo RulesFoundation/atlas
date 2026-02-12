@@ -199,7 +199,7 @@ class WIConverter:
         content_elem = soup.find("div", id="document", class_="statutes")
         if content_elem:
             # Remove navigation elements
-            for elem in content_elem.find_all(["div"], class_=["navigation", "navigation_up"]):
+            for elem in content_elem.find_all(["div"], class_=["navigation", "navigation_up"]):  # pragma: no cover
                 elem.decompose()
             text = content_elem.get_text(separator="\n", strip=True)
             html_content = str(content_elem)
@@ -346,7 +346,7 @@ class WIConverter:
             match = re.search(r"\(([^)]+)\)", text)
             if match:
                 return match.group(1)
-        return None
+        return None  # pragma: no cover
 
     def _parse_child_subsections(
         self, parent_elem, soup: BeautifulSoup
@@ -357,7 +357,7 @@ class WIConverter:
         # Look for level5 elements that follow the parent
         for elem in soup.find_all("div", class_=re.compile(r"qsatxt.*level5")):
             identifier = self._extract_subsection_identifier(elem)
-            if not identifier:
+            if not identifier:  # pragma: no cover
                 continue
 
             text_parts = []

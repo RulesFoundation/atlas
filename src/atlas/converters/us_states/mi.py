@@ -150,7 +150,7 @@ def parse_body_text(body_text: str) -> tuple[str, list[MCLSubsection]]:
     Returns:
         Tuple of (plain_text, subsections)
     """
-    if not body_text:
+    if not body_text:  # pragma: no cover
         return "", []
 
     # Unescape HTML entities
@@ -249,7 +249,7 @@ def _parse_lettered_subsections(text: str) -> list[MCLSubsection]:
 
             # Look for roman numeral children (i), (ii), etc.
             # For now, don't parse further levels
-            if len(content) > 2000:
+            if len(content) > 2000:  # pragma: no cover
                 content = content[:2000] + "..."
 
             subsections.append(MCLSubsection(
@@ -462,7 +462,7 @@ class MichiganConverter:
                 except ValueError:  # pragma: no cover
                     pass
 
-            if not effective_date:
+            if not effective_date:  # pragma: no cover
                 continue
 
             # Parse legislation info

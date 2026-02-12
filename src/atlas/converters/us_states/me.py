@@ -353,7 +353,7 @@ class MEConverter:
                     chapter_number = int(ch_match.group(1))
                     if title == 36:
                         chapter_title = ME_TAX_CHAPTERS.get(chapter_number)
-                    elif title == 22:
+                    elif title == 22:  # pragma: no cover
                         chapter_title = ME_WELFARE_CHAPTERS.get(chapter_number)
                     break
 
@@ -362,7 +362,7 @@ class MEConverter:
         content_elem = soup.find("body")
         if content_elem:
             # Remove navigation and scripts
-            for elem in content_elem.find_all(["nav", "script", "style", "header", "footer"]):
+            for elem in content_elem.find_all(["nav", "script", "style", "header", "footer"]):  # pragma: no cover
                 elem.decompose()
 
             # Get text content

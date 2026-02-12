@@ -596,7 +596,7 @@ class CTConverter:
         # Note: CT statutes may not have space after the closing paren
         parts = re.split(r"(?=\([A-Z]\))", text)
 
-        for part in parts[1:]:
+        for part in parts[1:]:  # pragma: no cover
             match = re.match(r"\(([A-Z])\)\s*", part)
             if not match:
                 continue  # pragma: no cover

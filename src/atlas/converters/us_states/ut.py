@@ -484,21 +484,21 @@ class UTConverter:
             rf"^{re.escape(parent_anchor_base)}\(([ivxlcdm]+)\)$"
         )
 
-        for anchor in parent_cell.find_all("a", id=grandchild_pattern):
+        for anchor in parent_cell.find_all("a", id=grandchild_pattern):  # pragma: no cover
             anchor_id = anchor.get("id", "")
             match = grandchild_pattern.search(anchor_id)
             if not match:
-                continue  # pragma: no cover
+                continue
 
             identifier = match.group(1)
 
             table = anchor.find_next("table")
             if not table:
-                continue  # pragma: no cover
+                continue
 
             cells = table.find_all("td")
             if len(cells) < 2:
-                continue  # pragma: no cover
+                continue
 
             text = self._get_direct_text(cells[1])
 

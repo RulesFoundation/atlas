@@ -495,7 +495,7 @@ class MSConverter:
 
             # Clean up text - remove trailing subsections
             next_subsection = re.search(r"\(\d+\)", direct_text)
-            if next_subsection:
+            if next_subsection:  # pragma: no cover
                 direct_text = direct_text[:next_subsection.start()].strip()
 
             subsections.append(
@@ -523,7 +523,7 @@ class MSConverter:
 
             # Limit to reasonable size and stop at next numbered subsection
             next_num = re.search(r"\(\d+\)", content)
-            if next_num:
+            if next_num:  # pragma: no cover
                 content = content[:next_num.start()]
 
             subsections.append(

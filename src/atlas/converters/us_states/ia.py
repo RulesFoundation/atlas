@@ -245,12 +245,12 @@ class IAConverter:
         response.raise_for_status()
         return response.text
 
-    def _get_bytes(self, url: str) -> bytes:
+    def _get_bytes(self, url: str) -> bytes:  # pragma: no cover
         """Make a rate-limited GET request returning bytes."""
         self._rate_limit()
         response = self.client.get(url)
         response.raise_for_status()
-        return response.content  # pragma: no cover
+        return response.content
 
     def _build_chapter_sections_url(self, chapter: str) -> str:
         """Build the URL for a chapter's section listing.

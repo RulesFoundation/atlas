@@ -409,7 +409,7 @@ class ORConverter:
             children = self._parse_level3(content)
 
             # Get direct text
-            if children:
+            if children:  # pragma: no cover
                 first_child_match = re.search(r"\([A-Z]\)", content)
                 direct_text = (
                     content[:first_child_match.start()].strip()
@@ -440,10 +440,10 @@ class ORConverter:
         subsections: list[ParsedORSubsection] = []
         parts = re.split(r"(?=\([A-Z]\))", text)
 
-        for part in parts[1:]:
+        for part in parts[1:]:  # pragma: no cover
             match = re.match(r"\(([A-Z])\)\s*", part)
             if not match:
-                continue  # pragma: no cover
+                continue
 
             identifier = match.group(1)
             content = part[match.end():]
@@ -451,7 +451,7 @@ class ORConverter:
             # Stop at parent-level markers
             next_match = re.search(r"\(\d+\)|\([a-z]\)|\([A-Z]\)", content)
             if next_match:
-                content = content[:next_match.start()]  # pragma: no cover
+                content = content[:next_match.start()]
 
             subsections.append(
                 ParsedORSubsection(

@@ -40,11 +40,11 @@ class TestVerifierCallPolicyengine:
 
     def test_call_policyengine_package_success(self):
         """Test _call_policyengine_package with a mocked Simulation."""
-        import numpy as np
         mock_sim_class = MagicMock()
         mock_sim_instance = MagicMock()
         mock_sim_class.return_value = mock_sim_instance
-        mock_sim_instance.calculate.return_value = np.array([500.0])
+        # Use a list to mimic array with __len__ and indexing
+        mock_sim_instance.calculate.return_value = [500.0]
 
         with patch("atlas.verifier.USE_PACKAGE", True), \
              patch("atlas.verifier.Simulation", mock_sim_class, create=True):

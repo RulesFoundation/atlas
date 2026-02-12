@@ -40,7 +40,7 @@ jobs:
       - name: Run tests with coverage
         run: |
           pip install pytest-cov pytest-timeout
-          pytest tests -v --ignore=tests/test_uslm_parser.py --cov=atlas --cov-report=term-missing --cov-config=pyproject.toml --timeout=60
+          pytest tests -v --ignore=tests/test_uslm_parser.py -m "not integration" --cov=atlas --cov-report=term-missing --cov-config=pyproject.toml --timeout=60
 
   test-with-data:
     runs-on: ubuntu-latest

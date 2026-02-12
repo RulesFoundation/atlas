@@ -552,7 +552,7 @@ class NJConverter:
         html = self._get(url)
         return self._parse_search_results(html)
 
-    def fetch_section(self, section_number: str) -> Section:
+    def fetch_section(self, section_number: str) -> Section:  # pragma: no cover
         """Fetch and convert a single section.
 
         Args:

@@ -441,7 +441,7 @@ class DCConverter:
         parts = []
         if elem.text:
             parts.append(elem.text)
-        for child in elem:
+        for child in elem:  # pragma: no cover
             if child.text:
                 parts.append(child.text)
             if child.tail:

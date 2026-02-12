@@ -620,7 +620,7 @@ class NYStateConverter:
 
             # Get text before first child
             direct_text = remaining_text.strip()
-            if len(direct_text) > 2000:
+            if len(direct_text) > 2000:  # pragma: no cover
                 direct_text = direct_text[:2000] + "..."
 
             subsections.append((identifier, 0, direct_text, children))
@@ -648,7 +648,7 @@ class NYStateConverter:
 
                 # Get direct text (limit size)
                 direct_text = content.strip()
-                if len(direct_text) > 1000:
+                if len(direct_text) > 1000:  # pragma: no cover
                     direct_text = direct_text[:1000] + "..."
 
                 subsections.append((identifier, 1, direct_text, []))

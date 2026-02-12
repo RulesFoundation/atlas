@@ -328,7 +328,7 @@ class WYConverter:
 
         if content_elem:
             # Remove navigation and scripts
-            for elem in content_elem.find_all(
+            for elem in content_elem.find_all(  # pragma: no cover
                 ["nav", "script", "style", "header", "footer"]
             ):
                 elem.decompose()

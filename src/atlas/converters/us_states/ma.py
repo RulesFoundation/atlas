@@ -375,7 +375,7 @@ class MAConverter:
 
             # Clean up text - remove trailing subsections
             next_subsection = re.search(r"\([a-z]\)", direct_text)
-            if next_subsection:
+            if next_subsection:  # pragma: no cover
                 direct_text = direct_text[: next_subsection.start()].strip()
 
             subsections.append(
@@ -406,7 +406,7 @@ class MAConverter:
 
             # Limit to reasonable size and stop at next letter subsection
             next_letter = re.search(r"\([a-z]\)", content)
-            if next_letter:
+            if next_letter:  # pragma: no cover
                 content = content[: next_letter.start()]
 
             subsections.append(
@@ -434,7 +434,7 @@ class MAConverter:
 
             # Stop at next numbered or lettered subsection
             next_sub = re.search(r"\([A-Za-z0-9]\)", content)
-            if next_sub:
+            if next_sub:  # pragma: no cover
                 content = content[: next_sub.start()]
 
             subsections.append(

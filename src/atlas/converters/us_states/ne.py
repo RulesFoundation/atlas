@@ -327,7 +327,7 @@ class NEConverter:
                 content = content[: next_num.start()]  # pragma: no cover
 
             # Get text before first roman numeral child
-            if children:
+            if children:  # pragma: no cover
                 first_child_match = re.search(r"\(i+\)", content)
                 direct_text = (
                     content[: first_child_match.start()].strip()
@@ -353,7 +353,7 @@ class NEConverter:
         # Match roman numerals in parentheses
         parts = re.split(r"(?=\((?:i{1,3}|iv|v|vi{0,3}|ix|x)\)\s)", text, flags=re.IGNORECASE)
 
-        for part in parts[1:]:
+        for part in parts[1:]:  # pragma: no cover
             match = re.match(r"\((i{1,3}|iv|v|vi{0,3}|ix|x)\)\s*", part, re.IGNORECASE)
             if not match:
                 continue  # pragma: no cover

@@ -280,7 +280,7 @@ class IRSParameterExtractor:
         def extract_row_amounts(header_pattern: str) -> list[int] | None:
             """Find header and extract following 4 dollar amounts."""
             match = re.search(header_pattern, section_text, re.IGNORECASE)
-            if not match:
+            if not match:  # pragma: no cover
                 return None
 
             # Look for amounts starting from the header

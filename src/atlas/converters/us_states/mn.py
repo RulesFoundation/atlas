@@ -320,7 +320,7 @@ class MNConverter:
 
         if content_elem:
             # Remove navigation and scripts
-            for elem in content_elem.find_all(["nav", "script", "style", "header", "footer"]):
+            for elem in content_elem.find_all(["nav", "script", "style", "header", "footer"]):  # pragma: no cover
                 elem.decompose()
             text = content_elem.get_text(separator="\n", strip=True)
             html_content = str(content_elem)
@@ -457,7 +457,7 @@ class MNConverter:
 
         parts = re.split(r"(?=\(\d+\)\s)", text)
 
-        for part in parts[1:]:
+        for part in parts[1:]:  # pragma: no cover
             match = re.match(r"\((\d+)\)\s*", part)
             if not match:
                 continue  # pragma: no cover

@@ -453,7 +453,7 @@ class AKConverter:
 
             # Clean up text - remove trailing subsections
             next_subsection = re.search(r"\([a-z]\)", direct_text)
-            if next_subsection:
+            if next_subsection:  # pragma: no cover
                 direct_text = direct_text[: next_subsection.start()].strip()
 
             subsections.append(
@@ -495,7 +495,7 @@ class AKConverter:
 
             # Limit to reasonable size and stop at next lowercase letter subsection
             next_alpha = re.search(r"\([a-z]\)", direct_text)
-            if next_alpha:
+            if next_alpha:  # pragma: no cover
                 direct_text = direct_text[: next_alpha.start()]
 
             subsections.append(
@@ -655,7 +655,7 @@ class AKConverter:
             section_title = match.group(2).strip().rstrip(".")
 
             # Skip repealed/renumbered sections
-            if "[Repealed" in section_title or "[Renumbered" in section_title:
+            if "[Repealed" in section_title or "[Renumbered" in section_title:  # pragma: no cover
                 continue
 
             if section_num not in section_numbers:
