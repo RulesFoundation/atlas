@@ -1,20 +1,17 @@
 """Tests for Tennessee HTML-to-AKN converter."""
 
-from pathlib import Path
 from xml.etree import ElementTree as ET
 
 import pytest
 
 from atlas.converters.tn_html_to_akn import (
-    TennesseeToAKN,
-    ParsedTitle,
     ParsedChapter,
     ParsedPart,
     ParsedSection,
     ParsedSubsection,
-    AKN_NS,
+    ParsedTitle,
+    TennesseeToAKN,
 )
-
 
 SAMPLE_TN_HTML = """\
 <html>

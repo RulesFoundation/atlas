@@ -1,10 +1,8 @@
 """Tests for the Tennessee HTML to AKN converter module."""
 
-import pytest
 
 from atlas.converters.tn_html_to_akn import (
     AKN_NS,
-    ParsedPart,
     ParsedSection,
     ParsedSubsection,
     TennesseeToAKN,

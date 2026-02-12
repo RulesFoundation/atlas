@@ -1,10 +1,8 @@
 """Tests for eCFR fetcher."""
 
-import pytest
-from pathlib import Path
-from unittest.mock import Mock, patch, AsyncMock
-import httpx
+from unittest.mock import AsyncMock, patch
 
+import pytest
 
 # Sample XML for mocking
 SAMPLE_TITLE_XML = """<?xml version="1.0" encoding="UTF-8" ?>

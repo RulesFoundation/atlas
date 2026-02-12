@@ -13,7 +13,6 @@ from atlas.converters.us_states.sd import (
     SD_TAX_CHAPTERS,
     SD_WELFARE_CHAPTERS,
     SDConverter,
-    SDConverterError,
     download_sd_chapter,
     fetch_sd_section,
 )

@@ -3,12 +3,9 @@
 This file targets specific missing lines identified by coverage analysis.
 """
 
-import json
-import re
-from datetime import date, datetime
+from datetime import date
 from io import BytesIO
-from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch, PropertyMock
+from unittest.mock import MagicMock, patch
 from xml.etree import ElementTree as ET
 
 import pytest
@@ -359,8 +356,8 @@ class TestSQLiteStorageGaps:
 
     def test_store_section_with_malformed_reference(self, tmp_path):
         """Test that malformed cross-references are silently skipped."""
-        from atlas.storage.sqlite import SQLiteStorage
         from atlas.models import Citation, Section
+        from atlas.storage.sqlite import SQLiteStorage
         db_path = tmp_path / "test.db"
         storage = SQLiteStorage(db_path)
         section = Section(
@@ -507,8 +504,9 @@ class TestECFRFetcherGaps:
 
     @pytest.mark.asyncio
     async def test_download_file(self, tmp_path):
-        from atlas.fetchers.ecfr import ECFRFetcher
         from unittest.mock import AsyncMock
+
+        from atlas.fetchers.ecfr import ECFRFetcher
         fetcher = ECFRFetcher(data_dir=tmp_path)
 
         mock_response = MagicMock()
@@ -580,8 +578,9 @@ class TestPDFExtractorGaps:
             extractor.extract_text(b"not a pdf")
 
     def test_extract_text_from_file(self, tmp_path):
-        from atlas.fetchers.pdf_extractor import PDFTextExtractor
         import fitz
+
+        from atlas.fetchers.pdf_extractor import PDFTextExtractor
 
         doc = fitz.open()
         page = doc.new_page()
@@ -595,8 +594,9 @@ class TestPDFExtractorGaps:
         assert "File content" in result
 
     def test_get_metadata(self):
-        from atlas.fetchers.pdf_extractor import PDFTextExtractor
         import fitz
+
+        from atlas.fetchers.pdf_extractor import PDFTextExtractor
 
         doc = fitz.open()
         doc.new_page()
@@ -609,8 +609,9 @@ class TestPDFExtractorGaps:
         assert meta["page_count"] == 1
 
     def test_get_metadata_from_bytesio(self):
-        from atlas.fetchers.pdf_extractor import PDFTextExtractor
         import fitz
+
+        from atlas.fetchers.pdf_extractor import PDFTextExtractor
 
         doc = fitz.open()
         doc.new_page()
@@ -631,8 +632,9 @@ class TestIRSGuidanceFetcherGaps:
     """Test IRS guidance fetcher parsing methods."""
 
     def test_parse_revenue_procedure_html(self):
-        from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
         from bs4 import BeautifulSoup
+
+        from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
 
         html = """
         <html>
@@ -657,8 +659,9 @@ class TestIRSGuidanceFetcherGaps:
 
     def test_parse_revenue_procedure_with_main_content(self):
         """Test fallback to main content element."""
-        from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
         from bs4 import BeautifulSoup
+
+        from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
 
         html = """
         <html>
@@ -683,8 +686,9 @@ class TestIRSGuidanceFetcherGaps:
         assert len(rp.sections) >= 1
 
     def test_extract_title(self):
-        from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
         from bs4 import BeautifulSoup
+
+        from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
 
         html = "<h2>Rev. Proc. 2024-40. Inflation Adjustments</h2>"
         soup = BeautifulSoup(html, "html.parser")
@@ -695,8 +699,9 @@ class TestIRSGuidanceFetcherGaps:
         assert "Inflation Adjustments" in title
 
     def test_is_next_document(self):
-        from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
         from bs4 import BeautifulSoup
+
+        from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
 
         fetcher = IRSGuidanceFetcher()
 
@@ -711,8 +716,9 @@ class TestIRSGuidanceFetcherGaps:
         assert fetcher._is_next_document(None) is False
 
     def test_parse_sections(self):
-        from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
         from bs4 import BeautifulSoup
+
+        from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
 
         html = """
         <div>
@@ -797,7 +803,7 @@ class TestIRSBulkFetcherGaps:
                 doc_type=gtype,
                 doc_number="2024-1",
                 year=2024,
-                pdf_filename=f"test.pdf",
+                pdf_filename="test.pdf",
             )
             assert doc.id == f"{prefix}-2024-1"
 
@@ -934,9 +940,10 @@ class TestIRSBulkFetcherGaps:
 
     def test_fetch_and_store_http_error(self):
         """Test fetch_and_store handles HTTP errors."""
+        import httpx
+
         from atlas.fetchers.irs_bulk import IRSBulkFetcher
         from atlas.models_guidance import GuidanceType
-        import httpx
 
         fetcher = IRSBulkFetcher()
 
@@ -996,8 +1003,9 @@ class TestAknModelsFromXmlGaps:
 
     def test_frbr_expression_from_xml_missing_elements(self):
         """FRBRExpression.from_xml_element has Pydantic alias bug - ValidationError expected."""
-        from atlas.models_akoma_ntoso import FRBRExpression, AKN_NAMESPACE
         from pydantic import ValidationError
+
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, FRBRExpression
 
         elem = ET.Element(f"{{{AKN_NAMESPACE}}}FRBRExpression")
         # Known bug: from_xml_element passes keyword args that conflict with aliases
@@ -1006,8 +1014,9 @@ class TestAknModelsFromXmlGaps:
 
     def test_frbr_manifestation_from_xml_missing(self):
         """FRBRManifestation.from_xml_element has same Pydantic alias bug."""
-        from atlas.models_akoma_ntoso import FRBRManifestation, AKN_NAMESPACE
         from pydantic import ValidationError
+
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, FRBRManifestation
 
         elem = ET.Element(f"{{{AKN_NAMESPACE}}}FRBRManifestation")
         with pytest.raises(ValidationError):
@@ -1015,8 +1024,9 @@ class TestAknModelsFromXmlGaps:
 
     def test_frbr_item_from_xml_missing(self):
         """FRBRItem.from_xml_element has same Pydantic alias bug."""
-        from atlas.models_akoma_ntoso import FRBRItem, AKN_NAMESPACE
         from pydantic import ValidationError
+
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, FRBRItem
 
         elem = ET.Element(f"{{{AKN_NAMESPACE}}}FRBRItem")
         with pytest.raises(ValidationError):
@@ -1024,8 +1034,9 @@ class TestAknModelsFromXmlGaps:
 
     def test_identification_from_xml_missing(self):
         """Identification.from_xml_element cascades the alias bug from sub-elements."""
-        from atlas.models_akoma_ntoso import Identification, AKN_NAMESPACE
         from pydantic import ValidationError
+
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, Identification
 
         elem = ET.Element(f"{{{AKN_NAMESPACE}}}identification")
         with pytest.raises(ValidationError):
@@ -1033,8 +1044,9 @@ class TestAknModelsFromXmlGaps:
 
     def test_publication_from_xml_bad_date(self):
         """Publication.from_xml_element also has alias bug (pub_date vs date)."""
-        from atlas.models_akoma_ntoso import Publication, AKN_NAMESPACE
         from pydantic import ValidationError
+
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, Publication
 
         elem = ET.Element(f"{{{AKN_NAMESPACE}}}publication")
         elem.set("date", "not-a-date")
@@ -1044,8 +1056,9 @@ class TestAknModelsFromXmlGaps:
 
     def test_lifecycle_event_from_xml_bad_type(self):
         """LifecycleEvent.from_xml_element has Pydantic alias bug."""
-        from atlas.models_akoma_ntoso import LifecycleEvent, AKN_NAMESPACE
         from pydantic import ValidationError
+
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, LifecycleEvent
 
         elem = ET.Element(f"{{{AKN_NAMESPACE}}}eventRef")
         elem.set("date", "2024-01-01")
@@ -1055,7 +1068,7 @@ class TestAknModelsFromXmlGaps:
             LifecycleEvent.from_xml_element(elem)
 
     def test_lifecycle_from_xml_empty(self):
-        from atlas.models_akoma_ntoso import Lifecycle, AKN_NAMESPACE
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, Lifecycle
 
         elem = ET.Element(f"{{{AKN_NAMESPACE}}}lifecycle")
         elem.set("source", "#org1")
@@ -1066,8 +1079,9 @@ class TestAknModelsFromXmlGaps:
 
     def test_modification_from_xml_bad_type(self):
         """Modification.from_xml_element has Pydantic alias bug."""
-        from atlas.models_akoma_ntoso import Modification, AKN_NAMESPACE
         from pydantic import ValidationError
+
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, Modification
 
         elem = ET.Element(f"{{{AKN_NAMESPACE}}}textualMod")
         elem.set("type", "unknown_mod_type")
@@ -1076,8 +1090,9 @@ class TestAknModelsFromXmlGaps:
 
     def test_modification_from_xml_with_force_bad_date(self):
         """Modification with bad force date has alias bug."""
-        from atlas.models_akoma_ntoso import Modification, AKN_NAMESPACE
         from pydantic import ValidationError
+
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, Modification
 
         elem = ET.Element(f"{{{AKN_NAMESPACE}}}textualMod")
         elem.set("type", "substitution")
@@ -1107,11 +1122,6 @@ class TestAknModelsFromXmlGaps:
             HierarchicalElement,
             Identification,
             Lifecycle,
-            LifecycleEvent,
-            LifecycleEventType,
-            Modification,
-            ModificationType,
-            Publication,
             Reference,
             TemporalGroup,
             TimeInterval,
@@ -1190,7 +1200,7 @@ class TestAknModelsFromXmlGaps:
 
     def test_akn_document_from_xml_no_doc_type(self):
         """Test from_xml_element with no doc type element."""
-        from atlas.models_akoma_ntoso import AkomaNtosoDocument, AKN_NAMESPACE
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, AkomaNtosoDocument
 
         root = ET.Element(f"{{{AKN_NAMESPACE}}}akomaNtoso")
         with pytest.raises(ValueError, match="No document type"):
@@ -1198,7 +1208,7 @@ class TestAknModelsFromXmlGaps:
 
     def test_akn_document_from_xml_no_meta(self):
         """Test from_xml_element with no meta section."""
-        from atlas.models_akoma_ntoso import AkomaNtosoDocument, AKN_NAMESPACE
+        from atlas.models_akoma_ntoso import AKN_NAMESPACE, AkomaNtosoDocument
 
         root = ET.Element(f"{{{AKN_NAMESPACE}}}akomaNtoso")
         ET.SubElement(root, f"{{{AKN_NAMESPACE}}}act")
@@ -1234,7 +1244,7 @@ class TestUKModelsGaps:
     """Test UK models edge cases."""
 
     def test_uk_models_import(self):
-        from atlas.models_uk import UKSection, UKCitation, UKAct, UKAmendment
+        from atlas.models_uk import UKAct, UKAmendment, UKCitation, UKSection
         assert UKSection is not None
         assert UKCitation is not None
         assert UKAct is not None
@@ -1259,8 +1269,8 @@ class TestPipelineAknGaps:
     """Test pipeline AKN conversion edge cases."""
 
     def test_section_to_akn_xml(self):
-        from atlas.pipeline.akn import section_to_akn_xml
         from atlas.models import Citation, Section
+        from atlas.pipeline.akn import section_to_akn_xml
 
         section = Section(
             citation=Citation(title=0, section="1-1"),
@@ -1531,8 +1541,9 @@ class TestStateBenefitsFetcherGaps:
         assert 2025 in results
 
     def test_fetch_snap_sua_error(self, tmp_path):
-        from atlas.fetchers.state_benefits import StateBenefitsFetcher
         import httpx
+
+        from atlas.fetchers.state_benefits import StateBenefitsFetcher
 
         fetcher = StateBenefitsFetcher()
         fetcher.snap.client = MagicMock()
@@ -1558,8 +1569,9 @@ class TestStateBenefitsFetcherGaps:
         assert "II.A.4_2023" in results
 
     def test_fetch_tanf_tables_error(self, tmp_path):
-        from atlas.fetchers.state_benefits import StateBenefitsFetcher
         import httpx
+
+        from atlas.fetchers.state_benefits import StateBenefitsFetcher
 
         fetcher = StateBenefitsFetcher()
         fetcher.tanf.client = MagicMock()
@@ -1585,8 +1597,9 @@ class TestStateBenefitsFetcherGaps:
         assert result is not None
 
     def test_fetch_tanf_databook_error(self, tmp_path):
-        from atlas.fetchers.state_benefits import StateBenefitsFetcher
         import httpx
+
+        from atlas.fetchers.state_benefits import StateBenefitsFetcher
 
         fetcher = StateBenefitsFetcher()
         fetcher.tanf.client = MagicMock()
@@ -1612,8 +1625,9 @@ class TestStateBenefitsFetcherGaps:
         assert result is not None
 
     def test_fetch_ccdf_database_error(self, tmp_path):
-        from atlas.fetchers.state_benefits import StateBenefitsFetcher
         import httpx
+
+        from atlas.fetchers.state_benefits import StateBenefitsFetcher
 
         fetcher = StateBenefitsFetcher()
         fetcher.ccdf.client = MagicMock()

@@ -1,14 +1,11 @@
 """Tests for the sources registry module."""
 
-from pathlib import Path
-from unittest.mock import MagicMock, mock_open, patch
 
-import pytest
 
 from atlas.sources.base import SourceConfig
 from atlas.sources.registry import (
-    _load_yaml_configs,
     _get_builtin_configs,
+    _load_yaml_configs,
     get_all_configs,
     get_config_for_jurisdiction,
     get_source_for_jurisdiction,
@@ -56,7 +53,7 @@ rate_limit: 1.0
         yaml_file = tmp_path / "invalid.yaml"
         yaml_file.write_text("not: valid: yaml: {broken")
 
-        configs = _load_yaml_configs(tmp_path)
+        _load_yaml_configs(tmp_path)
         # Should not raise, just skip
 
     def test_load_yaml_minimal(self, tmp_path):

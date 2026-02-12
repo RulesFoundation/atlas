@@ -1,24 +1,24 @@
 """Tests for the pipeline runner module."""
 
 from datetime import date
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from atlas.pipeline.runner import STATE_CONVERTERS, StatePipeline
 from atlas.models import Citation, Section
+from atlas.pipeline.runner import STATE_CONVERTERS, StatePipeline
 
 
 def _make_section(section_id="AK-43.05.010", **kwargs):
-    defaults = dict(
-        citation=Citation(title=0, section=section_id),
-        title_name="Alaska Statutes",
-        section_title="Test section",
-        text="Test text content.",
-        subsections=[],
-        source_url="https://example.com",
-        retrieved_at=date.today(),
-    )
+    defaults = {
+        "citation": Citation(title=0, section=section_id),
+        "title_name": "Alaska Statutes",
+        "section_title": "Test section",
+        "text": "Test text content.",
+        "subsections": [],
+        "source_url": "https://example.com",
+        "retrieved_at": date.today(),
+    }
     defaults.update(kwargs)
     return Section(**defaults)
 
@@ -38,7 +38,7 @@ class TestStateConvertersRegistry:
             assert "atlas.converters.us_states" in path, f"{state}: {path}"
 
     def test_all_states_two_letter(self):
-        for state in STATE_CONVERTERS.keys():
+        for state in STATE_CONVERTERS:
             assert len(state) == 2
 
 
@@ -102,7 +102,7 @@ class TestStatePipelineLoadConverter:
         mock_arch = MagicMock()
         mock_rules = MagicMock()
         pipeline = StatePipeline("ak", r2_arch=mock_arch, r2_rules=mock_rules)
-        result = pipeline._load_converter()
+        pipeline._load_converter()
 
         mock_converter_cls.assert_called_once()
 

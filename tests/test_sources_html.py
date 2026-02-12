@@ -8,22 +8,22 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from atlas.sources.base import SourceConfig, StatuteSource
+from atlas.sources.base import SourceConfig
 from atlas.sources.html import HTMLSource
 
 
 def _make_config(**kwargs):
-    defaults = dict(
-        jurisdiction="us-oh",
-        name="Ohio",
-        source_type="html",
-        base_url="https://codes.ohio.gov",
-        section_url_pattern="/orc/{section}",
-        toc_url_pattern="/orc/toc/{code}",
-        content_selector=".section-content",
-        title_selector="h1",
-        history_selector=".history",
-    )
+    defaults = {
+        "jurisdiction": "us-oh",
+        "name": "Ohio",
+        "source_type": "html",
+        "base_url": "https://codes.ohio.gov",
+        "section_url_pattern": "/orc/{section}",
+        "toc_url_pattern": "/orc/toc/{code}",
+        "content_selector": ".section-content",
+        "title_selector": "h1",
+        "history_selector": ".history",
+    }
     defaults.update(kwargs)
     return SourceConfig(**defaults)
 

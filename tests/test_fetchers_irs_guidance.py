@@ -1,6 +1,5 @@
 """Tests for the IRS guidance fetcher module."""
 
-from datetime import date
 from unittest.mock import MagicMock, patch
 
 import pytest

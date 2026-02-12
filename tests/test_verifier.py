@@ -6,16 +6,13 @@ verification reports, and report output/saving.
 
 import json
 from datetime import datetime
-from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from atlas.verifier import (
-    ComparisonResult,
     FILING_STATUS_MAP,
     INPUT_MAPPINGS,
     OUTPUT_MAPPINGS,
+    ComparisonResult,
     TestCase,
     VerificationReport,
     build_policyengine_situation,
@@ -24,7 +21,6 @@ from atlas.verifier import (
     save_verification_report,
     verify_encoding,
 )
-
 
 # =============================================================================
 # Dataclass Tests

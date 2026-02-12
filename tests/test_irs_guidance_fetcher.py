@@ -1,14 +1,11 @@
 """Tests for IRS guidance fetcher."""
 
-import re
-from datetime import date
 from unittest.mock import MagicMock, patch
 
 import pytest
 from bs4 import BeautifulSoup
 
 from atlas.fetchers.irs_guidance import IRSGuidanceFetcher
-from atlas.models_guidance import GuidanceSection, GuidanceType
 
 
 class TestIRSGuidanceFetcherInit:
@@ -210,7 +207,7 @@ class TestFetchRevenueProcedure:
                 fetcher.fetch_revenue_procedure("9999-99")
 
     def test_fetch_heading_not_found(self):
-        with patch("atlas.fetchers.irs_guidance.httpx.Client") as mock_cls:
+        with patch("atlas.fetchers.irs_guidance.httpx.Client"):
             fetcher = IRSGuidanceFetcher()
             mock_response = MagicMock()
             mock_response.text = "<html><body><p>No Rev. Proc. here</p></body></html>"

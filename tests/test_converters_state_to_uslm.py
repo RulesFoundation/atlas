@@ -1,6 +1,5 @@
 """Tests for the state_to_uslm converter module."""
 
-from pathlib import Path
 
 import pytest
 

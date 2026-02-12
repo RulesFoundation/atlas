@@ -5,26 +5,24 @@ All external dependencies (Arch, database, APIs) are mocked.
 """
 
 from datetime import date
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-import pytest
 from click.testing import CliRunner
 
 from atlas.cli import main
-from atlas.models import Citation, SearchResult, Section, Subsection, TitleInfo
+from atlas.models import Citation, SearchResult, Section, TitleInfo
 
 
 def _make_section(**kwargs):
-    defaults = dict(
-        citation=Citation(title=26, section="32"),
-        title_name="Internal Revenue Code",
-        section_title="Earned income tax credit",
-        text="A tax credit is allowed under this section.",
-        subsections=[],
-        source_url="https://uscode.house.gov",
-        retrieved_at=date(2024, 1, 1),
-    )
+    defaults = {
+        "citation": Citation(title=26, section="32"),
+        "title_name": "Internal Revenue Code",
+        "section_title": "Earned income tax credit",
+        "text": "A tax credit is allowed under this section.",
+        "subsections": [],
+        "source_url": "https://uscode.house.gov",
+        "retrieved_at": date(2024, 1, 1),
+    }
     defaults.update(kwargs)
     return Section(**defaults)
 
@@ -163,7 +161,7 @@ class TestServeCommand:
         atlas.cli.uvicorn = mock_uvicorn
 
         runner = CliRunner()
-        result = runner.invoke(main, ["serve"])
+        runner.invoke(main, ["serve"])
         # May fail if uvicorn not properly mocked, but should at least parse args
         # The important thing is the command is registered
 
@@ -238,7 +236,7 @@ class TestValidateCommand:
         assert result.exit_code == 0
 
     def test_validate_file_not_found(self, tmp_path):
-        rules_file = tmp_path / "rules.rac"
+        tmp_path / "rules.rac"
         # File doesn't exist, but tmp_path does exist as dir
         runner = CliRunner()
         result = runner.invoke(main, ["validate", str(tmp_path)])

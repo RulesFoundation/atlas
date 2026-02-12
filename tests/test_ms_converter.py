@@ -4,15 +4,14 @@ Tests the MSConverter which fetches from UniCourt's cic-code-ms GitHub Pages
 and converts to the internal Section model.
 """
 
-from datetime import date
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import pytest
 from bs4 import BeautifulSoup
 
 from atlas.converters.us_states.ms import (
-    MS_TITLES,
     MS_TAX_CHAPTERS,
+    MS_TITLES,
     MS_WELFARE_CHAPTERS,
     MSConverter,
     MSConverterError,

@@ -3,15 +3,14 @@
 All database calls are mocked since we don't have a real PostgreSQL instance.
 """
 
-from datetime import date
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from atlas.models import Citation, SearchResult, Section, Subsection, TitleInfo
+from atlas.models import Subsection
 
 try:
-    from atlas.storage.postgres import PostgresStorage, get_engine, POSTGRES_AVAILABLE
+    from atlas.storage.postgres import POSTGRES_AVAILABLE, PostgresStorage, get_engine
     _IMPORT_OK = True
 except ImportError:
     _IMPORT_OK = False
@@ -30,7 +29,7 @@ class TestGetEngine:
     @pytest.mark.skipif(not POSTGRES_AVAILABLE, reason="SQLAlchemy not installed")
     @patch("atlas.storage.postgres.create_engine")
     def test_url_from_param(self, mock_create):
-        engine = get_engine("postgresql://localhost/test")
+        get_engine("postgresql://localhost/test")
         mock_create.assert_called_once_with("postgresql://localhost/test")
 
     @pytest.mark.skipif(not POSTGRES_AVAILABLE, reason="SQLAlchemy not installed")

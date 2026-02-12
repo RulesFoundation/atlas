@@ -1,10 +1,8 @@
 """Tests for UK legislation fetcher."""
 
-import pytest
-from pathlib import Path
-from unittest.mock import patch, AsyncMock
-from datetime import date
+from unittest.mock import AsyncMock, patch
 
+import pytest
 
 # Sample XML response
 SAMPLE_SECTION_RESPONSE = """<?xml version="1.0" encoding="UTF-8"?>

@@ -2,8 +2,6 @@
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from atlas.parsers.generic.statutes import (
     GEORGIA_CONFIG,
     ILLINOIS_CONFIG,
@@ -11,11 +9,11 @@ from atlas.parsers.generic.statutes import (
     NORTH_CAROLINA_CONFIG,
     OHIO_CONFIG,
     PENNSYLVANIA_CONFIG,
+    STATE_PARSERS,
     GenericStateParser,
     StateConfig,
     StateSection,
     StateSubsection,
-    STATE_PARSERS,
     get_georgia_parser,
     get_illinois_parser,
     get_michigan_parser,
@@ -346,7 +344,6 @@ class TestGenericStateParser:
     @patch("atlas.parsers.generic.statutes.httpx.Client")
     def test_del_closes_client(self, mock_client_cls):
         parser = GenericStateParser(OHIO_CONFIG)
-        mock_client = parser._client
         del parser
         # Should not raise
 

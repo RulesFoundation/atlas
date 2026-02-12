@@ -4,7 +4,6 @@ Tests the VTConverter which fetches from legislature.vermont.gov
 and converts to the internal Section model.
 """
 
-from datetime import date
 from unittest.mock import patch
 
 import pytest

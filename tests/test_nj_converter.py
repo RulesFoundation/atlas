@@ -4,7 +4,6 @@ Tests the NJConverter which fetches from lis.njleg.state.nj.us
 and converts to the internal Section model.
 """
 
-from datetime import date
 from unittest.mock import patch
 
 import pytest
@@ -14,7 +13,6 @@ from atlas.converters.us_states.nj import (
     NJ_WELFARE_TITLES,
     NJConverter,
     NJConverterError,
-    fetch_nj_section,
     search_nj_statutes,
 )
 from atlas.models import Section

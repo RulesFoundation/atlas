@@ -3,7 +3,6 @@
 Following TDD: write failing tests first, then implement to make them pass.
 """
 
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -368,8 +367,8 @@ class TestIRSGuidanceIntegration:
         Run with: pytest -m integration
         """
         from atlas.fetchers.irs_bulk import IRSBulkFetcher, IRSDropDocument
-        from atlas.fetchers.pdf_extractor import PDFTextExtractor
         from atlas.fetchers.irs_parser import IRSDocumentParser, IRSParameterExtractor
+        from atlas.fetchers.pdf_extractor import PDFTextExtractor
         from atlas.models_guidance import GuidanceType
 
         doc = IRSDropDocument(

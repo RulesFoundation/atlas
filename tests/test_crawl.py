@@ -4,9 +4,6 @@ Tests cover the CrawlStats dataclass, section patterns, and crawl logic.
 All HTTP and R2 calls are mocked.
 """
 
-import time
-from dataclasses import asdict
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -37,7 +34,6 @@ class TestSectionPatterns:
             assert re.search(pattern, "/section-5747.02")
 
     def test_texas_pattern(self):
-        import re
         pattern = SECTION_PATTERNS.get("us-tx", "")
         assert pattern  # TX should have a pattern
 

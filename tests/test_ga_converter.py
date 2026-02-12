@@ -10,16 +10,14 @@ from unittest.mock import patch
 import pytest
 
 from atlas.converters.us_states.ga import (
-    GA_TAX_CHAPTERS,
     GA_SOCIAL_SERVICES_CHAPTERS,
+    GA_TAX_CHAPTERS,
     GA_TITLES,
     GAConverter,
     GAConverterError,
-    download_ga_chapter,
     fetch_ga_section,
 )
 from atlas.models import Section
-
 
 # Sample HTML from ga.elaws.us for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

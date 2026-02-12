@@ -5,9 +5,9 @@ from datetime import date
 import pytest
 
 from atlas.models_regulation import (
+    CFR_CITATION_PATTERN,
     Amendment,
     CFRCitation,
-    CFR_CITATION_PATTERN,
     Regulation,
     RegulationSearchResult,
     RegulationSubsection,
@@ -143,14 +143,14 @@ class TestAmendment:
 
 class TestRegulation:
     def _make_regulation(self, **kwargs):
-        defaults = dict(
-            citation=CFRCitation(title=26, part=1, section="32-1"),
-            heading="Earned income credit",
-            authority="26 U.S.C. 32",
-            source="T.D. 9954, 86 FR 12345",
-            full_text="The earned income credit...",
-            effective_date=date(2024, 1, 1),
-        )
+        defaults = {
+            "citation": CFRCitation(title=26, part=1, section="32-1"),
+            "heading": "Earned income credit",
+            "authority": "26 U.S.C. 32",
+            "source": "T.D. 9954, 86 FR 12345",
+            "full_text": "The earned income credit...",
+            "effective_date": date(2024, 1, 1),
+        }
         defaults.update(kwargs)
         return Regulation(**defaults)
 

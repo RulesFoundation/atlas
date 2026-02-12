@@ -1,7 +1,8 @@
 """Tests for UK legislation data models."""
 
-import pytest
 from datetime import date
+
+import pytest
 
 
 class TestUKCitation:
@@ -138,7 +139,7 @@ class TestUKSection:
 
     def test_create_section(self):
         """Create a basic UK section."""
-        from atlas.models_uk import UKSection, UKCitation
+        from atlas.models_uk import UKCitation, UKSection
 
         section = UKSection(
             citation=UKCitation(type="ukpga", year=2003, number=1, section="1"),
@@ -151,7 +152,7 @@ class TestUKSection:
 
     def test_section_with_extent(self):
         """Section includes territorial extent."""
-        from atlas.models_uk import UKSection, UKCitation
+        from atlas.models_uk import UKCitation, UKSection
 
         section = UKSection(
             citation=UKCitation(type="ukpga", year=2003, number=1, section="1"),
@@ -165,7 +166,7 @@ class TestUKSection:
 
     def test_section_with_amendments(self):
         """Section tracks amendment history."""
-        from atlas.models_uk import UKSection, UKCitation, UKAmendment
+        from atlas.models_uk import UKAmendment, UKCitation, UKSection
 
         amendment = UKAmendment(
             type="substitution",
@@ -185,7 +186,7 @@ class TestUKSection:
 
     def test_section_with_subsections(self):
         """Section contains subsections."""
-        from atlas.models_uk import UKSection, UKCitation, UKSubsection
+        from atlas.models_uk import UKCitation, UKSection, UKSubsection
 
         subsec = UKSubsection(
             id="1",
@@ -202,7 +203,7 @@ class TestUKSection:
 
     def test_section_path(self):
         """Section has path property."""
-        from atlas.models_uk import UKSection, UKCitation
+        from atlas.models_uk import UKCitation, UKSection
 
         section = UKSection(
             citation=UKCitation(type="ukpga", year=2003, number=1, section="62"),

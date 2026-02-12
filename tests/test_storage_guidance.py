@@ -1,13 +1,8 @@
 """Tests for the guidance storage module."""
 
-import json
 from datetime import date
-from unittest.mock import MagicMock, patch
-
-import pytest
 
 from atlas.models_guidance import (
-    GuidanceSearchResult,
     GuidanceSection,
     GuidanceType,
     RevenueProcedure,
@@ -16,20 +11,20 @@ from atlas.storage.guidance import GuidanceStorage
 
 
 def _make_rev_proc(**kwargs):
-    defaults = dict(
-        doc_number="2023-34",
-        doc_type=GuidanceType.REV_PROC,
-        title="Inflation Adjustments",
-        irb_citation="2023-48 IRB",
-        published_date=date(2023, 11, 9),
-        full_text="This procedure provides inflation adjustments...",
-        sections=[
+    defaults = {
+        "doc_number": "2023-34",
+        "doc_type": GuidanceType.REV_PROC,
+        "title": "Inflation Adjustments",
+        "irb_citation": "2023-48 IRB",
+        "published_date": date(2023, 11, 9),
+        "full_text": "This procedure provides inflation adjustments...",
+        "sections": [
             GuidanceSection(section_num=".01", text="Purpose"),
             GuidanceSection(section_num=".02", text="Scope"),
         ],
-        source_url="https://www.irs.gov/irb/2023-48",
-        retrieved_at=date(2024, 1, 15),
-    )
+        "source_url": "https://www.irs.gov/irb/2023-48",
+        "retrieved_at": date(2024, 1, 15),
+    }
     defaults.update(kwargs)
     return RevenueProcedure(**defaults)
 

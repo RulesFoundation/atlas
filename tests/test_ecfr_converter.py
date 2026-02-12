@@ -1,19 +1,15 @@
 """Tests for eCFR converter."""
 
-import pytest
 from datetime import date
 from unittest.mock import Mock, patch
-from xml.etree import ElementTree as ET
 
 from atlas.converters.ecfr import (
-    ECFRConverter,
-    ECFRMetadata,
-    FetchResult,
     PRIORITY_TITLES,
+    ECFRConverter,
+    FetchResult,
     fetch_regulation,
 )
 from atlas.models_regulation import CFRCitation
-
 
 # Sample XML fragments for testing
 SAMPLE_SECTION_XML = """<?xml version="1.0" encoding="UTF-8"?>

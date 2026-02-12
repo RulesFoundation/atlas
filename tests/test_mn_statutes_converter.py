@@ -1,12 +1,10 @@
 """Tests for Minnesota Statutes to AKN converter."""
 
-from pathlib import Path
 from xml.etree import ElementTree as ET
 
 import pytest
 
-from atlas.converters.mn_statutes import MNStatutesToAKN, MNSection, MNSubsection
-
+from atlas.converters.mn_statutes import MNSection, MNStatutesToAKN, MNSubsection
 
 SAMPLE_MN_HTML = """\
 <html>
@@ -276,7 +274,7 @@ class TestConvertFile:
         input_path.write_text(SAMPLE_MN_HTML)
         output_path = tmp_path / "output" / "mn_609.75.xml"
 
-        xml = converter.convert_file(input_path, output_path)
+        converter.convert_file(input_path, output_path)
         assert output_path.exists()
         assert "akomaNtoso" in output_path.read_text()
 

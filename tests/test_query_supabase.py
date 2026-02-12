@@ -5,31 +5,29 @@ HTTP calls are mocked.
 """
 
 import os
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from atlas.query.supabase import Rule, Section, SupabaseQuery
 
 
 def _make_rule(**kwargs):
-    defaults = dict(
-        id="us/statute/26/32",
-        jurisdiction="us",
-        doc_type="statute",
-        parent_id=None,
-        level=0,
-        ordinal=1,
-        heading="Earned income tax credit",
-        body="A tax credit is allowed...",
-        effective_date="2024-01-01",
-        repeal_date=None,
-        source_url="https://uscode.house.gov",
-        source_path="26/32",
-        rac_path="rac-us/statute/26/32.rac",
-        has_rac=True,
-        citation_path="26/32",
-    )
+    defaults = {
+        "id": "us/statute/26/32",
+        "jurisdiction": "us",
+        "doc_type": "statute",
+        "parent_id": None,
+        "level": 0,
+        "ordinal": 1,
+        "heading": "Earned income tax credit",
+        "body": "A tax credit is allowed...",
+        "effective_date": "2024-01-01",
+        "repeal_date": None,
+        "source_url": "https://uscode.house.gov",
+        "source_path": "26/32",
+        "rac_path": "rac-us/statute/26/32.rac",
+        "has_rac": True,
+        "citation_path": "26/32",
+    }
     defaults.update(kwargs)
     return Rule(**defaults)
 

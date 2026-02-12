@@ -4,8 +4,6 @@ Tests cover R2Storage class including upload, fetch, list, and stats operations.
 All boto3 calls are mocked.
 """
 
-from datetime import datetime, timezone
-from pathlib import Path
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest

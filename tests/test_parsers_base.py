@@ -7,14 +7,13 @@ and helper functions.
 import pytest
 
 from atlas.parsers.base import (
+    STATE_REGISTRY,
     BaseStateParser,
     StateCode,
     StateInfo,
-    STATE_REGISTRY,
     get_state_info,
     get_supported_states,
 )
-from atlas.models import Section
 
 
 class TestStateCode:

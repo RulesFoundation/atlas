@@ -6,10 +6,7 @@ and file saving logic with mocked Claude API calls.
 
 import json
 from datetime import date, datetime
-from pathlib import Path
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 from atlas.encoder import (
     SYSTEM_PROMPT,
@@ -19,7 +16,6 @@ from atlas.encoder import (
     encode_section,
 )
 from atlas.models import Citation, Section, Subsection
-
 
 # =============================================================================
 # Helpers

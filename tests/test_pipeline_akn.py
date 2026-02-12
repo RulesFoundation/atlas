@@ -6,8 +6,7 @@ from runner.py which has unresolved R2 deps. We import directly.
 
 import pytest
 
-from atlas.models import Citation, Section, Subsection
-
+from atlas.models import Citation, Section
 
 # Direct import to avoid pipeline.__init__ which may fail
 try:
@@ -26,15 +25,15 @@ pytestmark = pytest.mark.skipif(not _IMPORT_OK, reason="Pipeline AKN module not 
 def _make_section(**kwargs):
     from datetime import date as _date
 
-    defaults = dict(
-        citation=Citation(title=0, section="5747.02"),
-        title_name="Ohio Revised Code",
-        section_title="Tax rates",
-        text="Tax is imposed at the following rates.\n\nRate schedule applies.",
-        subsections=[],
-        source_url="https://codes.ohio.gov/orc/5747.02",
-        retrieved_at=_date.today(),
-    )
+    defaults = {
+        "citation": Citation(title=0, section="5747.02"),
+        "title_name": "Ohio Revised Code",
+        "section_title": "Tax rates",
+        "text": "Tax is imposed at the following rates.\n\nRate schedule applies.",
+        "subsections": [],
+        "source_url": "https://codes.ohio.gov/orc/5747.02",
+        "retrieved_at": _date.today(),
+    }
     defaults.update(kwargs)
     return Section(**defaults)
 

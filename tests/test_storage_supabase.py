@@ -4,13 +4,13 @@ All database calls are mocked since we don't have a real Supabase instance.
 """
 
 import os
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
 # Import with graceful handling since psycopg may not be installed
 try:
-    from atlas.storage.supabase import SupabaseStorage, get_db_url, HAS_PSYCOPG
+    from atlas.storage.supabase import HAS_PSYCOPG, SupabaseStorage, get_db_url
     _IMPORT_OK = True
 except ImportError:
     _IMPORT_OK = False

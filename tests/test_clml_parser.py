@@ -1,8 +1,6 @@
 """Tests for CLML (Crown Legislation Markup Language) XML parser."""
 
-import pytest
 from datetime import date
-
 
 # Sample CLML XML fragments for testing
 SAMPLE_SECTION_XML = """<?xml version="1.0" encoding="UTF-8"?>

@@ -2,8 +2,6 @@
 
 from datetime import date
 
-import pytest
-
 from atlas.models_canada import CanadaAct, CanadaCitation, CanadaSection, CanadaSubsection
 
 

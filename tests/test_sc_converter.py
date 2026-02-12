@@ -10,8 +10,8 @@ from unittest.mock import patch
 import pytest
 
 from atlas.converters.us_states.sc import (
-    SC_TITLES,
     SC_TAX_CHAPTERS,
+    SC_TITLES,
     SC_WELFARE_CHAPTERS,
     SCConverter,
     SCConverterError,

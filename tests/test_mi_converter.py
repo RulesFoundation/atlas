@@ -1,19 +1,18 @@
 """Tests for Michigan Compiled Laws XML converter."""
 
-import pytest
 from datetime import date
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 from atlas.converters.us_states.mi import (
-    MichiganConverter,
     MCLChapter,
-    MCLSection,
-    MCLHistory,
     MCLCitation,
+    MCLHistory,
+    MCLSection,
+    MichiganConverter,
     parse_body_text,
-    MCLSubsection,
 )
-
 
 # Sample XML from Michigan legislature.mi.gov
 SAMPLE_CHAPTER_XML = b"""<?xml version="1.0" encoding="utf-8"?>
@@ -315,7 +314,6 @@ class TestMCLToArchSection:
 
     def test_convert_to_arch_section(self):
         """Convert MCL section to Arch Section model."""
-        from atlas.models import Section, Citation
 
         converter = MichiganConverter()
         chapter = converter.parse_chapter_xml(SAMPLE_CHAPTER_XML)

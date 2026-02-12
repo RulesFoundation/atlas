@@ -6,7 +6,6 @@ basic dataclass instantiation. Network calls are NOT made.
 """
 
 import importlib
-import re
 
 import pytest
 
@@ -57,7 +56,7 @@ class TestStateConverterModules:
         """Most modules define a BASE_URL constant."""
         name, mod = state_module
         # Check for BASE_URL or base_url or similar
-        has_url = any(
+        any(
             attr.upper().endswith("URL") or attr.upper() == "BASE_URL"
             for attr in dir(mod)
             if isinstance(getattr(mod, attr, None), str)

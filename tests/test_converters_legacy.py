@@ -6,10 +6,9 @@ directly from the file path using importlib.
 """
 
 import importlib.util
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import MagicMock
 
 import pytest
 

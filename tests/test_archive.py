@@ -3,22 +3,20 @@
 from datetime import date
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from atlas.archive import Arch
-from atlas.models import Citation, SearchResult, Section, Subsection, TitleInfo
+from atlas.models import Citation, SearchResult, Section, TitleInfo
 
 
 def _make_section(**kwargs):
-    defaults = dict(
-        citation=Citation(title=26, section="32"),
-        title_name="Internal Revenue Code",
-        section_title="Earned income tax credit",
-        text="Tax credit is allowed...",
-        subsections=[],
-        source_url="https://uscode.house.gov",
-        retrieved_at=date(2024, 1, 1),
-    )
+    defaults = {
+        "citation": Citation(title=26, section="32"),
+        "title_name": "Internal Revenue Code",
+        "section_title": "Earned income tax credit",
+        "text": "Tax credit is allowed...",
+        "subsections": [],
+        "source_url": "https://uscode.house.gov",
+        "retrieved_at": date(2024, 1, 1),
+    }
     defaults.update(kwargs)
     return Section(**defaults)
 
@@ -26,12 +24,12 @@ def _make_section(**kwargs):
 class TestArchInit:
     @patch("atlas.archive.SQLiteStorage")
     def test_init_default(self, mock_sqlite):
-        arch = Arch()
+        Arch()
         mock_sqlite.assert_called_once_with("atlas.db")
 
     @patch("atlas.archive.SQLiteStorage")
     def test_init_custom_path(self, mock_sqlite):
-        arch = Arch(db_path="custom.db")
+        Arch(db_path="custom.db")
         mock_sqlite.assert_called_once_with("custom.db")
 
     def test_init_custom_storage(self):

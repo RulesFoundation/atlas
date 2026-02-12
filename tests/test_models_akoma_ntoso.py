@@ -9,18 +9,19 @@ Note: Several from_xml_element methods have bugs with Pydantic alias handling
 which triggers extra="forbid"). These are tested as known failures where applicable.
 """
 
-from datetime import date, datetime
+from datetime import date
 from xml.etree import ElementTree as ET
 
 import pytest
 
 from atlas.models_akoma_ntoso import (
+    _DOCUMENT_TYPES,
+    _HIERARCHICAL_ELEMENTS,
     AKN_NAMESPACE,
-    AKN_NAMESPACES,
+    Act,
     AknBaseModel,
     AknCitation,
     AkomaNtosoDocument,
-    Act,
     Amendment,
     Article,
     Bill,
@@ -59,13 +60,10 @@ from atlas.models_akoma_ntoso import (
     Subsection,
     TemporalGroup,
     TimeInterval,
-    _DOCUMENT_TYPES,
-    _HIERARCHICAL_ELEMENTS,
     create_expression_uri,
     create_work_uri,
     parse_akn_uri,
 )
-
 
 # =============================================================================
 # Enum Tests
@@ -292,33 +290,33 @@ class TestFRBRLanguage:
 
 
 def _make_work(**kwargs):
-    defaults = dict(
-        uri=FRBRUri(value="/akn/us/act/2023/1"),
-        date=FRBRDate(value=date(2023, 1, 1)),
-        author=FRBRAuthor(href="#congress"),
-        country=FRBRCountry(value="us"),
-    )
+    defaults = {
+        "uri": FRBRUri(value="/akn/us/act/2023/1"),
+        "date": FRBRDate(value=date(2023, 1, 1)),
+        "author": FRBRAuthor(href="#congress"),
+        "country": FRBRCountry(value="us"),
+    }
     defaults.update(kwargs)
     return FRBRWork(**defaults)
 
 
 def _make_expression(**kwargs):
-    defaults = dict(
-        uri=FRBRUri(value="/akn/us/act/2023/1/eng@2023-01-01"),
-        date=FRBRDate(value=date(2023, 1, 1)),
-        author=FRBRAuthor(href="#congress"),
-        language=FRBRLanguage(language="en"),
-    )
+    defaults = {
+        "uri": FRBRUri(value="/akn/us/act/2023/1/eng@2023-01-01"),
+        "date": FRBRDate(value=date(2023, 1, 1)),
+        "author": FRBRAuthor(href="#congress"),
+        "language": FRBRLanguage(language="en"),
+    }
     defaults.update(kwargs)
     return FRBRExpression(**defaults)
 
 
 def _make_manifestation(**kwargs):
-    defaults = dict(
-        uri=FRBRUri(value="/akn/us/act/2023/1/eng@2023-01-01/main.xml"),
-        date=FRBRDate(value=date(2023, 1, 1)),
-        author=FRBRAuthor(href="#congress"),
-    )
+    defaults = {
+        "uri": FRBRUri(value="/akn/us/act/2023/1/eng@2023-01-01/main.xml"),
+        "date": FRBRDate(value=date(2023, 1, 1)),
+        "author": FRBRAuthor(href="#congress"),
+    }
     defaults.update(kwargs)
     return FRBRManifestation(**defaults)
 
@@ -431,12 +429,12 @@ class TestFRBRItem:
 
 
 def _make_identification(**kwargs):
-    defaults = dict(
-        source="#source",
-        work=_make_work(),
-        expression=_make_expression(),
-        manifestation=_make_manifestation(),
-    )
+    defaults = {
+        "source": "#source",
+        "work": _make_work(),
+        "expression": _make_expression(),
+        "manifestation": _make_manifestation(),
+    }
     defaults.update(kwargs)
     return Identification(**defaults)
 
@@ -859,10 +857,10 @@ class TestHierarchicalSubclasses:
 
 
 def _make_document(**kwargs):
-    defaults = dict(
-        document_type=DocumentType.ACT,
-        identification=_make_identification(),
-    )
+    defaults = {
+        "document_type": DocumentType.ACT,
+        "identification": _make_identification(),
+    }
     defaults.update(kwargs)
     return AkomaNtosoDocument(**defaults)
 

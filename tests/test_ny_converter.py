@@ -8,12 +8,12 @@ import pytest
 
 from atlas.converters.us_states.ny import (
     NY_LAW_CODES,
+    USLM_NS,
     NYFetchResult,
     NYLawInfo,
     NYLegislationAPIError,
     NYSection,
     NYStateConverter,
-    USLM_NS,
 )
 
 

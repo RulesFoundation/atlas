@@ -3,15 +3,15 @@
 Tests cover the AKN models, converter registry, and base converter class.
 """
 
-from datetime import date, datetime, timezone
+from datetime import date
 
 import pytest
 
 from atlas.converters.base import (
+    CONVERTERS,
     AknSection,
     AknSubsection,
     AkomaNtoso,
-    CONVERTERS,
     LegalDocConverter,
     _deterministic_id,
     get_converter,

@@ -1,19 +1,17 @@
 """Tests for state benefits policy data fetcher."""
 
-from datetime import date
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
 from atlas.fetchers.state_benefits import (
-    SNAPSUAFetcher,
-    TANFFetcher,
     CCDFFetcher,
+    CCDFPolicyData,
+    SNAPSUAFetcher,
     StateBenefitsFetcher,
     SUAData,
+    TANFFetcher,
     TANFPolicyData,
-    CCDFPolicyData,
 )
 
 

@@ -6,14 +6,12 @@ Network calls are NOT made.
 
 from datetime import date
 
-import pytest
-
 from atlas.converters.ecfr import (
     ECFR_API_BASE,
+    PRIORITY_TITLES,
     ECFRConverter,
     ECFRMetadata,
     FetchResult,
-    PRIORITY_TITLES,
 )
 
 

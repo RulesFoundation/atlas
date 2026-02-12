@@ -1,7 +1,8 @@
 """Tests for regulation data models."""
 
-import pytest
 from datetime import date
+
+import pytest
 
 
 class TestCFRCitation:
@@ -136,7 +137,7 @@ class TestRegulation:
 
     def test_create_regulation(self):
         """Create a basic regulation."""
-        from atlas.models_regulation import Regulation, CFRCitation
+        from atlas.models_regulation import CFRCitation, Regulation
 
         reg = Regulation(
             citation=CFRCitation(title=26, part=1, section="32-1"),
@@ -152,7 +153,7 @@ class TestRegulation:
 
     def test_regulation_with_source_statutes(self):
         """Regulation can reference source statutes."""
-        from atlas.models_regulation import Regulation, CFRCitation
+        from atlas.models_regulation import CFRCitation, Regulation
 
         reg = Regulation(
             citation=CFRCitation(title=26, part=1, section="32-1"),
@@ -168,7 +169,7 @@ class TestRegulation:
 
     def test_regulation_with_subsections(self):
         """Regulation can have structured subsections."""
-        from atlas.models_regulation import Regulation, CFRCitation, RegulationSubsection
+        from atlas.models_regulation import CFRCitation, Regulation, RegulationSubsection
 
         subsec = RegulationSubsection(id="a", text="General rule text")
         reg = Regulation(
@@ -185,7 +186,7 @@ class TestRegulation:
 
     def test_regulation_path(self):
         """Regulation has path property."""
-        from atlas.models_regulation import Regulation, CFRCitation
+        from atlas.models_regulation import CFRCitation, Regulation
 
         reg = Regulation(
             citation=CFRCitation(title=26, part=1, section="32-1"),
@@ -199,7 +200,7 @@ class TestRegulation:
 
     def test_regulation_cfr_cite(self):
         """Regulation has cfr_cite property."""
-        from atlas.models_regulation import Regulation, CFRCitation
+        from atlas.models_regulation import CFRCitation, Regulation
 
         reg = Regulation(
             citation=CFRCitation(title=26, part=1, section="32-1"),

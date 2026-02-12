@@ -1,19 +1,14 @@
 """Tests for NZ PCO legislation converter."""
 
-from datetime import date, datetime
-from pathlib import Path
+from datetime import date
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 from atlas.converters.nz_pco import (
-    NZLabeledParagraph,
     NZLegislation,
     NZPCOConverter,
-    NZProvision,
-    NZRSSItem,
 )
-
 
 SAMPLE_NZ_ACT_XML = """\
 <?xml version="1.0" encoding="UTF-8"?>

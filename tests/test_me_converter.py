@@ -4,7 +4,6 @@ Tests the MEConverter which fetches from legislature.maine.gov
 and converts to the internal Section model.
 """
 
-from datetime import date
 from unittest.mock import patch
 
 import pytest
@@ -19,7 +18,6 @@ from atlas.converters.us_states.me import (
     fetch_me_section,
 )
 from atlas.models import Section
-
 
 # Sample HTML from legislature.maine.gov for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

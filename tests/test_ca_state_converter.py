@@ -4,16 +4,15 @@ Tests the CAStateConverter which fetches from leginfo.legislature.ca.gov
 and converts to the unified Statute model.
 """
 
+from unittest.mock import MagicMock, Mock, patch
+
 import pytest
-from datetime import datetime
-from unittest.mock import Mock, patch, MagicMock
 
 from atlas.converters.us_states.ca import (
-    CAStateConverter,
     CA_CODES,
+    CAStateConverter,
 )
-from atlas.models_statute import Statute, StatuteSubsection
-
+from atlas.models_statute import Statute
 
 # Sample HTML from leginfo for testing
 SAMPLE_SECTION_HTML = """<!DOCTYPE html>

@@ -10,14 +10,14 @@ from unittest.mock import patch
 import pytest
 
 from atlas.converters.us_states.ok import (
-    OKConverter,
-    OKConverterError,
     OK_SECTIONS,
     OK_TAX_SECTIONS,
-    OK_WELFARE_SECTIONS,
     OK_TITLES,
-    fetch_ok_section,
+    OK_WELFARE_SECTIONS,
+    OKConverter,
+    OKConverterError,
     download_ok_title,
+    fetch_ok_section,
 )
 from atlas.models import Section
 

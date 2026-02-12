@@ -1,6 +1,5 @@
 """Tests for the Minnesota statutes converter module."""
 
-import pytest
 
 from atlas.converters.mn_statutes import (
     AKN_NS,

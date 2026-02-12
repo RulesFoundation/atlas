@@ -1,6 +1,5 @@
 """Tests for IRS bulk guidance fetcher."""
 
-from datetime import date
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -256,7 +255,7 @@ class TestBulkDownloadWithExtraction:
         with patch.object(fetcher, "_fetch_drop_listing", return_value=mock_html):
             mock_pdf = b"%PDF-1.4 test content for saving"
             with patch.object(fetcher, "fetch_pdf", return_value=mock_pdf):
-                results = fetcher.fetch_and_store(
+                fetcher.fetch_and_store(
                     years=[2024],
                     doc_types=[GuidanceType.REV_PROC],
                     download_dir=tmp_path,

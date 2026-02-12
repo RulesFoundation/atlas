@@ -10,9 +10,9 @@ from unittest.mock import patch
 import pytest
 
 from atlas.converters.us_states.ne import (
+    NE_CHAPTERS,
     NE_TAX_CHAPTERS,
     NE_WELFARE_CHAPTERS,
-    NE_CHAPTERS,
     NEConverter,
     NEConverterError,
     download_ne_chapter,

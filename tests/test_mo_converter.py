@@ -246,7 +246,7 @@ class TestMOConverterParsing:
         # The sample HTML has (1)(a)(b) structure - check for level 2 children
         # Note: The actual parsing may vary based on exact HTML structure
         # Check that we can find nested structure in subsections
-        has_nested = any(len(s.children) >= 1 for s in parsed.subsections)
+        any(len(s.children) >= 1 for s in parsed.subsections)
         # If no nested children found in this sample, that's acceptable
         # since the HTML structure can vary
         assert sub_2 is not None  # Main assertion is that we found subsection 2

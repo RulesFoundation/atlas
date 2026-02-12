@@ -5,15 +5,14 @@ and converts to the internal Section model.
 """
 
 from datetime import date
-from unittest.mock import patch
 
 import pytest
 
 from atlas.converters.us_states.nm import (
-    NM_TAX_CHAPTERS,
     NM_TAX_ARTICLES,
-    NM_WELFARE_CHAPTERS,
+    NM_TAX_CHAPTERS,
     NM_WELFARE_ARTICLES,
+    NM_WELFARE_CHAPTERS,
     NMConverter,
     NMConverterError,
     parse_nm_section,

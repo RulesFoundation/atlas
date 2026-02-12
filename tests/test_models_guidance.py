@@ -2,8 +2,6 @@
 
 from datetime import date
 
-import pytest
-
 from atlas.models_guidance import (
     GuidanceSearchResult,
     GuidanceSection,
@@ -46,16 +44,16 @@ class TestGuidanceSection:
 
 class TestRevenueProcedure:
     def _make_rev_proc(self, **kwargs):
-        defaults = dict(
-            doc_number="2023-34",
-            doc_type=GuidanceType.REV_PROC,
-            title="Inflation Adjustments Under Section 1(f)",
-            irb_citation="2023-48 IRB",
-            published_date=date(2023, 11, 9),
-            full_text="This procedure provides inflation adjustments...",
-            source_url="https://www.irs.gov/irb/2023-48_IRB#RP-2023-34",
-            retrieved_at=date(2024, 1, 15),
-        )
+        defaults = {
+            "doc_number": "2023-34",
+            "doc_type": GuidanceType.REV_PROC,
+            "title": "Inflation Adjustments Under Section 1(f)",
+            "irb_citation": "2023-48 IRB",
+            "published_date": date(2023, 11, 9),
+            "full_text": "This procedure provides inflation adjustments...",
+            "source_url": "https://www.irs.gov/irb/2023-48_IRB#RP-2023-34",
+            "retrieved_at": date(2024, 1, 15),
+        }
         defaults.update(kwargs)
         return RevenueProcedure(**defaults)
 

@@ -10,8 +10,8 @@ from unittest.mock import patch
 import pytest
 
 from atlas.converters.us_states.pa import (
-    PA_TITLES,
     PA_TAX_TITLES,
+    PA_TITLES,
     PA_WELFARE_TITLES,
     PAConverter,
     PAConverterError,

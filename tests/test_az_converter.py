@@ -10,8 +10,8 @@ from unittest.mock import patch
 import pytest
 
 from atlas.converters.us_states.az import (
-    AZ_TITLES,
     AZ_TAX_CHAPTERS,
+    AZ_TITLES,
     AZ_WELFARE_CHAPTERS,
     AZConverter,
     AZConverterError,

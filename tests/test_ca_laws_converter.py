@@ -1,17 +1,16 @@
 """Tests for Canadian laws-lois-xml GitHub converter."""
 
-import pytest
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
-from io import BytesIO
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 from atlas.converters.ca_laws import (
+    BilingualContent,
     CanadaLawsConverter,
     CanadaLawsSource,
-    BilingualContent,
 )
-from atlas.models_canada import CanadaAct, CanadaSection, CanadaCitation
-
+from atlas.models_canada import CanadaAct
 
 # Sample minimal XML for testing
 SAMPLE_ACT_XML = b"""<?xml version="1.0" encoding="UTF-8"?>

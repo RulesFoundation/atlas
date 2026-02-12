@@ -11,7 +11,6 @@ from atlas.writer import (
     CanonicalDocument,
     DocumentWriter,
     LocalBackend,
-    StorageError,
 )
 
 

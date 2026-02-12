@@ -3,13 +3,12 @@
 Tests cover SourceConfig, StatuteSource, and helper functions.
 """
 
-from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
 
+from atlas.models_statute import Statute
 from atlas.sources.base import SourceConfig, StatuteSource, load_source
-from atlas.models_statute import Statute, StatuteSubsection
 
 
 class TestSourceConfig:

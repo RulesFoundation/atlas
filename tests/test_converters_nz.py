@@ -2,8 +2,6 @@
 
 from datetime import date
 
-import pytest
-
 from atlas.converters.nz_pco import (
     NZLabeledParagraph,
     NZLegislation,
@@ -50,14 +48,14 @@ class TestNZLabeledParagraph:
 
 class TestNZLegislation:
     def _make_legislation(self, **kwargs):
-        defaults = dict(
-            id="DLM407930",
-            legislation_type="act",
-            subtype="public",
-            year=2007,
-            number=97,
-            title="Income Tax Act",
-        )
+        defaults = {
+            "id": "DLM407930",
+            "legislation_type": "act",
+            "subtype": "public",
+            "year": 2007,
+            "number": 97,
+            "title": "Income Tax Act",
+        }
         defaults.update(kwargs)
         return NZLegislation(**defaults)
 

@@ -6,9 +6,7 @@ Playwright browser calls are not invoked.
 
 import time
 
-import pytest
-
-from atlas.crawl_playwright import PlaywrightStats, SPA_STATES
+from atlas.crawl_playwright import SPA_STATES, PlaywrightStats
 
 
 class TestPlaywrightStats:

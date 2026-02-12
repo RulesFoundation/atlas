@@ -10,12 +10,12 @@ from unittest.mock import patch
 import pytest
 
 from atlas.converters.us_states.la import (
+    LA_KNOWN_DOC_IDS,
+    LA_TAX_SECTIONS,
+    LA_TITLES,
+    LA_WELFARE_SECTIONS,
     LAConverter,
     LAConverterError,
-    LA_TITLES,
-    LA_TAX_SECTIONS,
-    LA_WELFARE_SECTIONS,
-    LA_KNOWN_DOC_IDS,
     fetch_la_section,
 )
 from atlas.models import Section

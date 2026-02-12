@@ -1,12 +1,11 @@
 """Tests for the statute models module."""
 
-from datetime import datetime
 
 import pytest
 
 from atlas.models_statute import (
-    CodeType,
     JURISDICTIONS,
+    CodeType,
     JurisdictionInfo,
     JurisdictionType,
     Statute,
@@ -66,15 +65,15 @@ class TestStatuteSubsection:
 
 class TestStatute:
     def _make_statute(self, **kwargs):
-        defaults = dict(
-            jurisdiction="us-oh",
-            code="ORC",
-            code_name="Ohio Revised Code",
-            section="5747.02",
-            title="Tax rates",
-            text="Tax imposed at the following rates.",
-            source_url="https://codes.ohio.gov/orc/5747.02",
-        )
+        defaults = {
+            "jurisdiction": "us-oh",
+            "code": "ORC",
+            "code_name": "Ohio Revised Code",
+            "section": "5747.02",
+            "title": "Tax rates",
+            "text": "Tax imposed at the following rates.",
+            "source_url": "https://codes.ohio.gov/orc/5747.02",
+        }
         defaults.update(kwargs)
         return Statute(**defaults)
 
