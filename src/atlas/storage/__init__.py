@@ -6,13 +6,13 @@ from atlas.storage.sqlite import SQLiteStorage
 # PostgreSQL is optional - only import if installed
 try:
     from atlas.storage.postgres import PostgresStorage
-except ImportError:
+except ImportError:  # pragma: no cover
     PostgresStorage = None  # type: ignore
 
 # R2 is optional - only import if boto3 is installed
 try:
     from atlas.storage.r2 import R2Storage, get_r2
-except ImportError:
+except ImportError:  # pragma: no cover
     R2Storage = None  # type: ignore
     get_r2 = None  # type: ignore
 

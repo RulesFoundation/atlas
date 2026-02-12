@@ -9,7 +9,6 @@ The ND Legislature provides:
 - Full section text in PDFs at /cencode/t{title}c{chapter}.pdf with named destinations
 """
 
-from datetime import date
 from unittest.mock import patch
 
 import pytest
@@ -23,7 +22,6 @@ from atlas.converters.us_states.nd import (
     fetch_nd_section,
 )
 from atlas.models import Section
-
 
 # Sample HTML from ndlegis.gov for testing
 SAMPLE_TITLE_HTML = """<!DOCTYPE html>

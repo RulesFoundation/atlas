@@ -226,7 +226,7 @@ class TestMNConverterParsing:
         )
 
         # Look for a subdivision with a heading
-        headings = [s.heading for s in parsed.subdivisions if s.heading]
+        [s.heading for s in parsed.subdivisions if s.heading]
         # The sample should have at least one heading parsed
         assert len(parsed.subdivisions) > 0
 
@@ -238,7 +238,7 @@ class TestMNConverterParsing:
         )
 
         # Find subdivisions with clauses
-        has_clauses = any(len(s.clauses) > 0 for s in parsed.subdivisions)
+        any(len(s.clauses) > 0 for s in parsed.subdivisions)
         # Note: clause parsing depends on subdivision content being correctly split
         # The sample has clauses under Subd. 2
 

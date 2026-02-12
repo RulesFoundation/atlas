@@ -12,8 +12,6 @@ Usage:
 
 import asyncio
 import hashlib
-import json
-import os
 import re
 import time
 from dataclasses import dataclass, field
@@ -21,14 +19,15 @@ from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 import click
-from playwright.async_api import async_playwright, Page, Browser
+from playwright.async_api import Page, async_playwright
 
-from atlas.crawl import R2_ENDPOINT, R2_BUCKET, get_r2_client
+from atlas.crawl import R2_BUCKET, get_r2_client
 
 
 @dataclass
 class PlaywrightStats:
     """Stats for a Playwright crawl job."""
+
     jurisdiction: str
     name: str
     sections_discovered: int = 0
@@ -151,7 +150,7 @@ class AlabamaCrawler:
             parts = title_name.split()
             title_prefix = parts[0] + " " + parts[1]
 
-            print(f"[us-al] Processing {i+1}/{len(title_names)}: {title_name[:50]}...")
+            print(f"[us-al] Processing {i + 1}/{len(title_names)}: {title_name[:50]}...")
 
             # Reload page for each title to avoid virtualization issues
             await self.page.goto(
@@ -194,10 +193,12 @@ class AlabamaCrawler:
                     if href and href not in seen_urls:
                         seen_urls.add(href)
                         full_url = urljoin("https://alison.legislature.state.al.us", href)
-                        sections.append({
-                            "url": full_url,
-                            "title": text.strip(),
-                        })
+                        sections.append(
+                            {
+                                "url": full_url,
+                                "title": text.strip(),
+                            }
+                        )
                 except:
                     pass
 
@@ -272,7 +273,7 @@ class AlaskaCrawler:
 
     async def _get_title_names(self) -> list[str]:
         """Get all title names from the page."""
-        titles = await self.page.evaluate('''() => {
+        titles = await self.page.evaluate("""() => {
             const links = document.querySelectorAll('a');
             const titles = [];
             for (const link of links) {
@@ -282,21 +283,24 @@ class AlaskaCrawler:
                 }
             }
             return titles;
-        }''')
+        }""")
         return titles
 
     async def _click_title(self, title_text: str) -> bool:
         """Click a title using JavaScript (bypasses overlay issues)."""
-        return await self.page.evaluate(f'''(titleText) => {{
+        return await self.page.evaluate(
+            """(titleText) => {
             const links = document.querySelectorAll('a');
-            for (const link of links) {{
-                if (link.innerText.trim().startsWith(titleText.split('.')[0])) {{
+            for (const link of links) {
+                if (link.innerText.trim().startsWith(titleText.split('.')[0])) {
                     link.click();
                     return true;
-                }}
-            }}
+                }
+            }
             return false;
-        }}''', title_text)
+        }""",
+            title_text,
+        )
 
     async def discover_sections(self) -> list[dict]:
         """Discover all sections from Alaska's statute page."""
@@ -316,7 +320,7 @@ class AlaskaCrawler:
         print(f"[us-ak] Found {len(title_names)} titles")
 
         for i, title_name in enumerate(title_names):
-            print(f"[us-ak] Processing {i+1}/{len(title_names)}: {title_name[:50]}...")
+            print(f"[us-ak] Processing {i + 1}/{len(title_names)}: {title_name[:50]}...")
 
             # Reload page for each title to get clean state
             await self.page.goto(
@@ -335,7 +339,7 @@ class AlaskaCrawler:
             await self.page.wait_for_timeout(2000)
 
             # Now extract chapter links
-            chapters = await self.page.evaluate('''() => {
+            chapters = await self.page.evaluate("""() => {
                 const links = document.querySelectorAll('a');
                 const chapters = [];
                 for (const link of links) {
@@ -346,26 +350,29 @@ class AlaskaCrawler:
                     }
                 }
                 return chapters;
-            }''')
+            }""")
 
             # Click each chapter to get sections
             for chapter in chapters:
                 # Click chapter
-                await self.page.evaluate(f'''(chapterText) => {{
+                await self.page.evaluate(
+                    """(chapterText) => {
                     const links = document.querySelectorAll('a');
-                    for (const link of links) {{
-                        if (link.innerText.trim() === chapterText) {{
+                    for (const link of links) {
+                        if (link.innerText.trim() === chapterText) {
                             link.click();
                             return true;
-                        }}
-                    }}
+                        }
+                    }
                     return false;
-                }}''', chapter['text'])
+                }""",
+                    chapter["text"],
+                )
 
                 await self.page.wait_for_timeout(1000)
 
             # Collect all section links
-            section_data = await self.page.evaluate('''() => {
+            section_data = await self.page.evaluate("""() => {
                 const links = document.querySelectorAll('a');
                 const sections = [];
                 for (const link of links) {
@@ -376,17 +383,19 @@ class AlaskaCrawler:
                     }
                 }
                 return sections;
-            }''')
+            }""")
 
             for sec in section_data:
-                href = sec['href']
+                href = sec["href"]
                 if href and href not in seen_urls:
                     seen_urls.add(href)
                     full_url = urljoin("https://www.akleg.gov", href)
-                    sections.append({
-                        "url": full_url,
-                        "title": sec['text'],
-                    })
+                    sections.append(
+                        {
+                            "url": full_url,
+                            "title": sec["text"],
+                        }
+                    )
 
             # Progress update
             if (i + 1) % 5 == 0:
@@ -512,10 +521,10 @@ class TexasCrawler:
             return []
 
         # Get all code options
-        code_names = await self.page.evaluate('''() => {
+        code_names = await self.page.evaluate("""() => {
             const opts = document.querySelectorAll('mat-option');
             return Array.from(opts).map(o => o.innerText.trim()).filter(t => t.includes('Code'));
-        }''')
+        }""")
 
         print(f"[us-tx] Found {len(code_names)} codes")
 
@@ -529,7 +538,7 @@ class TexasCrawler:
                 print(f"[us-tx] Unknown code: {code_name}")
                 continue
 
-            print(f"[us-tx] Processing {i+1}/{len(code_names)}: {code_name}...")
+            print(f"[us-tx] Processing {i + 1}/{len(code_names)}: {code_name}...")
 
             # Navigate to chapter 1 of this code
             chapter_url = f"https://statutes.capitol.texas.gov/Docs/{abbrev}/htm/{abbrev}.1.htm"
@@ -538,7 +547,7 @@ class TexasCrawler:
             await self.page.wait_for_timeout(3000)
 
             # Extract section links from the page
-            section_data = await self.page.evaluate('''() => {
+            section_data = await self.page.evaluate("""() => {
                 const links = document.querySelectorAll('a');
                 const sections = [];
                 for (const link of links) {
@@ -549,23 +558,25 @@ class TexasCrawler:
                     }
                 }
                 return sections;
-            }''')
+            }""")
 
             for sec in section_data:
-                href = sec['href']
+                href = sec["href"]
                 if href and href not in seen_urls:
                     seen_urls.add(href)
                     # Ensure absolute URL
                     if not href.startswith("http"):
                         href = urljoin("https://statutes.capitol.texas.gov/", href)
-                    sections.append({
-                        "url": href,
-                        "title": sec['text'],
-                        "code": code_name,
-                    })
+                    sections.append(
+                        {
+                            "url": href,
+                            "title": sec["text"],
+                            "code": code_name,
+                        }
+                    )
 
             # Try to find links to other chapters
-            chapter_links = await self.page.evaluate(f'''() => {{
+            chapter_links = await self.page.evaluate(f"""() => {{
                 const links = document.querySelectorAll('a');
                 const chapters = [];
                 for (const link of links) {{
@@ -575,7 +586,7 @@ class TexasCrawler:
                     }}
                 }}
                 return [...new Set(chapters)];
-            }}''')
+            }}""")
 
             # Visit each chapter
             for ch_href in chapter_links[:50]:  # Limit chapters per code
@@ -586,7 +597,7 @@ class TexasCrawler:
                     await self.page.goto(ch_href, wait_until="load", timeout=30000)
                     await self.page.wait_for_timeout(1000)
 
-                    ch_section_data = await self.page.evaluate('''() => {
+                    ch_section_data = await self.page.evaluate("""() => {
                         const links = document.querySelectorAll('a');
                         const sections = [];
                         for (const link of links) {
@@ -597,19 +608,21 @@ class TexasCrawler:
                             }
                         }
                         return sections;
-                    }''')
+                    }""")
 
                     for sec in ch_section_data:
-                        href = sec['href']
+                        href = sec["href"]
                         if href and href not in seen_urls:
                             seen_urls.add(href)
                             if not href.startswith("http"):
                                 href = urljoin("https://statutes.capitol.texas.gov/", href)
-                            sections.append({
-                                "url": href,
-                                "title": sec['text'],
-                                "code": code_name,
-                            })
+                            sections.append(
+                                {
+                                    "url": href,
+                                    "title": sec["text"],
+                                    "code": code_name,
+                                }
+                            )
                 except:
                     pass
 
@@ -718,9 +731,9 @@ async def crawl_spa_state(
         raise ValueError(f"Unknown SPA state: {jurisdiction}. Available: {available}")
 
     config = SPA_STATES[jurisdiction]
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Crawling {config['name']} ({jurisdiction})")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     # Prepare output directory if specified
     if output_dir and not dry_run:
@@ -746,17 +759,18 @@ async def crawl_spa_state(
 
         # Override upload to save to disk if output_dir specified
         if output_dir and not dry_run:
-            original_upload = crawler.upload_to_r2
 
             def save_to_disk(url: str, html: str) -> bool:
-                import re
-                import hashlib
-                from urllib.parse import urlparse
-
                 parsed = urlparse(url)
                 path_parts = parsed.path.strip("/").replace("/", "_")
-                query = parsed.query.replace("/", "_").replace("=", "-").replace("&", "_") if parsed.query else ""
-                fragment = parsed.fragment.replace("/", "_").replace(".", "-") if parsed.fragment else ""
+                query = (
+                    parsed.query.replace("/", "_").replace("=", "-").replace("&", "_")
+                    if parsed.query
+                    else ""
+                )
+                fragment = (
+                    parsed.fragment.replace("/", "_").replace(".", "-") if parsed.fragment else ""
+                )
 
                 # Build filename with all components
                 parts = [path_parts] if path_parts else ["index"]
@@ -767,15 +781,15 @@ async def crawl_spa_state(
                 filename = "_".join(parts) + ".html"
 
                 # Sanitize: remove invalid filename chars (colons, etc)
-                filename = re.sub(r'[:<>"|?*]', '-', filename)
-                filename = re.sub(r'https?-__', '', filename)
-                filename = re.sub(r'-+', '-', filename)
+                filename = re.sub(r'[:<>"|?*]', "-", filename)
+                filename = re.sub(r"https?-__", "", filename)
+                filename = re.sub(r"-+", "-", filename)
 
                 # Truncate if too long
                 if len(filename) > 200:
                     url_hash = hashlib.md5(url.encode()).hexdigest()[:12]
                     filename = f"{path_parts[:100]}_{url_hash}.html"
-                    filename = re.sub(r'[:<>"|?*]', '-', filename)
+                    filename = re.sub(r'[:<>"|?*]', "-", filename)
 
                 filepath = output_dir / filename
                 filepath.write_text(html, encoding="utf-8")
@@ -802,7 +816,7 @@ async def crawl_spa_state(
         print(f"[{jurisdiction}] Fetching sections...")
         for i, section in enumerate(sections):
             if (i + 1) % 10 == 0:
-                print(f"[{jurisdiction}] Progress: {i+1}/{len(sections)} sections")
+                print(f"[{jurisdiction}] Progress: {i + 1}/{len(sections)} sections")
 
             html = await crawler.fetch_section(section)
             if html:
@@ -836,22 +850,24 @@ async def crawl_all_spa_states(
             print(f"  Sections discovered: {stats.sections_discovered}")
             print(f"  Sections fetched: {stats.sections_fetched}")
             print(f"  Sections failed: {stats.sections_failed}")
-            print(f"  Data fetched: {stats.bytes_fetched/1024:.1f} KB")
+            print(f"  Data fetched: {stats.bytes_fetched / 1024:.1f} KB")
             print(f"  Duration: {stats.duration:.1f}s")
             print(f"  Rate: {stats.rate:.1f} sections/second")
 
         except Exception as e:
             print(f"[{jurisdiction}] Failed: {e}")
-            results.append(PlaywrightStats(
-                jurisdiction=jurisdiction,
-                name=SPA_STATES[jurisdiction]["name"],
-                errors=[str(e)],
-            ))
+            results.append(
+                PlaywrightStats(
+                    jurisdiction=jurisdiction,
+                    name=SPA_STATES[jurisdiction]["name"],
+                    errors=[str(e)],
+                )
+            )
 
     # Summary
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("CRAWL COMPLETE")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     total_sections = sum(s.sections_fetched for s in results)
     total_bytes = sum(s.bytes_fetched for s in results)
@@ -859,7 +875,7 @@ async def crawl_all_spa_states(
 
     print(f"States: {len(results)}")
     print(f"Total sections: {total_sections:,}")
-    print(f"Total data: {total_bytes/1024/1024:.1f} MB")
+    print(f"Total data: {total_bytes / 1024 / 1024:.1f} MB")
     print(f"Total time: {total_time:.1f}s")
 
     return results
@@ -894,24 +910,28 @@ def main(
     headless = not headed
 
     if crawl_all:
-        asyncio.run(crawl_all_spa_states(
-            max_sections=max_sections,
-            dry_run=dry_run,
-            headless=headless,
-        ))
+        asyncio.run(
+            crawl_all_spa_states(
+                max_sections=max_sections,
+                dry_run=dry_run,
+                headless=headless,
+            )
+        )
     elif jurisdiction:
-        stats = asyncio.run(crawl_spa_state(
-            jurisdiction,
-            max_sections=max_sections,
-            dry_run=dry_run,
-            headless=headless,
-        ))
+        stats = asyncio.run(
+            crawl_spa_state(
+                jurisdiction,
+                max_sections=max_sections,
+                dry_run=dry_run,
+                headless=headless,
+            )
+        )
 
         print(f"\n{stats.name}:")
         print(f"  Sections discovered: {stats.sections_discovered}")
         print(f"  Sections fetched: {stats.sections_fetched}")
         print(f"  Sections failed: {stats.sections_failed}")
-        print(f"  Data fetched: {stats.bytes_fetched/1024:.1f} KB")
+        print(f"  Data fetched: {stats.bytes_fetched / 1024:.1f} KB")
         print(f"  Duration: {stats.duration:.1f}s")
         print(f"  Rate: {stats.rate:.1f} sections/second")
         if stats.errors:

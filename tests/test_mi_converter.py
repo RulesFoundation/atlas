@@ -1,44 +1,18 @@
 """Tests for Michigan Compiled Laws XML converter."""
 
-import sys
-from pathlib import Path
-import importlib.util
-
-# Add src to path
-SRC_DIR = Path(__file__).parent.parent / "src"
-sys.path.insert(0, str(SRC_DIR))
+from datetime import date
+from unittest.mock import MagicMock, Mock, patch
 
 import pytest
-from datetime import date
-from unittest.mock import Mock, patch, MagicMock
 
-# Load the module directly without going through package __init__
-spec = importlib.util.spec_from_file_location(
-    "mi",
-    SRC_DIR / "arch" / "converters" / "us_states" / "mi.py"
+from atlas.converters.us_states.mi import (
+    MCLChapter,
+    MCLCitation,
+    MCLHistory,
+    MCLSection,
+    MichiganConverter,
+    parse_body_text,
 )
-mi_module = importlib.util.module_from_spec(spec)
-
-# We need to set up the models module first
-models_spec = importlib.util.spec_from_file_location(
-    "models",
-    SRC_DIR / "arch" / "models.py"
-)
-models_module = importlib.util.module_from_spec(models_spec)
-sys.modules["arch.models"] = models_module
-models_spec.loader.exec_module(models_module)
-
-# Now load the mi module
-spec.loader.exec_module(mi_module)
-
-MichiganConverter = mi_module.MichiganConverter
-MCLChapter = mi_module.MCLChapter
-MCLSection = mi_module.MCLSection
-MCLHistory = mi_module.MCLHistory
-MCLCitation = mi_module.MCLCitation
-parse_body_text = mi_module.parse_body_text
-MCLSubsection = mi_module.MCLSubsection
-
 
 # Sample XML from Michigan legislature.mi.gov
 SAMPLE_CHAPTER_XML = b"""<?xml version="1.0" encoding="utf-8"?>
@@ -340,7 +314,6 @@ class TestMCLToArchSection:
 
     def test_convert_to_arch_section(self):
         """Convert MCL section to Arch Section model."""
-        from atlas.models import Section, Citation
 
         converter = MichiganConverter()
         chapter = converter.parse_chapter_xml(SAMPLE_CHAPTER_XML)

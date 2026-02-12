@@ -4,38 +4,21 @@ Tests the TXConverter which fetches from texas.public.law
 and converts to the internal Section model.
 """
 
-import sys
-from pathlib import Path
-
-# Add src to path to enable direct imports
-src_dir = Path(__file__).parent.parent / "src"
-if str(src_dir) not in sys.path:
-    sys.path.insert(0, str(src_dir))
-
 from datetime import date
 from unittest.mock import patch
 
 import pytest
 
-from atlas.models import Section
-
-# Import tx module directly using importlib to bypass __init__.py chain
-# (other state converters may have syntax errors during development)
-import importlib.util
-
-tx_spec = importlib.util.spec_from_file_location(
-    "tx", src_dir / "arch" / "converters" / "us_states" / "tx.py"
+from atlas.converters.us_states.tx import (
+    TX_CODES,
+    TX_TAX_CHAPTERS,
+    TX_WELFARE_CHAPTERS,
+    TXConverter,
+    TXConverterError,
+    download_tx_chapter,
+    fetch_tx_section,
 )
-tx_module = importlib.util.module_from_spec(tx_spec)
-tx_spec.loader.exec_module(tx_module)
-
-TX_CODES = tx_module.TX_CODES
-TX_TAX_CHAPTERS = tx_module.TX_TAX_CHAPTERS
-TX_WELFARE_CHAPTERS = tx_module.TX_WELFARE_CHAPTERS
-TXConverter = tx_module.TXConverter
-TXConverterError = tx_module.TXConverterError
-download_tx_chapter = tx_module.download_tx_chapter
-fetch_tx_section = tx_module.fetch_tx_section
+from atlas.models import Section
 
 # Sample HTML from texas.public.law for testing
 SAMPLE_TAX_SECTION_HTML = """<!DOCTYPE html>

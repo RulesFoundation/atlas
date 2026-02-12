@@ -2,10 +2,8 @@
 
 import re
 from datetime import date
-from typing import Optional
 
-from pydantic import BaseModel, Field, field_validator
-
+from pydantic import BaseModel, Field
 
 # Regex pattern for CFR citations - defined outside class to avoid Pydantic issues
 # Matches: "26 CFR 1.32-1(a)(1)" or "26 C.F.R. § 1.32-1" etc.
@@ -31,10 +29,8 @@ class CFRCitation(BaseModel):
 
     title: int = Field(..., description="CFR title number (e.g., 26 for Treasury/IRS)")
     part: int = Field(..., description="Part number within the title")
-    section: Optional[str] = Field(None, description="Section number (e.g., '32-1')")
-    subsection: Optional[str] = Field(
-        None, description="Subsection path in a/1/i format"
-    )
+    section: str | None = Field(None, description="Section number (e.g., '32-1')")
+    subsection: str | None = Field(None, description="Subsection path in a/1/i format")
 
     model_config = {"extra": "forbid"}
 
@@ -105,7 +101,7 @@ class RegulationSubsection(BaseModel):
     """A subsection within a regulation."""
 
     id: str = Field(..., description="Subsection identifier (e.g., 'a', '1', 'i')")
-    heading: Optional[str] = Field(None, description="Subsection heading if present")
+    heading: str | None = Field(None, description="Subsection heading if present")
     text: str = Field(..., description="Text content of this subsection")
     children: list["RegulationSubsection"] = Field(
         default_factory=list, description="Child subsections"
@@ -117,13 +113,15 @@ class RegulationSubsection(BaseModel):
 class Amendment(BaseModel):
     """A record of an amendment to a regulation via Federal Register."""
 
-    document: str = Field(..., description="Treasury Decision or document number (e.g., 'T.D. 9954')")
+    document: str = Field(
+        ..., description="Treasury Decision or document number (e.g., 'T.D. 9954')"
+    )
     federal_register_citation: str = Field(
         ..., description="Federal Register citation (e.g., '86 FR 12345')"
     )
     published_date: date = Field(..., description="Date published in Federal Register")
     effective_date: date = Field(..., description="Date the amendment took effect")
-    description: Optional[str] = Field(None, description="Brief description of changes")
+    description: str | None = Field(None, description="Brief description of changes")
 
     model_config = {"extra": "forbid"}
 
@@ -166,8 +164,8 @@ class Regulation(BaseModel):
     )
 
     # Source tracking
-    source_url: Optional[str] = Field(None, description="URL to eCFR or govinfo source")
-    retrieved_at: Optional[date] = Field(None, description="Date this version was retrieved")
+    source_url: str | None = Field(None, description="URL to eCFR or govinfo source")
+    retrieved_at: date | None = Field(None, description="Date this version was retrieved")
 
     model_config = {"extra": "forbid"}
 

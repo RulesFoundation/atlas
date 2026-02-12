@@ -1,7 +1,5 @@
 """Tests for CFR XML parser."""
 
-import pytest
-from datetime import date
 
 
 # Sample XML fragments for testing

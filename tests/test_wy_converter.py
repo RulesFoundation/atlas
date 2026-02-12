@@ -11,8 +11,8 @@ import pytest
 
 from atlas.converters.us_states.wy import (
     WY_TAX_CHAPTERS,
-    WY_WELFARE_CHAPTERS,
     WY_TITLES,
+    WY_WELFARE_CHAPTERS,
     WYConverter,
     WYConverterError,
     download_wy_chapter,

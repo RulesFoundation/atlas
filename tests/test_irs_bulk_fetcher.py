@@ -1,6 +1,5 @@
 """Tests for IRS bulk guidance fetcher."""
 
-from datetime import date
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -196,13 +195,13 @@ class TestBulkDownloadWithExtraction:
             # Mock PDF extraction since we're using a fake PDF
             # The imports are local in fetch_and_extract, so patch at the source modules
             with patch(
-                "arch.fetchers.pdf_extractor.PDFTextExtractor"
+                "atlas.fetchers.pdf_extractor.PDFTextExtractor"
             ) as mock_extractor_class:
                 mock_extractor = MagicMock()
                 mock_extractor.extract_text.return_value = "Rev. Proc. 2024-40\nSECTION 1. PURPOSE\nTest content"
                 mock_extractor_class.return_value = mock_extractor
 
-                with patch("arch.fetchers.irs_parser.IRSDocumentParser") as mock_parser_class:
+                with patch("atlas.fetchers.irs_parser.IRSDocumentParser") as mock_parser_class:
                     mock_parser = MagicMock()
                     mock_parser.parse.return_value = MagicMock(
                         sections=[],
@@ -210,7 +209,7 @@ class TestBulkDownloadWithExtraction:
                     )
                     mock_parser_class.return_value = mock_parser
 
-                    with patch("arch.fetchers.irs_parser.IRSParameterExtractor") as mock_param_class:
+                    with patch("atlas.fetchers.irs_parser.IRSParameterExtractor") as mock_param_class:
                         mock_param = MagicMock()
                         mock_param.extract.return_value = {}
                         mock_param_class.return_value = mock_param
@@ -256,7 +255,7 @@ class TestBulkDownloadWithExtraction:
         with patch.object(fetcher, "_fetch_drop_listing", return_value=mock_html):
             mock_pdf = b"%PDF-1.4 test content for saving"
             with patch.object(fetcher, "fetch_pdf", return_value=mock_pdf):
-                results = fetcher.fetch_and_store(
+                fetcher.fetch_and_store(
                     years=[2024],
                     doc_types=[GuidanceType.REV_PROC],
                     download_dir=tmp_path,

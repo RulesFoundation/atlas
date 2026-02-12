@@ -10,8 +10,8 @@ from unittest.mock import patch
 import pytest
 
 from atlas.converters.us_states.il import (
-    IL_CHAPTERS,
     IL_CHAPTER_IDS,
+    IL_CHAPTERS,
     IL_PUBLIC_AID_ACTS,
     IL_REVENUE_ACTS,
     ILConverter,

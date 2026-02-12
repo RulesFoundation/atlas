@@ -9,6 +9,29 @@ from datetime import datetime
 from atlas.models_statute import Statute, StatuteSubsection
 
 
+def _convert_subsections(subsections) -> list[StatuteSubsection]:
+    """Convert legacy subsection objects to StatuteSubsection models.
+
+    Handles both objects with a `children` attribute and those without.
+    """
+    return [
+        StatuteSubsection(
+            identifier=sub.identifier,
+            heading=getattr(sub, "heading", None),
+            text=sub.text,
+            children=[
+                StatuteSubsection(
+                    identifier=c.identifier,
+                    heading=getattr(c, "heading", None),
+                    text=c.text,
+                )
+                for c in getattr(sub, "children", [])
+            ],
+        )
+        for sub in subsections
+    ]
+
+
 def from_ca_section(ca_section) -> Statute:
     """Convert CA parser CASection to unified Statute.
 
@@ -18,18 +41,6 @@ def from_ca_section(ca_section) -> Statute:
     Returns:
         Unified Statute model
     """
-    subsections = [
-        StatuteSubsection(
-            identifier=sub.identifier,
-            text=sub.text,
-            children=[
-                StatuteSubsection(identifier=c.identifier, text=c.text)
-                for c in getattr(sub, "children", [])
-            ],
-        )
-        for sub in ca_section.subsections
-    ]
-
     return Statute(
         jurisdiction="us-ca",
         code=ca_section.code,
@@ -37,7 +48,7 @@ def from_ca_section(ca_section) -> Statute:
         section=ca_section.section_num,
         title=ca_section.title,
         text=ca_section.text,
-        subsections=subsections,
+        subsections=_convert_subsections(ca_section.subsections),
         division=ca_section.division,
         part=ca_section.part,
         chapter=ca_section.chapter,
@@ -57,18 +68,6 @@ def from_fl_section(fl_section) -> Statute:
     Returns:
         Unified Statute model
     """
-    subsections = [
-        StatuteSubsection(
-            identifier=sub.identifier,
-            text=sub.text,
-            children=[
-                StatuteSubsection(identifier=c.identifier, text=c.text)
-                for c in getattr(sub, "children", [])
-            ],
-        )
-        for sub in fl_section.subsections
-    ]
-
     return Statute(
         jurisdiction="us-fl",
         code=str(fl_section.chapter),
@@ -77,7 +76,7 @@ def from_fl_section(fl_section) -> Statute:
         title=fl_section.title,
         text=fl_section.text,
         chapter=str(fl_section.chapter),
-        subsections=subsections,
+        subsections=_convert_subsections(fl_section.subsections),
         source_url=fl_section.url,
         retrieved_at=datetime.utcnow(),
     )
@@ -92,18 +91,6 @@ def from_tx_section(tx_section) -> Statute:
     Returns:
         Unified Statute model
     """
-    subsections = [
-        StatuteSubsection(
-            identifier=sub.identifier,
-            text=sub.text,
-            children=[
-                StatuteSubsection(identifier=c.identifier, text=c.text)
-                for c in getattr(sub, "children", [])
-            ],
-        )
-        for sub in getattr(tx_section, "subsections", [])
-    ]
-
     return Statute(
         jurisdiction="us-tx",
         code=tx_section.code,
@@ -111,7 +98,7 @@ def from_tx_section(tx_section) -> Statute:
         section=tx_section.section,
         title=tx_section.title,
         text=tx_section.text,
-        subsections=subsections,
+        subsections=_convert_subsections(getattr(tx_section, "subsections", [])),
         source_url=tx_section.url,
         retrieved_at=datetime.utcnow(),
     )
@@ -126,18 +113,6 @@ def from_ny_section(ny_section) -> Statute:
     Returns:
         Unified Statute model
     """
-    subsections = [
-        StatuteSubsection(
-            identifier=sub.identifier,
-            text=sub.text,
-            children=[
-                StatuteSubsection(identifier=c.identifier, text=c.text)
-                for c in getattr(sub, "children", [])
-            ],
-        )
-        for sub in getattr(ny_section, "subsections", [])
-    ]
-
     return Statute(
         jurisdiction="us-ny",
         code=ny_section.law_code,
@@ -145,7 +120,7 @@ def from_ny_section(ny_section) -> Statute:
         section=ny_section.section,
         title=ny_section.title,
         text=ny_section.text,
-        subsections=subsections,
+        subsections=_convert_subsections(getattr(ny_section, "subsections", [])),
         source_url=ny_section.url,
         retrieved_at=datetime.utcnow(),
     )
@@ -171,21 +146,8 @@ def from_generic_state_section(state_section) -> Statute:
     }
 
     jurisdiction = state_to_jurisdiction.get(
-        state_section.state,
-        f"us-{state_section.state.lower()}"
+        state_section.state, f"us-{state_section.state.lower()}"
     )
-
-    subsections = [
-        StatuteSubsection(
-            identifier=sub.identifier,
-            text=sub.text,
-            children=[
-                StatuteSubsection(identifier=c.identifier, text=c.text)
-                for c in getattr(sub, "children", [])
-            ],
-        )
-        for sub in state_section.subsections
-    ]
 
     return Statute(
         jurisdiction=jurisdiction,
@@ -195,7 +157,7 @@ def from_generic_state_section(state_section) -> Statute:
         title=state_section.title,
         text=state_section.text,
         chapter=state_section.chapter,
-        subsections=subsections,
+        subsections=_convert_subsections(state_section.subsections),
         history=state_section.history,
         source_url=state_section.url,
         retrieved_at=datetime.utcnow(),
@@ -211,23 +173,6 @@ def from_usc_section(section) -> Statute:
     Returns:
         Unified Statute model
     """
-    subsections = [
-        StatuteSubsection(
-            identifier=sub.identifier,
-            heading=sub.heading,
-            text=sub.text,
-            children=[
-                StatuteSubsection(
-                    identifier=c.identifier,
-                    heading=c.heading,
-                    text=c.text,
-                )
-                for c in sub.children
-            ],
-        )
-        for sub in section.subsections
-    ]
-
     return Statute(
         jurisdiction="us",
         code=str(section.citation.title),
@@ -236,7 +181,7 @@ def from_usc_section(section) -> Statute:
         subsection_path=section.citation.subsection,
         title=section.section_title,
         text=section.text,
-        subsections=subsections,
+        subsections=_convert_subsections(section.subsections),
         enacted_date=section.enacted_date,
         last_amended=section.last_amended,
         effective_date=section.effective_date,

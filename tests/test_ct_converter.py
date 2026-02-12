@@ -11,8 +11,8 @@ import pytest
 
 from atlas.converters.us_states.ct import (
     CT_TAX_CHAPTERS,
-    CT_WELFARE_CHAPTERS,
     CT_TITLES,
+    CT_WELFARE_CHAPTERS,
     CTConverter,
     CTConverterError,
     download_ct_chapter,

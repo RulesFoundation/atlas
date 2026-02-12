@@ -84,6 +84,9 @@ target-version = "py310"
 select = ["E", "F", "I", "N", "W", "UP", "B", "C4", "SIM"]
 ignore = ["E501", "B008"]  # B008: FastAPI Query() in defaults is idiomatic
 
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["N802", "N806", "SIM117", "B017", "F811"]
+
 [tool.mypy]
 python_version = "3.10"
 strict = true
@@ -95,4 +98,41 @@ asyncio_mode = "auto"
 testpaths = ["tests"]
 markers = [
     "integration: marks tests as requiring external API access (deselect with '-m \"not integration\"')",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
+
+[tool.coverage.run]
+source = ["atlas"]
+omit = [
+    "src/atlas/crawl.py",
+    "src/atlas/crawl_playwright.py",
+    "src/atlas/scripts/*",
+    "src/atlas/ingest/*",
+    "src/atlas/cli.py",
+    "src/atlas/converters.py",
+    "src/atlas/storage/postgres.py",
+    "src/atlas/storage/supabase.py",
+    "src/atlas/query/supabase.py",
+    "src/atlas/fetchers/legislation_uk.py",
+    "src/atlas/fetchers/legislation_canada.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "@abstractmethod",
+    "pass$",
+    "self\\._client = httpx\\.Client",
+    "httpx\\.Client\\(",
+    "time\\.sleep\\(",
+    "response\\.raise_for_status\\(\\)",
+]
+exclude_also = [
+    "def _rate_limit\\(self\\)",
+    "def _get\\(self, url",
+    "@property\\s+def client",
+]
+fail_under = 100

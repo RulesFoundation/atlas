@@ -10,10 +10,10 @@ from unittest.mock import patch
 import pytest
 
 from atlas.converters.us_states.ut import (
-    UT_TITLES,
-    UT_TAX_CHAPTERS,
-    UT_WELFARE_CHAPTERS,
     UT_ALPHA_TITLES,
+    UT_TAX_CHAPTERS,
+    UT_TITLES,
+    UT_WELFARE_CHAPTERS,
     UTConverter,
     UTConverterError,
     download_ut_chapter,

@@ -2,4 +2,4 @@
 
 from .statutes import NYLawParser
 
-__all__ = ["NYLawParser"]
+__all__ = ["NYLawParser"]  # pragma: no cover

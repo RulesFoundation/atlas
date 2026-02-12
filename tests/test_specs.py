@@ -1,16 +1,15 @@
 """Tests for state spec loader."""
 
-import pytest
 
 from atlas.sources.specs import (
     StateSpec,
-    load_spec,
-    load_all_specs,
-    get_section_pattern,
     get_crawler_type,
+    get_section_pattern,
+    get_specs_dir,
     is_archive_org_state,
     is_playwright_state,
-    get_specs_dir,
+    load_all_specs,
+    load_spec,
 )
 
 

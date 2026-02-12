@@ -4,14 +4,13 @@ Tests the DCConverter which fetches from the dccouncil/law-xml-codified
 GitHub repository and converts to the internal Section model.
 """
 
-from datetime import date
 from unittest.mock import patch
 
 import pytest
 
 from atlas.converters.us_states.dc import (
-    DC_TITLES,
     DC_TAX_CHAPTERS,
+    DC_TITLES,
     DC_WELFARE_CHAPTERS,
     DCConverter,
     DCConverterError,

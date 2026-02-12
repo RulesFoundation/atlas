@@ -9,26 +9,15 @@ from unittest.mock import patch
 
 import pytest
 
-# Import directly from the wa module to avoid issues with other converters in __init__.py
-import importlib.util
-import sys
-from pathlib import Path
-
-# Get the wa.py file directly
-_wa_path = Path(__file__).parent.parent / "src" / "arch" / "converters" / "us_states" / "wa.py"
-_spec = importlib.util.spec_from_file_location("wa", _wa_path)
-_wa_module = importlib.util.module_from_spec(_spec)
-sys.modules["arch.converters.us_states.wa"] = _wa_module
-_spec.loader.exec_module(_wa_module)
-
-WA_EXCISE_TAX_CHAPTERS = _wa_module.WA_EXCISE_TAX_CHAPTERS
-WA_PUBLIC_ASSISTANCE_CHAPTERS = _wa_module.WA_PUBLIC_ASSISTANCE_CHAPTERS
-WA_TITLES = _wa_module.WA_TITLES
-WAConverter = _wa_module.WAConverter
-WAConverterError = _wa_module.WAConverterError
-download_wa_chapter = _wa_module.download_wa_chapter
-fetch_wa_section = _wa_module.fetch_wa_section
-
+from atlas.converters.us_states.wa import (
+    WA_EXCISE_TAX_CHAPTERS,
+    WA_PUBLIC_ASSISTANCE_CHAPTERS,
+    WA_TITLES,
+    WAConverter,
+    WAConverterError,
+    download_wa_chapter,
+    fetch_wa_section,
+)
 from atlas.models import Section
 
 # Sample HTML from app.leg.wa.gov for testing

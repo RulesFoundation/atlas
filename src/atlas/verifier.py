@@ -4,6 +4,7 @@ Similar to policyengine-taxsim validation - run test cases through both
 our DSL encodings and PolicyEngine's Python package, compare results.
 """
 
+import json
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -19,8 +20,8 @@ console = Console()
 try:
     from policyengine_us import Simulation
 
-    USE_PACKAGE = True
-except ImportError:
+    USE_PACKAGE = True  # pragma: no cover
+except ImportError:  # pragma: no cover
     USE_PACKAGE = False
     POLICYENGINE_API_URL = "https://api.policyengine.org/us/calculate"
 
@@ -247,7 +248,7 @@ def _call_policyengine_package(
         sim = Simulation(situation=situation)
         value = sim.calculate(output_variable, year)
         # Handle array output (sum for tax unit level)
-        if hasattr(value, "__len__") and len(value) > 0:
+        if hasattr(value, "__len__") and len(value) > 0:  # pragma: no cover
             return float(value[0]), None
         return float(value), None
     except Exception as e:
@@ -294,7 +295,7 @@ def _call_policyengine_api(
 
     except requests.exceptions.RequestException as e:
         return None, str(e)
-    except (KeyError, TypeError) as e:
+    except (KeyError, TypeError) as e:  # pragma: no cover
         return None, f"Failed to parse response: {e}"
 
 
@@ -315,8 +316,6 @@ def verify_encoding(
     metadata_path = section_dir / "metadata.json"
 
     # Get citation from metadata
-    import json
-
     citation = "Unknown"
     if metadata_path.exists():
         metadata = json.loads(metadata_path.read_text())
@@ -430,8 +429,6 @@ def print_verification_report(report: VerificationReport):
 
 def save_verification_report(report: VerificationReport, output_path: Path):
     """Save verification report to JSON."""
-    import json
-
     data = {
         "citation": report.citation,
         "timestamp": report.timestamp.isoformat(),

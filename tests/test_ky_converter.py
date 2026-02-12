@@ -429,7 +429,7 @@ class TestConvenienceFunctions:
         mock_get_text.return_value = SAMPLE_CHAPTER_HTML
         mock_get.return_value = b"fake pdf"
 
-        with patch("arch.converters.us_states.ky.PDFTextExtractor") as mock_extractor:
+        with patch("atlas.converters.us_states.ky.PDFTextExtractor") as mock_extractor:
             mock_extractor.return_value.extract_text.return_value = SAMPLE_PDF_TEXT
             section = fetch_ky_section("141.010")
 
@@ -443,7 +443,7 @@ class TestConvenienceFunctions:
         mock_get_text.return_value = SAMPLE_CHAPTER_HTML
         mock_get.return_value = b"fake pdf"
 
-        with patch("arch.converters.us_states.ky.PDFTextExtractor") as mock_extractor:
+        with patch("atlas.converters.us_states.ky.PDFTextExtractor") as mock_extractor:
             mock_extractor.return_value.extract_text.return_value = SAMPLE_PDF_TEXT
             sections = download_ky_chapter(141)
 

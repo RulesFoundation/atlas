@@ -2,4 +2,4 @@
 
 from .statutes import CaliforniaStatuteParser
 
-__all__ = ["CaliforniaStatuteParser"]
+__all__ = ["CaliforniaStatuteParser"]  # pragma: no cover

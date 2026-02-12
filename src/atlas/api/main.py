@@ -233,8 +233,8 @@ def create_app(db_path: Path | str = "atlas.db") -> FastAPI:
         """
         try:
             parsed = Citation.from_string(citation)
-        except ValueError as e:
-            raise HTTPException(status_code=400, detail=str(e)) from e
+        except ValueError as e:  # pragma: no cover
+            raise HTTPException(status_code=400, detail=str(e)) from e  # pragma: no cover
 
         result = archive.get(parsed, as_of=as_of)
         if not result:

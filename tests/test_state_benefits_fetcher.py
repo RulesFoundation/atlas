@@ -1,19 +1,17 @@
 """Tests for state benefits policy data fetcher."""
 
-from datetime import date
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
 from atlas.fetchers.state_benefits import (
-    SNAPSUAFetcher,
-    TANFFetcher,
     CCDFFetcher,
+    CCDFPolicyData,
+    SNAPSUAFetcher,
     StateBenefitsFetcher,
     SUAData,
+    TANFFetcher,
     TANFPolicyData,
-    CCDFPolicyData,
 )
 
 
@@ -36,7 +34,7 @@ class TestSNAPSUAFetcher:
     def test_parse_sua_data(self, fetcher, tmp_path):
         """Test parsing SUA Excel data."""
         # Create a mock Excel file with expected structure
-        import pandas as pd
+        pd = pytest.importorskip("pandas")
 
         df = pd.DataFrame(
             {

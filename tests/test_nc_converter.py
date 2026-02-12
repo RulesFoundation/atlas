@@ -10,8 +10,8 @@ from unittest.mock import patch
 import pytest
 
 from atlas.converters.us_states.nc import (
-    NC_TAX_CHAPTERS,
     NC_SOCIAL_CHAPTERS,
+    NC_TAX_CHAPTERS,
     NCConverter,
     NCConverterError,
     download_nc_chapter,

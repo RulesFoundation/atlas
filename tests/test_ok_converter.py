@@ -6,27 +6,19 @@ and converts to the internal Section model.
 
 from datetime import date
 from unittest.mock import patch
-import importlib.util
-import sys
 
 import pytest
 
-# Import ok module directly to avoid broken imports in other state converters
-_spec = importlib.util.spec_from_file_location(
-    "ok", "src/arch/converters/us_states/ok.py"
+from atlas.converters.us_states.ok import (
+    OK_SECTIONS,
+    OK_TAX_SECTIONS,
+    OK_TITLES,
+    OK_WELFARE_SECTIONS,
+    OKConverter,
+    OKConverterError,
+    download_ok_title,
+    fetch_ok_section,
 )
-_ok_module = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_ok_module)
-
-OKConverter = _ok_module.OKConverter
-OKConverterError = _ok_module.OKConverterError
-OK_SECTIONS = _ok_module.OK_SECTIONS
-OK_TAX_SECTIONS = _ok_module.OK_TAX_SECTIONS
-OK_WELFARE_SECTIONS = _ok_module.OK_WELFARE_SECTIONS
-OK_TITLES = _ok_module.OK_TITLES
-fetch_ok_section = _ok_module.fetch_ok_section
-download_ok_title = _ok_module.download_ok_title
-
 from atlas.models import Section
 
 # Sample HTML from OSCN for testing - Tax Code definition section

@@ -10,13 +10,13 @@ import pytest
 
 # Import directly from the module to avoid full package import
 from atlas.converters.base import (
-    LegalDocConverter,
-    AkomaNtoso,
+    CONVERTERS,
     AknSection,
     AknSubsection,
-    CONVERTERS,
-    register_converter,
+    AkomaNtoso,
+    LegalDocConverter,
     get_converter,
+    register_converter,
 )
 
 
