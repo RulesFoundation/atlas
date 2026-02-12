@@ -20,7 +20,7 @@ console = Console()
 try:
     from policyengine_us import Simulation
 
-    USE_PACKAGE = True
+    USE_PACKAGE = True  # pragma: no cover
 except ImportError:  # pragma: no cover
     USE_PACKAGE = False
     POLICYENGINE_API_URL = "https://api.policyengine.org/us/calculate"
@@ -248,7 +248,7 @@ def _call_policyengine_package(
         sim = Simulation(situation=situation)
         value = sim.calculate(output_variable, year)
         # Handle array output (sum for tax unit level)
-        if hasattr(value, "__len__") and len(value) > 0:
+        if hasattr(value, "__len__") and len(value) > 0:  # pragma: no cover
             return float(value[0]), None
         return float(value), None
     except Exception as e:

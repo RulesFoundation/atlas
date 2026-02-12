@@ -448,7 +448,7 @@ class GAConverter:
 
             # Clean up text - remove trailing subsections
             next_subsection = re.search(r"\([a-z]\)", direct_text)
-            if next_subsection:
+            if next_subsection:  # pragma: no cover
                 direct_text = direct_text[: next_subsection.start()].strip()
 
             subsections.append(

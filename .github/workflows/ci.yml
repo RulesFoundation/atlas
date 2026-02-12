@@ -35,9 +35,10 @@ jobs:
           mypy src/atlas --ignore-missing-imports
         continue-on-error: true  # Strict typing takes time to fully implement
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
-          pytest tests -v --ignore=tests/test_uslm_parser.py
+          pip install pytest-cov
+          pytest tests -v --ignore=tests/test_uslm_parser.py --cov=atlas --cov-report=term-missing --cov-config=pyproject.toml
 
   test-with-data:
     runs-on: ubuntu-latest
