@@ -15,7 +15,6 @@ Citation paths use slashes like RAC engine:
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -165,33 +164,21 @@ class Statute(BaseModel):
     """
 
     # Core identification
-    jurisdiction: str = Field(
-        ...,
-        description="Jurisdiction ID (us, us-ca, us-ny, uk, etc.)"
-    )
+    jurisdiction: str = Field(..., description="Jurisdiction ID (us, us-ca, us-ny, uk, etc.)")
     code: str = Field(
-        ...,
-        description="Code/title identifier (e.g., '26' for IRC, 'RTC' for CA Revenue)"
+        ..., description="Code/title identifier (e.g., '26' for IRC, 'RTC' for CA Revenue)"
     )
-    code_name: str = Field(
-        ...,
-        description="Full name of the code (e.g., 'Internal Revenue Code')"
-    )
-    section: str = Field(
-        ...,
-        description="Section number (e.g., '32', '17041', '601-a')"
-    )
+    code_name: str = Field(..., description="Full name of the code (e.g., 'Internal Revenue Code')")
+    section: str = Field(..., description="Section number (e.g., '32', '17041', '601-a')")
     subsection_path: str | None = Field(
-        None,
-        description="Subsection path using slashes (e.g., 'a/1/A')"
+        None, description="Subsection path using slashes (e.g., 'a/1/A')"
     )
 
     # Content
     title: str = Field(..., description="Section heading/title")
     text: str = Field(..., description="Full text content of the section")
     subsections: list[StatuteSubsection] = Field(
-        default_factory=list,
-        description="Hierarchical subsection structure"
+        default_factory=list, description="Hierarchical subsection structure"
     )
 
     # Structural hierarchy (varies by jurisdiction)
@@ -207,42 +194,31 @@ class Statute(BaseModel):
     last_amended: date | None = Field(None, description="Date of last amendment")
     effective_date: date | None = Field(None, description="Effective date")
     public_laws: list[str] = Field(
-        default_factory=list,
-        description="Public law numbers (federal) or chapter numbers (state)"
+        default_factory=list, description="Public law numbers (federal) or chapter numbers (state)"
     )
 
     # Cross-references
     references_to: list[str] = Field(
-        default_factory=list,
-        description="Citations this section references"
+        default_factory=list, description="Citations this section references"
     )
     referenced_by: list[str] = Field(
-        default_factory=list,
-        description="Citations that reference this section"
+        default_factory=list, description="Citations that reference this section"
     )
 
     # Source tracking
     source_url: str = Field(..., description="URL to official source")
     retrieved_at: datetime = Field(
-        default_factory=datetime.utcnow,
-        description="When this version was retrieved"
+        default_factory=datetime.utcnow, description="When this version was retrieved"
     )
-    source_id: str | None = Field(
-        None,
-        description="Source-specific ID (USLM id, etc.)"
-    )
+    source_id: str | None = Field(None, description="Source-specific ID (USLM id, etc.)")
 
     model_config = {"extra": "forbid"}
 
     @field_validator("jurisdiction")
     @classmethod
     def validate_jurisdiction(cls, v: str) -> str:
-        """Validate jurisdiction ID format."""
-        v = v.lower()
-        if v not in JURISDICTIONS:
-            # Allow unknown jurisdictions but warn
-            pass
-        return v
+        """Normalize jurisdiction ID to lowercase."""
+        return v.lower()
 
     @property
     def jurisdiction_name(self) -> str:
@@ -329,7 +305,7 @@ class Statute(BaseModel):
         match = re.match(usc_pattern, cite, re.IGNORECASE)
         if match:
             subsection = None
-            remainder = cite[match.end():]
+            remainder = cite[match.end() :]
             if remainder or match.group(3):
                 sub_pattern = r"\(([^)]+)\)"
                 subs = re.findall(sub_pattern, cite)
@@ -390,8 +366,7 @@ class JurisdictionInfo(BaseModel):
     name: str
     type: JurisdictionType
     codes: list[dict[str, str]] = Field(
-        default_factory=list,
-        description="List of codes with 'id' and 'name' keys"
+        default_factory=list, description="List of codes with 'id' and 'name' keys"
     )
     section_count: int = 0
     last_updated: datetime | None = None

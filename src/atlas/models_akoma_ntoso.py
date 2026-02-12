@@ -236,9 +236,7 @@ class FRBRCountry(AknBaseModel):
     @field_validator("value")
     @classmethod
     def validate_country(cls, v: str) -> str:
-        """Validate country code format."""
-        if not re.match(r"^[A-Za-z]{2}$", v):
-            pass  # Allow non-standard codes
+        """Normalize country code to lowercase."""
         return v.lower()
 
     def to_xml_element(self) -> ET.Element:
@@ -363,9 +361,21 @@ class FRBRWork(AknBaseModel):
         country_elem = elem.find("akn:FRBRcountry", ns)
 
         uri = FRBRUri.from_xml_element(uri_elem) if uri_elem is not None else FRBRUri(value="")
-        frbr_date = FRBRDate.from_xml_element(date_elem) if date_elem is not None else FRBRDate(date=date.today())
-        author = FRBRAuthor.from_xml_element(author_elem) if author_elem is not None else FRBRAuthor(href="")
-        country = FRBRCountry.from_xml_element(country_elem) if country_elem is not None else FRBRCountry(value="xx")
+        frbr_date = (
+            FRBRDate.from_xml_element(date_elem)
+            if date_elem is not None
+            else FRBRDate(date=date.today())
+        )
+        author = (
+            FRBRAuthor.from_xml_element(author_elem)
+            if author_elem is not None
+            else FRBRAuthor(href="")
+        )
+        country = (
+            FRBRCountry.from_xml_element(country_elem)
+            if country_elem is not None
+            else FRBRCountry(value="xx")
+        )
 
         # Parse optional elements
         number_elem = elem.find("akn:FRBRnumber", ns)
@@ -430,9 +440,15 @@ class FRBRExpression(AknBaseModel):
 
         return cls(
             uri=FRBRUri.from_xml_element(uri_elem) if uri_elem is not None else FRBRUri(value=""),
-            date=FRBRDate.from_xml_element(date_elem) if date_elem is not None else FRBRDate(date=date.today()),
-            author=FRBRAuthor.from_xml_element(author_elem) if author_elem is not None else FRBRAuthor(href=""),
-            language=FRBRLanguage.from_xml_element(lang_elem) if lang_elem is not None else FRBRLanguage(language="en"),
+            date=FRBRDate.from_xml_element(date_elem)
+            if date_elem is not None
+            else FRBRDate(date=date.today()),
+            author=FRBRAuthor.from_xml_element(author_elem)
+            if author_elem is not None
+            else FRBRAuthor(href=""),
+            language=FRBRLanguage.from_xml_element(lang_elem)
+            if lang_elem is not None
+            else FRBRLanguage(language="en"),
             this=this_elem.get("value") if this_elem is not None else None,
         )
 
@@ -477,8 +493,12 @@ class FRBRManifestation(AknBaseModel):
 
         return cls(
             uri=FRBRUri.from_xml_element(uri_elem) if uri_elem is not None else FRBRUri(value=""),
-            date=FRBRDate.from_xml_element(date_elem) if date_elem is not None else FRBRDate(date=date.today()),
-            author=FRBRAuthor.from_xml_element(author_elem) if author_elem is not None else FRBRAuthor(href=""),
+            date=FRBRDate.from_xml_element(date_elem)
+            if date_elem is not None
+            else FRBRDate(date=date.today()),
+            author=FRBRAuthor.from_xml_element(author_elem)
+            if author_elem is not None
+            else FRBRAuthor(href=""),
             this=this_elem.get("value") if this_elem is not None else None,
         )
 
@@ -523,8 +543,12 @@ class FRBRItem(AknBaseModel):
 
         return cls(
             uri=FRBRUri.from_xml_element(uri_elem) if uri_elem is not None else FRBRUri(value=""),
-            date=FRBRDate.from_xml_element(date_elem) if date_elem is not None else FRBRDate(date=date.today()),
-            author=FRBRAuthor.from_xml_element(author_elem) if author_elem is not None else FRBRAuthor(href=""),
+            date=FRBRDate.from_xml_element(date_elem)
+            if date_elem is not None
+            else FRBRDate(date=date.today()),
+            author=FRBRAuthor.from_xml_element(author_elem)
+            if author_elem is not None
+            else FRBRAuthor(href=""),
             this=this_elem.get("value") if this_elem is not None else None,
         )
 
@@ -568,19 +592,25 @@ class Identification(AknBaseModel):
 
         return cls(
             source=elem.get("source", ""),
-            work=FRBRWork.from_xml_element(work_elem) if work_elem is not None else FRBRWork(
+            work=FRBRWork.from_xml_element(work_elem)
+            if work_elem is not None
+            else FRBRWork(
                 uri=FRBRUri(value=""),
                 date=FRBRDate(date=date.today()),
                 author=FRBRAuthor(href=""),
                 country=FRBRCountry(value="xx"),
             ),
-            expression=FRBRExpression.from_xml_element(expr_elem) if expr_elem is not None else FRBRExpression(
+            expression=FRBRExpression.from_xml_element(expr_elem)
+            if expr_elem is not None
+            else FRBRExpression(
                 uri=FRBRUri(value=""),
                 date=FRBRDate(date=date.today()),
                 author=FRBRAuthor(href=""),
                 language=FRBRLanguage(language="en"),
             ),
-            manifestation=FRBRManifestation.from_xml_element(manif_elem) if manif_elem is not None else FRBRManifestation(
+            manifestation=FRBRManifestation.from_xml_element(manif_elem)
+            if manif_elem is not None
+            else FRBRManifestation(
                 uri=FRBRUri(value=""),
                 date=FRBRDate(date=date.today()),
                 author=FRBRAuthor(href=""),
@@ -963,7 +993,9 @@ class HierarchicalElement(AknBaseModel):
     heading: Optional[str] = Field(None, description="Heading text")
     subheading: Optional[str] = Field(None, description="Subheading text")
     text: str = Field("", description="Text content")
-    children: list["HierarchicalElement"] = Field(default_factory=list, description="Child elements")
+    children: list["HierarchicalElement"] = Field(
+        default_factory=list, description="Child elements"
+    )
 
     # Temporal attributes
     period: Optional[str] = Field(None, description="Reference to temporal group")
@@ -1049,8 +1081,18 @@ class HierarchicalElement(AknBaseModel):
 
         # Parse children (recursively)
         children = []
-        for child_tag in ["part", "chapter", "section", "subsection", "paragraph",
-                          "subparagraph", "clause", "subclause", "article", "hcontainer"]:
+        for child_tag in [
+            "part",
+            "chapter",
+            "section",
+            "subsection",
+            "paragraph",
+            "subparagraph",
+            "clause",
+            "subclause",
+            "article",
+            "hcontainer",
+        ]:
             for child_elem in elem.findall(f"akn:{child_tag}", ns):
                 child_cls = _HIERARCHICAL_ELEMENTS.get(child_tag, HierarchicalElement)
                 children.append(child_cls.from_xml_element(child_elem))
@@ -1073,46 +1115,55 @@ class HierarchicalElement(AknBaseModel):
 
 class Part(HierarchicalElement):
     """A Part - major division of a document."""
+
     _xml_element: ClassVar[str] = "part"
 
 
 class Chapter(HierarchicalElement):
     """A Chapter - subdivision of a Part."""
+
     _xml_element: ClassVar[str] = "chapter"
 
 
 class Section(HierarchicalElement):
     """A Section - primary structural unit of legislation."""
+
     _xml_element: ClassVar[str] = "section"
 
 
 class Subsection(HierarchicalElement):
     """A Subsection - subdivision of a Section."""
+
     _xml_element: ClassVar[str] = "subsection"
 
 
 class Paragraph(HierarchicalElement):
     """A Paragraph - numbered text block."""
+
     _xml_element: ClassVar[str] = "paragraph"
 
 
 class Subparagraph(HierarchicalElement):
     """A Subparagraph - subdivision of a Paragraph."""
+
     _xml_element: ClassVar[str] = "subparagraph"
 
 
 class Clause(HierarchicalElement):
     """A Clause - specific provision within a section."""
+
     _xml_element: ClassVar[str] = "clause"
 
 
 class Subclause(HierarchicalElement):
     """A Subclause - subdivision of a Clause."""
+
     _xml_element: ClassVar[str] = "subclause"
 
 
 class Article(HierarchicalElement):
     """An Article - numbered provision (common in civil law)."""
+
     _xml_element: ClassVar[str] = "article"
 
 
@@ -1152,11 +1203,17 @@ class AkomaNtosoDocument(AknBaseModel):
     body: list[HierarchicalElement] = Field(default_factory=list, description="Document body")
 
     # Cross-references
-    references: list[Reference] = Field(default_factory=list, description="Internal/external references")
-    modifications: list[Modification] = Field(default_factory=list, description="Textual modifications")
+    references: list[Reference] = Field(
+        default_factory=list, description="Internal/external references"
+    )
+    modifications: list[Modification] = Field(
+        default_factory=list, description="Textual modifications"
+    )
 
     # Temporal data
-    temporal_groups: list[TemporalGroup] = Field(default_factory=list, description="Temporal groups")
+    temporal_groups: list[TemporalGroup] = Field(
+        default_factory=list, description="Temporal groups"
+    )
 
     # Source tracking
     source_url: Optional[str] = Field(None, description="Source URL")
@@ -1248,25 +1305,29 @@ class AkomaNtosoDocument(AknBaseModel):
 
         # Parse identification
         id_elem = meta.find("akn:identification", ns)
-        identification = Identification.from_xml_element(id_elem) if id_elem is not None else Identification(
-            source="",
-            work=FRBRWork(
-                uri=FRBRUri(value=""),
-                date=FRBRDate(date=date.today()),
-                author=FRBRAuthor(href=""),
-                country=FRBRCountry(value="xx"),
-            ),
-            expression=FRBRExpression(
-                uri=FRBRUri(value=""),
-                date=FRBRDate(date=date.today()),
-                author=FRBRAuthor(href=""),
-                language=FRBRLanguage(language="en"),
-            ),
-            manifestation=FRBRManifestation(
-                uri=FRBRUri(value=""),
-                date=FRBRDate(date=date.today()),
-                author=FRBRAuthor(href=""),
-            ),
+        identification = (
+            Identification.from_xml_element(id_elem)
+            if id_elem is not None
+            else Identification(
+                source="",
+                work=FRBRWork(
+                    uri=FRBRUri(value=""),
+                    date=FRBRDate(date=date.today()),
+                    author=FRBRAuthor(href=""),
+                    country=FRBRCountry(value="xx"),
+                ),
+                expression=FRBRExpression(
+                    uri=FRBRUri(value=""),
+                    date=FRBRDate(date=date.today()),
+                    author=FRBRAuthor(href=""),
+                    language=FRBRLanguage(language="en"),
+                ),
+                manifestation=FRBRManifestation(
+                    uri=FRBRUri(value=""),
+                    date=FRBRDate(date=date.today()),
+                    author=FRBRAuthor(href=""),
+                ),
+            )
         )
 
         # Parse publication
@@ -1285,11 +1346,13 @@ class AkomaNtosoDocument(AknBaseModel):
                 references.append(Reference.from_xml_element(ref_elem))
             for cite_elem in refs_elem.findall("akn:citation", ns):
                 # Treat citations as references
-                references.append(Reference(
-                    href=cite_elem.get("href", ""),
-                    show_as=cite_elem.get("showAs"),
-                    text=cite_elem.text,
-                ))
+                references.append(
+                    Reference(
+                        href=cite_elem.get("href", ""),
+                        show_as=cite_elem.get("showAs"),
+                        text=cite_elem.text,
+                    )
+                )
 
         # Parse modifications
         modifications = []

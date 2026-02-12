@@ -1,9 +1,13 @@
 """AI encoding pipeline: Claude reads statute, writes DSL."""
 
+import contextlib
+import json
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+import yaml
 from anthropic import Anthropic
 
 from atlas.models import Section
@@ -136,10 +140,6 @@ def encode_section(section: Section, model: str = "claude-sonnet-4-20250514") ->
     # Parse test cases
     test_cases = []
     if tests_yaml:
-        import contextlib
-
-        import yaml
-
         with contextlib.suppress(Exception):
             test_cases = yaml.safe_load(tests_yaml) or []
 
@@ -157,8 +157,6 @@ def encode_section(section: Section, model: str = "claude-sonnet-4-20250514") ->
 
 def _extract_code_block(text: str, language: str) -> str:
     """Extract a code block with the given language from text."""
-    import re
-
     pattern = rf"```{language}\n(.*?)```"
     match = re.search(pattern, text, re.DOTALL)
     if match:
@@ -201,15 +199,11 @@ def encode_and_save(
 
     # Save tests
     if encoding.test_cases:
-        import yaml
-
         (section_dir / "tests.yaml").write_text(
             yaml.dump(encoding.test_cases, default_flow_style=False)
         )
 
     # Save metadata
-    import json
-
     metadata = {
         "citation": encoding.citation,
         "encoded_by": encoding.encoded_by,

@@ -4,6 +4,7 @@ Similar to policyengine-taxsim validation - run test cases through both
 our DSL encodings and PolicyEngine's Python package, compare results.
 """
 
+import json
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -315,8 +316,6 @@ def verify_encoding(
     metadata_path = section_dir / "metadata.json"
 
     # Get citation from metadata
-    import json
-
     citation = "Unknown"
     if metadata_path.exists():
         metadata = json.loads(metadata_path.read_text())
@@ -430,8 +429,6 @@ def print_verification_report(report: VerificationReport):
 
 def save_verification_report(report: VerificationReport, output_path: Path):
     """Save verification report to JSON."""
-    import json
-
     data = {
         "citation": report.citation,
         "timestamp": report.timestamp.isoformat(),

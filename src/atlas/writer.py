@@ -32,13 +32,10 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
-from typing import Dict, List, Optional
 
 
 class StorageError(Exception):
     """Error during document storage."""
-
-    pass
 
 
 # Allowed original file formats
@@ -65,10 +62,10 @@ class CanonicalDocument:
     content_text: str  # Full text content
 
     # Optional fields
-    title: Optional[int] = None  # Title number (for USC)
-    agency: Optional[str] = None  # Agency (for guidance)
-    release_point: Optional[str] = None  # e.g., "119-46" for USC
-    subsections: List[Dict] = field(default_factory=list)
+    title: int | None = None  # Title number (for USC)
+    agency: str | None = None  # Agency (for guidance)
+    release_point: str | None = None  # e.g., "119-46" for USC
+    subsections: list[dict] = field(default_factory=list)
 
     def storage_path(self) -> str:
         """Generate the storage path for this document.
@@ -92,7 +89,7 @@ class CanonicalDocument:
 
         return "/".join(parts)
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         """Convert to JSON-serializable dictionary."""
         return {
             "jurisdiction": self.jurisdiction,
@@ -111,7 +108,7 @@ class CanonicalDocument:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict) -> "CanonicalDocument":
+    def from_dict(cls, data: dict) -> "CanonicalDocument":
         """Create from dictionary (e.g., loaded from JSON)."""
         return cls(
             jurisdiction=data["jurisdiction"],
@@ -134,9 +131,7 @@ class StorageBackendBase(ABC):
     """Abstract base for document storage backends."""
 
     @abstractmethod
-    def write(
-        self, doc: CanonicalDocument, original: bytes, original_format: str
-    ) -> str:
+    def write(self, doc: CanonicalDocument, original: bytes, original_format: str) -> str:
         """Write document to storage.
 
         Args:
@@ -150,7 +145,7 @@ class StorageBackendBase(ABC):
         pass
 
     @abstractmethod
-    def read(self, path: str) -> Optional[CanonicalDocument]:
+    def read(self, path: str) -> CanonicalDocument | None:
         """Read canonical document from storage.
 
         Args:
@@ -162,7 +157,7 @@ class StorageBackendBase(ABC):
         pass
 
     @abstractmethod
-    def read_original(self, path: str) -> Optional[bytes]:
+    def read_original(self, path: str) -> bytes | None:
         """Read original file content.
 
         Args:
@@ -174,7 +169,7 @@ class StorageBackendBase(ABC):
         pass
 
     @abstractmethod
-    def list_versions(self, base_path: str) -> List[str]:
+    def list_versions(self, base_path: str) -> list[str]:
         """List all versions (effective dates) for a document.
 
         Args:
@@ -197,9 +192,7 @@ class LocalBackend(StorageBackendBase):
         """
         self.root = root
 
-    def write(
-        self, doc: CanonicalDocument, original: bytes, original_format: str
-    ) -> str:
+    def write(self, doc: CanonicalDocument, original: bytes, original_format: str) -> str:
         """Write document to local filesystem."""
         path = doc.storage_path()
         dir_path = self.root / path
@@ -217,7 +210,7 @@ class LocalBackend(StorageBackendBase):
 
         return path
 
-    def read(self, path: str) -> Optional[CanonicalDocument]:
+    def read(self, path: str) -> CanonicalDocument | None:
         """Read canonical document from local filesystem."""
         json_file = self.root / path / "canonical.json"
 
@@ -227,7 +220,7 @@ class LocalBackend(StorageBackendBase):
         data = json.loads(json_file.read_text())
         return CanonicalDocument.from_dict(data)
 
-    def read_original(self, path: str) -> Optional[bytes]:
+    def read_original(self, path: str) -> bytes | None:
         """Read original file from local filesystem."""
         dir_path = self.root / path
 
@@ -242,7 +235,7 @@ class LocalBackend(StorageBackendBase):
 
         return None
 
-    def list_versions(self, base_path: str) -> List[str]:
+    def list_versions(self, base_path: str) -> list[str]:
         """List all versions for a document."""
         dir_path = self.root / base_path
 
@@ -271,9 +264,7 @@ class DocumentWriter:
         """
         self.backend = backend
 
-    def write(
-        self, doc: CanonicalDocument, original: bytes, original_format: str
-    ) -> str:
+    def write(self, doc: CanonicalDocument, original: bytes, original_format: str) -> str:
         """Write document with validation.
 
         Args:
@@ -298,7 +289,7 @@ class DocumentWriter:
         # Write to backend
         return self.backend.write(doc, original, original_format)
 
-    def read(self, path: str) -> Optional[CanonicalDocument]:
+    def read(self, path: str) -> CanonicalDocument | None:
         """Read canonical document.
 
         Args:

@@ -16,22 +16,18 @@ Usage:
 
 import asyncio
 import hashlib
-import json
-import os
 import re
 import time
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterator, Optional
 from urllib.parse import urljoin, urlparse
 
-import httpx
 import click
+import httpx
 from bs4 import BeautifulSoup
 
-from atlas.sources.registry import get_all_configs, SourceConfig
-from atlas.sources.specs import load_spec, load_all_specs, get_section_pattern
-
+from atlas.sources.registry import SourceConfig, get_all_configs
+from atlas.sources.specs import get_section_pattern
 
 # R2 config
 R2_ENDPOINT = "https://010d8d7f3b423be5ce36c7a5a49e91e4.r2.cloudflarestorage.com"
@@ -41,14 +37,14 @@ R2_BUCKET = "atlas"
 # Maps jurisdiction ID to Archive.org item identifier
 # See: https://archive.org/details/govlaw
 ARCHIVE_ORG_STATES: dict[str, str] = {
-    "us-ga": "gov.ga.ocga.2018",   # Georgia OCGA
-    "us-ky": "gov.ky.code",        # Kentucky Revised Statutes
-    "us-nc": "gov.nc.code",        # North Carolina General Statutes
-    "us-nd": "gov.nd.code",        # North Dakota Century Code
-    "us-tn": "gov.tn.tca",         # Tennessee Code Annotated
-    "us-vt": "gov.vt.code",        # Vermont Statutes
-    "us-va": "gov.va.code",        # Virginia Code
-    "us-wy": "gov.wy.code",        # Wyoming Statutes
+    "us-ga": "gov.ga.ocga.2018",  # Georgia OCGA
+    "us-ky": "gov.ky.code",  # Kentucky Revised Statutes
+    "us-nc": "gov.nc.code",  # North Carolina General Statutes
+    "us-nd": "gov.nd.code",  # North Dakota Century Code
+    "us-tn": "gov.tn.tca",  # Tennessee Code Annotated
+    "us-vt": "gov.vt.code",  # Vermont Statutes
+    "us-va": "gov.va.code",  # Virginia Code
+    "us-wy": "gov.wy.code",  # Wyoming Statutes
     # Note: Colorado, Arkansas, Idaho, Mississippi have volumes split across
     # multiple archive.org items - not yet supported
 }
@@ -63,96 +59,67 @@ SECTION_PATTERNS: dict[str, str] = {
     "us-ny": r"/[A-Z]+/\d+",
     "us-fl": r"/statutes/\d+\.\d+",
     "us-nv": r"NRS-[\dA-Z]+\.html",  # Chapter pages
-    "us-de": r"/c\d+/index\.html",   # Chapter pages
-    "us-ia": r"/docs/code/\d+",       # Chapter pages
-    "us-ky": r"/chapter\d+\.htm",     # Chapter pages
-    "us-me": r"/statutes/\d+/",       # Maine title pages
-
+    "us-de": r"/c\d+/index\.html",  # Chapter pages
+    "us-ia": r"/docs/code/\d+",  # Chapter pages
+    "us-ky": r"/chapter\d+\.htm",  # Chapter pages
+    "us-me": r"/statutes/\d+/",  # Maine title pages
     # === FIXED PATTERNS ===
     # Arizona: ARS section URLs
     "us-az": r"/ars/\d+/[\d\-]+\.htm",
-
     # California: section display pages (lawCode + sectionNum params)
     "us-ca": r"codes_displaySection\.xhtml\?.*sectionNum=|codes_displayText\.xhtml\?.*lawCode=",
-
     # Colorado: title/article/section structure
     "us-co": r"/crs\d{4}/.*title.*|/statutes.*article",
-
     # Illinois: ILCS section display pages
     "us-il": r"ilcs\d+\.asp\?.*Section|ilcs4\.asp\?.*ActID",
-
     # Arkansas: LexisNexis hosted - chapter level
     "us-ar": r"arcode/.*Default\.asp|arcode/.*\d+",
-
     # Hawaii: HRS section pages
     "us-hi": r"HRS_\d+-\d+\.htm|hrscurrent/.*\.htm",
-
     # Indiana: IC title/chapter structure
     "us-in": r"/ic/titles/\d+|/ic/\d+-\d+",
-
     # Kansas: chapter pages
     "us-ks": r"/statutes/chapters/ch\d+|/statutes/\d+-\d+",
-
     # Louisiana: law sections
     "us-la": r"Law\.aspx\?d=|Laws.*folder=",
-
     # Michigan: MCL sections
     "us-mi": r"MCL.*objectId=mcl-|/Laws/MCL/.*\.\d+",
-
     # Minnesota: chapter/section pages
     "us-mn": r"/statutes/cite/\d+\.\d+|/statutes.*chapter",
-
     # Mississippi: LexisNexis hosted
     "us-ms": r"mscode/.*Default\.asp|mscode/.*\d+",
-
     # Montana: MCA title/chapter/section
     "us-mt": r"/bills/mca/title.*section|mca_\d+",
-
     # Nebraska: statute display
     "us-ne": r"statute=\d+-\d+|/laws/statutes\.php",
-
     # New Hampshire: RSA chapter pages
     "us-nh": r"/rsa/html/.*\.htm|/rsa/.*\d+-\d+",
-
     # New Jersey: statute sections
     "us-nj": r"statutes.*\d+[A-Z]?:\d+|gateway\.dll/statutes/\d+",
-
     # New Mexico: NMSA sections
     "us-nm": r"nmsa.*nav\.do|nmsaid=\d+-\d+",
-
     # Oklahoma: OSCN document delivery
     "us-ok": r"DeliverDocument\.asp\?.*CiteID|oscn.*\d+",
-
     # Oregon: ORS chapter pages
     "us-or": r"/ors/ors\d+\.html|/ors\d+",
-
     # Pennsylvania: consolidated statutes
     "us-pa": r"view-statute\?.*ttl=\d+|/statutes.*sctn=",
-
     # Rhode Island: title/chapter/section structure
     "us-ri": r"/TITLE\d+/\d+-\d+|Statutes.*\.htm",
-
     # Connecticut: General Statutes - chapter pages (chap_XXX.htm)
     "us-ct": r"/pub/chap_\d+\.htm|/pub/title_\d+\.htm",
-
     # South Carolina: code sections
     "us-sc": r"/code/t\d+c\d+|codeoflaw.*section",
-
     # South Dakota: codified laws
     "us-sd": r"DisplayStatute\.aspx\?.*Statute=|Statute=\d+-\d+",
-
     # Utah: xcode sections
     "us-ut": r"/xcode/Title\d+/.*\.html|Chapter.*-S\d+",
-
     # Washington: RCW cite pages
     "us-wa": r"RCW/.*cite=\d+\.\d+|rcw.*\d+\.\d+",
-
     # Wisconsin: statute sections
     "us-wi": r"/document/statutes/\d+\.\d+|/statutes/\d+",
-
     # West Virginia: code sections
     "us-wv": r"code\.cfm\?.*chap=\d+.*art=|wvcode.*\d+",
-
     # === DEFAULT ===
     # Matches common section URL formats when no specific pattern
     "_default": r"(?:section|§|sec|statute)[\-_/]?\d+[\.\d]*",
@@ -201,16 +168,20 @@ async def crawl_jurisdiction(
         output_dir.mkdir(parents=True, exist_ok=True)
 
         # Monkey-patch upload to save to disk instead
-        original_upload = crawler.upload_to_r2
-
         def save_to_disk(url: str, html: str):
             # Create filename from URL (include query params and fragment)
             parsed = urlparse(url)
             path_parts = parsed.path.strip("/").replace("/", "_")
             # Include query params for sites that use them for section IDs
             # Replace slashes, equals, ampersands with safe chars
-            query = parsed.query.replace("/", "_").replace("=", "-").replace("&", "_") if parsed.query else ""
-            fragment = parsed.fragment.replace("/", "_").replace(".", "-") if parsed.fragment else ""
+            query = (
+                parsed.query.replace("/", "_").replace("=", "-").replace("&", "_")
+                if parsed.query
+                else ""
+            )
+            fragment = (
+                parsed.fragment.replace("/", "_").replace(".", "-") if parsed.fragment else ""
+            )
 
             # Build filename with all components
             parts = [path_parts] if path_parts else ["index"]
@@ -222,15 +193,15 @@ async def crawl_jurisdiction(
 
             # Sanitize: remove invalid filename chars (colons, etc)
             # Colons appear in embedded URLs like "docName=https://..."
-            filename = re.sub(r'[:<>"|?*]', '-', filename)
-            filename = re.sub(r'https?-__', '', filename)  # Remove "https--" prefix
-            filename = re.sub(r'-+', '-', filename)  # Collapse multiple dashes
+            filename = re.sub(r'[:<>"|?*]', "-", filename)
+            filename = re.sub(r"https?-__", "", filename)  # Remove "https--" prefix
+            filename = re.sub(r"-+", "-", filename)  # Collapse multiple dashes
 
             # Truncate if too long (filesystem limit)
             if len(filename) > 200:
                 url_hash = hashlib.md5(url.encode()).hexdigest()[:12]
                 filename = f"{path_parts[:100]}_{url_hash}.html"
-                filename = re.sub(r'[:<>"|?*]', '-', filename)
+                filename = re.sub(r'[:<>"|?*]', "-", filename)
 
             filepath = output_dir / filename
             filepath.write_text(html, encoding="utf-8")
@@ -265,9 +236,7 @@ async def download_from_archive_org(
     """
     if jurisdiction not in ARCHIVE_ORG_STATES:
         available = ", ".join(sorted(ARCHIVE_ORG_STATES.keys()))
-        raise ValueError(
-            f"No Archive.org data for {jurisdiction}. Available: {available}"
-        )
+        raise ValueError(f"No Archive.org data for {jurisdiction}. Available: {available}")
 
     item_id = ARCHIVE_ORG_STATES[jurisdiction]
     output_dir = output_dir or Path(f"data/archive-org/{jurisdiction}")
@@ -299,9 +268,12 @@ async def download_from_archive_org(
 
         # Filter for content files (HTML, RTF, ODT - not metadata/thumbs)
         content_files = [
-            f for f in files
-            if any(f.get("name", "").lower().endswith(ext)
-                   for ext in [".html", ".htm", ".rtf", ".odt", ".xml", ".txt"])
+            f
+            for f in files
+            if any(
+                f.get("name", "").lower().endswith(ext)
+                for ext in [".html", ".htm", ".rtf", ".odt", ".xml", ".txt"]
+            )
             and not f.get("name", "").startswith("__")
         ]
 
@@ -309,7 +281,7 @@ async def download_from_archive_org(
 
         if dry_run:
             for f in content_files[:10]:
-                print(f"  Would download: {f['name']} ({int(f.get('size', 0))/1024:.1f} KB)")
+                print(f"  Would download: {f['name']} ({int(f.get('size', 0)) / 1024:.1f} KB)")
             if len(content_files) > 10:
                 print(f"  ... and {len(content_files) - 10} more")
             return stats
@@ -326,7 +298,7 @@ async def download_from_archive_org(
                 continue
 
             try:
-                print(f"  Downloading: {fname} ({fsize/1024:.1f} KB)")
+                print(f"  Downloading: {fname} ({fsize / 1024:.1f} KB)")
                 resp = await client.get(download_url)
                 resp.raise_for_status()
 
@@ -339,8 +311,10 @@ async def download_from_archive_org(
             except Exception as e:
                 stats["errors"].append(f"Failed {fname}: {e}")
 
-        print(f"[{jurisdiction}] Done: {stats['files_downloaded']} files, "
-              f"{stats['bytes_downloaded']/1024/1024:.1f} MB")
+        print(
+            f"[{jurisdiction}] Done: {stats['files_downloaded']} files, "
+            f"{stats['bytes_downloaded'] / 1024 / 1024:.1f} MB"
+        )
 
     return stats
 
@@ -366,9 +340,9 @@ async def download_all_archive_org(
     # Summary
     total_files = sum(r.get("files_downloaded", 0) for r in results)
     total_bytes = sum(r.get("bytes_downloaded", 0) for r in results)
-    print(f"\nArchive.org download complete:")
+    print("\nArchive.org download complete:")
     print(f"  Total files: {total_files}")
-    print(f"  Total size: {total_bytes/1024/1024:.1f} MB")
+    print(f"  Total size: {total_bytes / 1024 / 1024:.1f} MB")
 
     return results
 
@@ -376,6 +350,7 @@ async def download_all_archive_org(
 @dataclass
 class CrawlStats:
     """Stats for a crawl job."""
+
     jurisdiction: str
     name: str
     codes: int = 0
@@ -406,6 +381,7 @@ class CrawlStats:
 def get_r2_client():
     """Get R2 client using RF credentials file."""
     import json
+
     import boto3
     from botocore.config import Config
 
@@ -471,10 +447,7 @@ class StateCrawler:
             return re.compile(spec_pattern, re.IGNORECASE)
 
         # Fall back to hardcoded patterns
-        pattern = SECTION_PATTERNS.get(
-            self.config.jurisdiction,
-            SECTION_PATTERNS["_default"]
-        )
+        pattern = SECTION_PATTERNS.get(self.config.jurisdiction, SECTION_PATTERNS["_default"])
         return re.compile(pattern, re.IGNORECASE)
 
     def _is_section_url(self, url: str) -> bool:
@@ -488,9 +461,7 @@ class StateCrawler:
         url_domain = urlparse(url).netloc
         return url_domain == base_domain or url_domain == ""
 
-    async def discover_sections(
-        self, client: httpx.AsyncClient, max_depth: int = 3
-    ) -> list[str]:
+    async def discover_sections(self, client: httpx.AsyncClient, max_depth: int = 3) -> list[str]:
         """Discover all section URLs via recursive BFS crawl.
 
         Starts from TOC pages and follows links within the domain
@@ -505,9 +476,7 @@ class StateCrawler:
         for code_id in self.config.codes:
             if self.config.toc_url_pattern:
                 # Handle different placeholder names in patterns
-                toc_url = self.config.toc_url_pattern.format(
-                    code=code_id, title=code_id
-                )
+                toc_url = self.config.toc_url_pattern.format(code=code_id, title=code_id)
                 if not toc_url.startswith("http"):
                     toc_url = f"{self.config.base_url}{toc_url}"
                 frontier.append((toc_url, 0))
@@ -515,12 +484,14 @@ class StateCrawler:
                 # Fall back to base URL
                 frontier.append((self.config.base_url, 0))
 
-        print(f"  [{self.config.jurisdiction}] Starting discovery from {len(frontier)} TOC pages...")
+        print(
+            f"  [{self.config.jurisdiction}] Starting discovery from {len(frontier)} TOC pages..."
+        )
 
         while frontier:
             # Process current frontier in parallel
-            current_batch = frontier[:self.max_concurrent]
-            frontier = frontier[self.max_concurrent:]
+            current_batch = frontier[: self.max_concurrent]
+            frontier = frontier[self.max_concurrent :]
 
             tasks = []
             for url, depth in current_batch:
@@ -587,10 +558,20 @@ class StateCrawler:
                         # Add to child links for further crawling
                         # Only include navigation-like links
                         text = link.get_text(strip=True).lower()
-                        if any(x in href.lower() or x in text for x in [
-                            "title", "chapter", "article", "part", "division",
-                            "subtitle", "subchapter", "code", "revised"
-                        ]):
+                        if any(
+                            x in href.lower() or x in text
+                            for x in [
+                                "title",
+                                "chapter",
+                                "article",
+                                "part",
+                                "division",
+                                "subtitle",
+                                "subchapter",
+                                "code",
+                                "revised",
+                            ]
+                        ):
                             child_links.append(full_url)
 
                 return section_urls, child_links, depth
@@ -623,7 +604,7 @@ class StateCrawler:
                         return url, resp.text
                     elif resp.status_code == 429:
                         # Rate limited - exponential backoff
-                        wait_time = (2 ** attempt) + (attempt * 0.5)
+                        wait_time = (2**attempt) + (attempt * 0.5)
                         await asyncio.sleep(wait_time)
                         continue
                     else:
@@ -680,9 +661,7 @@ class StateCrawler:
                 self.stats.end_time = time.time()
                 return self.stats
 
-            print(
-                f"  [{self.config.jurisdiction}] Fetching {len(section_urls)} sections..."
-            )
+            print(f"  [{self.config.jurisdiction}] Fetching {len(section_urls)} sections...")
 
             # Fetch all sections concurrently
             tasks = [self.fetch_section(client, url) for url in section_urls]
@@ -761,20 +740,20 @@ async def crawl_all_states(
     duration = time.time() - start
 
     # Summary
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("CRAWL COMPLETE")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"States: {len(stats)} succeeded, {len(errors)} failed")
-    print(f"Total duration: {duration:.1f}s ({duration/60:.1f} minutes)")
+    print(f"Total duration: {duration:.1f}s ({duration / 60:.1f} minutes)")
 
     total_sections = sum(s.sections_fetched for s in stats)
     total_bytes = sum(s.bytes_fetched for s in stats)
     print(f"Total sections: {total_sections:,}")
-    print(f"Total data: {total_bytes/1024/1024:.1f} MB")
-    print(f"Overall rate: {total_sections/duration:.1f} sections/second")
+    print(f"Total data: {total_bytes / 1024 / 1024:.1f} MB")
+    print(f"Overall rate: {total_sections / duration:.1f} sections/second")
 
     if errors:
-        print(f"\nErrors:")
+        print("\nErrors:")
         for e in errors[:10]:
             print(f"  {e}")
 
@@ -857,7 +836,7 @@ def main(
         print(f"  Sections discovered: {stats.sections_discovered}")
         print(f"  Sections fetched: {stats.sections_fetched}")
         print(f"  Sections failed: {stats.sections_failed}")
-        print(f"  Data fetched: {stats.bytes_fetched/1024:.1f} KB")
+        print(f"  Data fetched: {stats.bytes_fetched / 1024:.1f} KB")
         print(f"  Duration: {stats.duration:.1f}s")
         print(f"  Rate: {stats.rate:.1f} sections/second")
         if stats.errors:
